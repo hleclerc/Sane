@@ -1,0 +1,54 @@
+#include "KuSI64.h"
+#include "Value.h"
+#include "Vm.h"
+
+KuSI64::KuSI64( const KuSI64 &ku ) {
+    if ( ku.val )
+        val = new Value( *ku.val );
+    else {
+        kno = ku.kno;
+        val = 0;
+    }
+}
+
+KuSI64::~KuSI64() {
+    delete val;
+}
+
+KuSI64::KuSI64(const Value &value) {
+    // ASSERT( value.type == vm->type_ )
+    if ( value.get_bytes( &kno, 0 ) ) {
+        if ( vm->reverse_endianness )
+            kno = byte_swaped( kno );
+        val = 0;
+    } else {
+        val = new Value( value );
+    }
+}
+
+KuSI64 &KuSI64::operator=(const KuSI64 &ku) {
+    if ( ku.val ) {
+        if ( val )
+            *val = *ku.val;
+        else
+            val = new Value( *ku.val );
+    } else {
+        kno = ku.kno;
+        delete val;
+        val = 0;
+    }
+    return *this;
+}
+
+KuSI64 KuSI64::operator!() const {
+    if ( val )
+        return val->is_non_null();
+    return ! kno;
+}
+
+KuSI64::operator bool() const {
+    if ( val )
+        return val->is_null();
+    return kno;
+}
+
