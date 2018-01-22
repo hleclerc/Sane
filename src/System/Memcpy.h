@@ -8,3 +8,4 @@ void memcpy_bit( void *dst, const void *src, size_t len ); ///< same thing, with
 void memset_bit( void *dst, size_t off_dst, bool val, size_t len );
 
 int memcmp_bit( const void *dst, size_t off_dst, const void *src, size_t off_src, size_t len );
+int memcmp_bit( const void *dst, size_t off, size_t len, bool val );

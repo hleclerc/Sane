@@ -5,10 +5,10 @@
 Value::Value( const Ressource &ressource, const KuSI64 &offset, const KuSI64 &length, Type *type ) : ressource( ressource ), offset( offset ), length( length ), type( type ) {
 }
 
-Value::Value( Inst *inst, int nout ) : Value( Ressource{ inst, nout }, 0, inst->out_size( nout ), inst->out_type( nout ) ) {
+Value::Value( Inst *inst, int nout ) : Value( Ressource{ inst, nout }, 0, inst->created_outputs[ nout ].size, inst->created_outputs[ nout ].type ) {
 }
 
-Value::Value( const Ressource &ressource ) : Value( ressource, 0, ressource.size(), ressource.type() ) {
+Value::Value( const Ressource &ressource ) : Value( ressource.inst.ptr(), ressource.nout ) {
 }
 
 Value::Value( const Value &value ) : ressource( value.ressource ), offset( value.offset ), type( value.type ) {
@@ -41,15 +41,13 @@ void Value::write_to_stream( std::ostream &os ) const {
 bool Value::get_bytes( void *dst, PI32 beg_dst ) const {
     if ( length.is_known() ) {
         BoolVec msk( length.kv(), true );
-        get_bytes( dst, beg_dst, msk.data );
-        return msk.all_false();
+        return get_bytes( dst, beg_dst, msk.data ) && msk.all_false();
     }
     return false;
 }
 
-void Value::get_bytes( void *dst, PI32 beg_dst, void *msk ) const {
-    if ( offset.is_known() && length.is_known() )
-        ressource.get_bytes( dst, beg_dst, offset.kv(), length.kv(), msk );
+bool Value::get_bytes( void *dst, PI32 beg_dst, void *msk ) const {
+    return offset.is_known() && length.is_known() && ressource.get_bytes( dst, beg_dst, offset.kv(), length.kv(), msk );
 }
 
 bool Value::is_equal( const Value &that ) const {

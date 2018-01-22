@@ -57,13 +57,14 @@ public:
         //    type->write_cst( os, val.data, 0 );
     }
 
-    virtual void get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const override {
+    virtual bool get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const override {
         if ( PI32( beg_src ) >= val.size )
-            return;
+            return true;
         if ( PI32( beg_src + len ) > val.size )
             len = val.size - beg_src;
         memcpy_bit( dst, beg_dst, val.data, beg_src, len, msk );
         memset_bit( msk, beg_dst, false, len );
+        return true;
     }
 
     Type   *type;
@@ -73,7 +74,7 @@ public:
 
 Variable make_Cst( Type *type, int size, void *val, void *kno ) {
     Cst *res = new Cst( type, size, val, kno );
-    return { res->new_created_output(), 0, size, type };
+    return { res->new_created_output( type, size ), 0, size, type };
 }
 
 

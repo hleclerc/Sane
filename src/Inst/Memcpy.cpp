@@ -35,7 +35,7 @@ public:
         //        int len = children[ 1 ].type->size();
         //        BoolVec dst( len );
         //        if ( children[ 1 ].get_bytes( dst.data, 0, 0, len ) ) {
-        //            if ( std::function<void(const PI8 *)> assign = children[ 0 ].inst->get_assign_func( children[ 0 ].nout, dst_off, len ) ) {
+        //            if ( std::function<void(const PI8 *)> assign = children[ 0 ].inst->get_assign_func( children[ 0 ].nout, dst.offset.kv, len ) ) {
         //                replace_by( 0, children[ 0 ].inst.ptr(), children[ 0 ].nout );
         //                assign( dst.data );
         //                return true;
@@ -53,7 +53,7 @@ public:
         TODO;
         //        cd.out_regs = { children[ 0 ].inst->cd.out_regs[ children[ 0 ].nout ] };
 
-        //        if ( write_ssp_rec( ss, cg, dst_off, children[ 0 ].type, "" ) )
+        //        if ( write_ssp_rec( ss, cg, dst.offset.kv, children[ 0 ].type, "" ) )
         //            return;
         //        ss << "memcpy_bits(...);";
     }
@@ -62,68 +62,58 @@ public:
         os << "Memcpy";
     }
 
-    virtual void get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const override {
-        TODO;
-        //        // we have to get data from...
-        //        int len_ssp = children[ 1 ].type->size(), end_ssp = dst_off + len_ssp, end_src = beg_src + len;
-        //        if ( beg_src < dst_off ) { // left part of children[ 0 ] and...
-        //            if ( end_src <= dst_off ) { // => only children[ 0 ]
-        //                children[ 0 ].inst->get_bytes( children[ 0 ].nout, dst, beg_dst, beg_src, len, msk );
-        //            } else if ( end_src <= end_ssp ) {
-        //                children[ 1 ].inst->get_bytes( children[ 1 ].nout, dst, beg_dst + dst_off - beg_src, 0, end_src - dst_off, msk );
-        //                children[ 0 ].inst->get_bytes( children[ 0 ].nout, dst, beg_dst, beg_src, len, msk );
-        //            } else {
-        //                children[ 1 ].inst->get_bytes( children[ 1 ].nout, dst, beg_dst + dst_off - beg_src, 0, len_ssp, msk );
-        //                children[ 0 ].inst->get_bytes( children[ 0 ].nout, dst, beg_dst, beg_src, len, msk );
-        //            }
-        //        } else if ( beg_src < end_ssp ) { // children[ 1 ] and...
-        //            if ( end_src <= end_ssp ) {
-        //                children[ 1 ].inst->get_bytes( children[ 1 ].nout, dst, beg_dst, beg_src - dst_off, len, msk );
-        //            } else {
-        //                children[ 1 ].inst->get_bytes( children[ 1 ].nout, dst, beg_dst, beg_src - dst_off, end_ssp - beg_src, msk );
-        //                children[ 0 ].inst->get_bytes( children[ 0 ].nout, dst, beg_dst, beg_src, len, msk );
-        //            }
-        //        } else { // right part of children[ 0 ]
-        //            children[ 0 ].inst->get_bytes( children[ 0 ].nout, dst, beg_dst, beg_src, len, msk );
-        //        }
+    virtual bool get_bytes( int nout, void *w_dst, int beg_w_dst, int beg_w_src, int w_len, void *msk ) const override {
+        if ( nout )
+            return false;
+        // look if we can get something from children[ 1 ]
+        if ( dst.offset.is_known() && src.offset.is_known() && len.is_known() ) {
+            int beg_l_src = std::max( beg_w_src, int( dst.offset.kv ) );
+            int end_l_src = std::min( beg_w_src + w_len, int( dst.offset.kv + len.kv ) );
+            int beg_n_dst = beg_l_src - dst.offset.kv;
+            int beg_n_src = beg_l_src - dst.offset.kv + src.offset.kv;
+            int n_len = end_l_src - beg_l_src;
+            if ( beg_l_src < end_l_src &&
+                 memcmp_bit( msk, beg_n_dst, n_len, false ) &&
+                 children[ 1 ].inst->get_bytes( children[ 1 ].nout, w_dst, beg_n_dst, beg_n_src, n_len, msk ) == false )
+                return false;
+        }
+        return memcmp_bit( msk, beg_w_dst, w_len, false ) ?
+            children[ 0 ].inst->get_bytes( children[ 0 ].nout, w_dst, beg_w_dst, beg_w_src, w_len, msk ) :
+            true;
     }
 
     virtual int inp_corr( int nout ) const override {
         return nout == 0 ? 0 : -1;
     }
 
-    virtual Type *out_type( int nout ) const override {
-        return children[ 0 ].inst->out_type( children[ 0 ].nout );
-    }
+//    bool write_ssp_rec( StreamSep &ss, Codegen &cg, int dst.offset.kvset, Type *dst_type, String m ) const {
+//        TODO;
+//        //        if ( dst.offset.kvset == 0 && dst_type == children[ 1 ].type ) {
+//        //            ss << cg.repr( children[ 0 ], PRIO_Member_selection ) << m << " = " << cg.repr( children[ 1 ], PRIO_Assignment, Codegen::WriteInlineCodeFlags::type_is_forced ) << ";";
+//        //            return true;
+//        //        }
 
-    bool write_ssp_rec( StreamSep &ss, Codegen &cg, int dst_offset, Type *dst_type, String m ) const {
-        TODO;
-        //        if ( dst_offset == 0 && dst_type == children[ 1 ].type ) {
-        //            ss << cg.repr( children[ 0 ], PRIO_Member_selection ) << m << " = " << cg.repr( children[ 1 ], PRIO_Assignment, Codegen::WriteInlineCodeFlags::type_is_forced ) << ";";
-        //            return true;
-        //        }
-
-        //        for( const TypeContent::Attribute *attr = dst_type->content.data.first_attribute; attr; attr = attr->next ) {
-        //            if ( dst_offset < attr->off )
-        //                return false;
-        //            if ( write_ssp_rec( ss, cg, dst_offset - attr->off, attr->type, m + "." + attr->name ) )
-        //                return true;
-        //        }
-        return false;
-    }
+//        //        for( const TypeContent::Attribute *attr = dst_type->content.data.first_attribute; attr; attr = attr->next ) {
+//        //            if ( dst.offset.kvset < attr->off )
+//        //                return false;
+//        //            if ( write_ssp_rec( ss, cg, dst.offset.kvset - attr->off, attr->type, m + "." + attr->name ) )
+//        //                return true;
+//        //        }
+//        return false;
+//    }
 
     IiRessourceWithOffset dst;
     IiRessourceWithOffset src;
     IiKuSI64              len;
 };
 
-void memcpy( Ressource &dst, const Ressource &src, const KuSI64 &off_dst, const KuSI64 &off_src, const KuSI64 &len ) {
+void memcpy( Ref *dst, Ref *src, const KuSI64 &off_dst, const KuSI64 &off_src, const KuSI64 &len ) {
     Memcpy *res = new Memcpy;
-    res->init_attr( res->dst, dst, off_dst );
-    res->init_attr( res->src, src, off_src );
-    res->init_attr( res->len, len          );
+    res->init_attr( res->dst, dst->current, off_dst );
+    res->init_attr( res->src, src->current, off_src );
+    res->init_attr( res->len, len                   );
 
     // for each potentially modified/read ressource
-    vm->ressource_map.get_potentially_linked_refs( dst, off_dst, len, res->add_wr_cb() );
-    vm->ressource_map.get_potentially_linked_refs( src, off_src, len, res->add_rd_cb() );
+    vm->ressource_map.get_linked_refs( dst, off_dst, len, res->add_wr_cb() );
+    vm->ressource_map.get_linked_refs( src, off_src, len, res->add_rd_cb() );
 }

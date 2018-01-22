@@ -1,20 +1,21 @@
-#include "Ref.h"
+#include "System/BoolVec.h"
 #include "Variable.h"
 #include "Type.h"
+#include "Ref.h"
 #include "Vm.h"
 
-Variable::Variable( const RcPtr<RefAncestor> &ref, const KuSI64 &offset, const KuSI64 &length, Type *type, Variable::Flags flags ) : ref( ref ), type( type ), flags( flags ), offset( offset ), length( length ) {
+Variable::Variable( const RcPtr<RefAncestor> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Variable::Flags flags ) : ref_anc( ref_anc ), type( type ), offset( offset ), length( length ), flags( flags ) {
 }
 
-Variable::Variable( const Value &value, Variable::Flags flags ) : ref( new Ref( value.ressource ) ), type( value.type ), flags( flags ), offset( value.offset ), length( value.length ) {
+Variable::Variable( const Value &value, Variable::Flags flags ) : ref_anc( new Ref( value.ressource ) ), type( value.type ), offset( value.offset ), length( value.length ), flags( flags ) {
 }
 
 Variable &Variable::operator=( const Variable &value ) {
-    ref    = value.ref   ;
-    type   = value.type  ;
-    flags  = value.flags ;
-    offset = value.offset;
-    length = value.length;
+    ref_anc = value.ref_anc;
+    type    = value.type   ;
+    offset  = value.offset ;
+    length  = value.length ;
+    flags   = value.flags  ;
     return *this;
 }
 
@@ -23,7 +24,7 @@ bool Variable::error() const {
 }
 
 bool Variable::is_shared() const {
-    return ref->is_shared();
+    return ref_anc->is_shared();
 }
 
 Variable Variable::to_Bool() const {
@@ -57,8 +58,8 @@ Variable Variable::to_Bool() const {
 //}
 
 void Variable::write_to_stream( std::ostream &os ) const {
-    if ( ref )
-        os << *ref;
+    if ( ref_anc )
+        os << *ref_anc;
     else
         os << "NULL";
 }
@@ -114,7 +115,7 @@ Variable Variable::constify( bool deep ) {
     flags |= Flags::CONST;
 
     if ( deep )
-        ref->constify();
+        ref_anc->constify();
 
     return *this;
 }
@@ -173,15 +174,16 @@ Variable Variable::constify( bool deep ) {
 //    return { res.inst, res.nout, type, res.offset + offset };
 //}
 
-//bool Variable::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const {
-//    BoolVec msk( len, true );
-//    get_bytes( dst, beg_dst, beg_src, len, msk.data );
-//    return msk.all_false();
-//}
+bool Variable::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const {
+    BoolVec msk( len, true );
+    get_bytes( dst, beg_dst, beg_src, len, msk.data );
+    return msk.all_false();
+}
 
-//void Variable::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const {
-//    return get().get_bytes( dst, beg_dst, beg_src, len, msk );
-//}
+bool Variable::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const {
+    return offset.is_known() && length.is_known() && offset.kv() + length.kv() > beg_src &&
+        ref_anc->ref()->current.get_bytes( dst, beg_dst, beg_src + offset.kv(), std::min( PI32( offset.kv() + length.kv() - beg_src ), len ), msk );
+}
 
 //bool Variable::get_value( SI32 &val ) const {
 //    #define TPT( BA, SI ) if ( type == vm->type_##BA##SI ) { BA##SI v; if ( ! get_bytes( &v, 0, 0, SI ) ) return false; if ( vm->reverse_endianness ) TODO; val = v; return true; }

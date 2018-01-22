@@ -1,14 +1,15 @@
 #include "Ref.h"
 #include "Vm.h"
 
-Ref::Ref( const Ressource &ressource, Ref::Flags flags ) : creation_inter_date( vm ? vm->inter_date : 0 ), ressource( ressource ), flags( flags ) {
+Ref::Ref( const Ressource &creator, Ref::Flags flags ) : creation_inter_date( vm ? vm->inter_date : 0 ), current( creator ), creator( creator ), flags( flags ) {
 }
 
 Ref::~Ref() {
+    creator.inst->created_outputs[ creator.nout ].ref = 0;
 }
 
 void Ref::write_to_stream( std::ostream &os ) const {
-    os << ressource;
+    os << current;
 }
 
 bool Ref::is_shared() const {
@@ -19,12 +20,12 @@ void Ref::constify() {
     flags |= Flags::CONST;
 }
 
-Ressource &Ref::ressource_ref() {
-    return ressource;
+Ref *Ref::ref() {
+    return this;
 }
 
 void Ref::set( const Ressource &src_ressource, int cst ) {
-    if ( ressource == src_ressource )
+    if ( current == src_ressource )
         return;
 
     if ( flags & Flags::CONST )
@@ -39,7 +40,7 @@ void Ref::set( const Ressource &src_ressource, int cst ) {
     }
 
     // change value
-    ressource = src_ressource;
+    current = src_ressource;
 
     //    auto mod = [&]() {
     //        if ( creation_inter_date < inter_date && inter_map ) {

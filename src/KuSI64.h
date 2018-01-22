@@ -28,8 +28,8 @@ public:
     KuSI64      &operator=    ( const KuSI64 &ku );
 
     bool         is_known     () const { return val == 0; }
-    const Value &uv       () const { return *val; } ///< unknown Value (works only if is_known() == false)
-    SI64         kv       () const { return kno; }  ///< known Value (works only if is_known() == true)
+    const Value &uv           () const { return *val; } ///< unknown Value (works only if is_known() == false)
+    SI64         kv           () const { return kno; }  ///< known Value (works only if is_known() == true)
 
     KuSI64       operator!    () const;
     explicit     operator bool() const;

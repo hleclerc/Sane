@@ -86,35 +86,30 @@ void Inst::init_attr( IiValue &attr, const Value &val ) {
     attr.type = val.type;
 }
 
-Ref *Inst::new_created_output() {
+Ref *Inst::new_created_output( Type *type, const KuSI64 &size ) {
     Ref *res = new Ref( Ressource( this, created_outputs.size() ) );
-    created_outputs << Output{ res };
+    created_outputs << Output{ res, type, size };
     return res;
 }
 
-void Inst::get_base_refs( int nout, const std::function<void (Ref *)> &cb ) {
-    if ( nout >= (int)created_outputs.size() ) {
-        const Ressource &ch = children[ iomap[ nout - created_outputs.size() ] ];
-        return ch.inst->get_base_refs( ch.nout, cb );
-    }
-    cb( created_outputs[ nout ].ref );
+void Inst::get_linked_refs( int nout, const std::function<void (Ref *)> &cb ) {
 }
 
 Inst::FuncOnRefPtr Inst::add_wr_cb() {
     return [this]( Ref *ref ) {
         // if *this has modified the ref, there's nothing to do (ressource is already a child and ref has already been modified)
-        if ( ref->ressource.inst == this )
+        if ( ref->current.inst == this )
             return;
 
         size_t nc = 0;
         for( ; ; ++nc ) {
             // not in children ?
             if ( nc == children.size() ) {
-                add_child( ref->ressource );
+                add_child( ref->current );
                 break;
             }
             // already in children ?
-            if ( ref->ressource == children[ nc ] )
+            if ( ref->current == children[ nc ] )
                 break;
         }
         ref->set( Ressource( this, iomap.size() ) );
@@ -125,18 +120,18 @@ Inst::FuncOnRefPtr Inst::add_wr_cb() {
 Inst::FuncOnRefPtr Inst::add_rd_cb() {
     return [this]( Ref *ref ) {
         // if *this has modified the ref, there's nothing to do (ressource is already a child)
-        if ( ref->ressource.inst == this )
+        if ( ref->current.inst == this )
             return;
 
         // else, we have to say that the ressource is needed
         for( size_t nc = 0; ; ++nc ) {
             // not in children ?
             if ( nc == children.size() ) {
-                add_child( ref->ressource );
+                add_child( ref->current );
                 break;
             }
             // already in children ?
-            if ( ref->ressource == children[ nc ] )
+            if ( ref->current == children[ nc ] )
                 break;
         }
     };
@@ -170,16 +165,6 @@ void Inst::externalize( Inst *inst, size_t ninp ) {
 
 int Inst::inp_corr( int nout ) const {
     return -1;
-}
-
-Type *Inst::out_type( int nout ) const {
-    write_dot( std::cerr << __FUNCTION__ << " " );
-    TODO;
-    return 0;
-}
-
-KuSI64 Inst::out_size( int nout ) const {
-    return out_type( nout )->size();
 }
 
 Inst *Inst::clone() const {
@@ -293,7 +278,8 @@ bool Inst::can_be_inlined() const {
     return true;
 }
 
-void Inst::get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const {
+bool Inst::get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const {
+    return false;
 }
 
 void *Inst::rcast( int nout ) {

@@ -67,3 +67,21 @@ int memcmp_bit( const void *dst, size_t off_dst, const void *src, size_t off_src
 
     return memcmp( (const char *)dst + off_dst / 8, (const char *)src + off_src / 8, ( len + 7 ) / 8 );
 }
+
+int memcmp_bit( const void *dst, size_t off, size_t len, bool val ) {
+    if ( off % 8 || len % 8 ) {
+        TODO;
+        return 0;
+    }
+
+    if ( val ) {
+        for( size_t i = off / 8; i < off / 8 + len / 8; ++i )
+            if ( ! ((const char *)dst)[ i ] )
+                return -1;
+    } else {
+        for( size_t i = off / 8; i < off / 8 + len / 8; ++i )
+            if ( ((const char *)dst)[ i ] )
+                return 1;
+    }
+    return 0;
+}

@@ -1,4 +1,5 @@
 #include "RessourceMap.h"
+#include "Ref.h"
 
 RessourceMap::RessourceMap() : file_content( 0 ) {
 }
@@ -7,8 +8,10 @@ RessourceMap::~RessourceMap() {
     delete file_content;
 }
 
-void RessourceMap::get_potentially_linked_refs( const Ressource &ressource, const KuSI64 &offset, const KuSI64 &length, const std::function<void(Ref *)> &cb ) {
-    ressource.inst->get_base_refs( ressource.nout, [&]( Ref *ref ) {
+void RessourceMap::get_linked_refs( const Ref *ref, const KuSI64 &offset, const KuSI64 &length, const std::function<void(Ref *)> &cb ) {
+    cb( const_cast<Ref *>( ref ) );
+
+    ref->creator.inst->get_linked_refs( ref->creator.nout, [&]( Ref *ref ) {
         cb( ref );
     } );
 }

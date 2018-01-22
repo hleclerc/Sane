@@ -7,11 +7,10 @@ void Ressource::thread_visitor( const std::function<void (Inst *, int, int)> &cb
 
 bool Ressource::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const {
     BoolVec msk( len, true );
-    get_bytes( dst, beg_dst, beg_src, len, msk.data );
-    return msk.all_false();
+    return get_bytes( dst, beg_dst, beg_src, len, msk.data ) && msk.all_false();
 }
 
-void Ressource::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const {
+bool Ressource::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const {
     return inst->get_bytes( nout, dst, beg_dst, beg_src, len, msk );
 }
 

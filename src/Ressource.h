@@ -17,8 +17,8 @@ public:
     bool        operator==     ( const Ressource &that ) const;
     bool        operator<      ( const Ressource &that ) const;
 
-    Type       *type           () const { return inst->out_type( nout ); }
-    KuSI64      size           () const { return inst->out_size( nout ); }
+    //    Type       *type           () const { return inst->out_type( nout ); }
+    //    KuSI64      size           () const { return inst->out_size( nout ); }
     operator    bool           () const { return inst; }
     void       *rcast          ();
 
@@ -26,7 +26,7 @@ public:
     void        thread_visitor ( const std::function<void( Inst *, int, int )> &cb, bool call_before = true ) const;
 
     bool        get_bytes      ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const;
-    void        get_bytes      ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const;
+    bool        get_bytes      ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const;
 
     RcPtr<Inst> inst;
     int         nout; ///< num output of inst

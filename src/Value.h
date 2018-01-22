@@ -24,7 +24,7 @@ public:
     void        write_to_stream( std::ostream &os ) const;
 
     bool        get_bytes      ( void *dst, PI32 beg_dst = 0 ) const;
-    void        get_bytes      ( void *dst, PI32 beg_dst, void *msk ) const;
+    bool        get_bytes      ( void *dst, PI32 beg_dst, void *msk ) const;
 
     bool        is_not_equal   ( const Value &that ) const; ///< works for a very limited number of cases (SI32, ...).
     bool        is_equal       ( const Value &that ) const; ///< works for a very limited number of cases (SI32, ...).

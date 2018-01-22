@@ -2,18 +2,20 @@
 
 #include "../System/RcPtr.h"
 #include "../System/Deque.h"
+#include "../KuSI64.h"
+
 #include "IiRessourceWithOffset.h"
 #include "CodegenData.h"
 #include "IiValue.h"
+
 #include <functional>
 #include <set>
+
 class StreamPrio;
 class Ressource;
 class StreamSep;
 class Codegen;
 class BoolVec;
-class KuSI64;
-class Value;
 class Type;
 class Ref;
 
@@ -22,7 +24,7 @@ class Ref;
 class Inst : public RcObj {
 public:
     struct Parent { bool operator==( const Parent &p ) const { return inst == p.inst && ninp == p.ninp; } Inst *inst; int ninp; };
-    struct Output { Ref *ref; };
+    struct Output { Ref *ref; Type *type; KuSI64 size; };
 
     using FuncOnRefPtr = std::function<void(Ref *)>;
     using AssFunc = std::function<void(const PI8 *)>;
@@ -41,9 +43,9 @@ public:
     void             init_attr              ( IiKuSI64              &attr, const KuSI64 &val );
     void             init_attr              ( IiValue               &attr, const Value &val );
 
-    Ref             *new_created_output     ();
+    Ref             *new_created_output     (Type *type, const KuSI64 &size );
 
-    virtual void     get_base_refs          ( int nout, const std::function<void(Ref *)> &cb );
+    virtual void     get_linked_refs        ( int nout, const std::function<void(Ref *)> &cb );
 
     FuncOnRefPtr     add_wr_cb              (); ///< cb to add a ressource thay may be written by this
     FuncOnRefPtr     add_rd_cb              (); ///< cb to add a ressource thay may be read by this
@@ -54,8 +56,6 @@ public:
     int              nb_parents_on_nout     ( int nout ) const;
     virtual void     externalize            ( Inst *inst, size_t ninp );
     virtual int      inp_corr               ( int nout ) const;
-    virtual Type    *out_type               ( int nout ) const;
-    virtual KuSI64   out_size               ( int nout ) const;
     virtual Inst    *clone                  () const;
 
     virtual bool     is_non_null            ( int nout, const KuSI64 &offset, const KuSI64 &length, Type *type ) const;
@@ -65,7 +65,7 @@ public:
     virtual bool     write_graph_rec        ( std::ostream &ss, std::set<const Inst *> &seen_insts, const std::function<void(std::ostream&, const Inst *)> &f, bool disp_parents ) const;
     virtual AssFunc  get_assign_func        ( int nout, int off, int len );
     virtual void     write_dot              ( std::ostream &os ) const = 0;
-    virtual void     get_bytes              ( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const;
+    virtual bool     get_bytes              ( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const;
     virtual void    *rcast                  ( int nout );
 
     virtual void     write_inline_code      ( StreamPrio &ss, Codegen &cg, int nout, int flags ); ///< helper for case nb_outputs == 1

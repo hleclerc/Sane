@@ -12,7 +12,7 @@ public:
     RessourceMap();
     ~RessourceMap();
 
-    void        get_potentially_linked_refs( const Ressource &ressource, const KuSI64 &offset, const KuSI64 &length, const std::function<void(Ref *)> &cb );
+    void        get_linked_refs( const Ref *ref, const KuSI64 &offset, const KuSI64 &length, const std::function<void(Ref *)> &cb );
 
     //    void        get_prs_on_file_content( const Value &fd, const std::function<void( Rss * )> &cb );
     //    void        get_prs_on_file_cursor ( const Value &fd, const std::function<void( Rss * )> &cb );
