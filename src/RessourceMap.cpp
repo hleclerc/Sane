@@ -1,11 +1,12 @@
+#include "Inst/RessourceInst.h"
 #include "RessourceMap.h"
+#include "Variable.h"
 #include "Ref.h"
 
 RessourceMap::RessourceMap() : file_content( 0 ) {
 }
 
 RessourceMap::~RessourceMap() {
-    delete file_content;
 }
 
 void RessourceMap::get_linked_refs( const Ref *ref, const KuSI64 &offset, const KuSI64 &length, const std::function<void(Ref *)> &cb ) {
@@ -16,30 +17,35 @@ void RessourceMap::get_linked_refs( const Ref *ref, const KuSI64 &offset, const 
     } );
 }
 
-//void RessourceMap::get_prs_on_file_content( const Value &fd, const std::function<void (Rss *)> &cb ) {
-//    if ( ! file_content )
-//        file_content = new Rss( "file content" );
+void RessourceMap::on_file_content( const Value &fd, const std::function<void(Ref *)> &cb ) {
+    if ( ! file_content ) {
+        Variable v = make_RessourceInst( "file content" );
+        file_content = v.ref();
+    }
 
-//    cb( file_content );
-//}
+    cb( file_content.ptr() );
+}
 
-//void RessourceMap::get_prs_on_file_cursor( const Value &fd, const std::function<void (Rss *)> &cb ) {
-//    // check fd is present
-//    auto iter = file_cursors.find( fd );
-//    if ( iter == file_cursors.end() )
-//        file_cursors.insert( iter, std::make_pair( fd, Rss( "file cursor" ) ) );
+void RessourceMap::on_file_cursor( const Value &fd, const std::function<void(Ref *)> &cb ) {
+    //    // check fd is present
+    //    auto iter = file_cursors.find( fd );
+    //    if ( iter == file_cursors.end() )
+    //        file_cursors.insert( iter, std::make_pair( fd, Rss( "file cursor" ) ) );
 
-//    // call cb on potentially equal fds
-//    for( std::pair<const Value,Rss> &vr : file_cursors  )
-//        if ( ! fd.is_not_equal( vr.first ) )
-//            cb( &vr.second );
-//}
+    //    // call cb on potentially equal fds
+    //    for( std::pair<const Value,Rss> &vr : file_cursors  )
+    //        if ( ! fd.is_not_equal( vr.first ) )
+    //            cb( &vr.second );
+}
+
+void RessourceMap::visit_ext_changes( const std::function<void(Ref *)> &visitor ) {
+    if ( file_content /*&& file_content->current != file_content->creator*/ )
+        visitor( file_content.ptr() );
+
+    //    for( std::pair<const Value,Rss> &vr : file_cursors  )
+    //        visitor( &vr.second );
+}
 
 //void RessourceMap::visit( std::function<void (Rss *)> visitor ) {
-//    if ( file_content )
-//        visitor( file_content );
-
-//    for( std::pair<const Value,Rss> &vr : file_cursors  )
-//        visitor( &vr.second );
 //}
 

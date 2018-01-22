@@ -53,8 +53,7 @@ public:
     }
 
     virtual void write_dot( std::ostream &os ) const override {
-        TODO;
-        //    type->write_cst( os, val.data, 0 );
+        type->write_cst( os, val.data, 0 );
     }
 
     virtual bool get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const override {

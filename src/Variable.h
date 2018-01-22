@@ -14,7 +14,7 @@ public:
 
     Variable( const RcPtr<RefAncestor> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Flags flags = Flags::NONE );
     Variable( const Value &value, Flags flags = Flags::NONE ); // make a RefLeaf from a value
-    Variable() : type( 0 ), flags( Flags::NONE ) {} // void Variable
+    Variable() : flags( Flags::NONE ), type( 0 ) {} // void Variable
 
     Variable          &operator=           ( const Variable &value );
 
@@ -58,9 +58,9 @@ public:
     T                 *rcast               () const { return (T *)ref_anc->ref()->current.rcast(); }
 
     RcPtr<RefAncestor> ref_anc;
-    Type              *type;
     KuSI64             offset;
     KuSI64             length;
     Flags              flags;
+    Type              *type;
 };
 ENUM_FLAGS( Variable::Flags )

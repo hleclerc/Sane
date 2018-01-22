@@ -4,10 +4,10 @@
 #include "Ref.h"
 #include "Vm.h"
 
-Variable::Variable( const RcPtr<RefAncestor> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Variable::Flags flags ) : ref_anc( ref_anc ), type( type ), offset( offset ), length( length ), flags( flags ) {
+Variable::Variable( const RcPtr<RefAncestor> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Variable::Flags flags ) : ref_anc( ref_anc ), offset( offset ), length( length ), flags( flags ), type( type ) {
 }
 
-Variable::Variable( const Value &value, Variable::Flags flags ) : ref_anc( new Ref( value.ressource ) ), type( value.type ), offset( value.offset ), length( value.length ), flags( flags ) {
+Variable::Variable( const Value &value, Variable::Flags flags ) : ref_anc( new Ref( value.ressource ) ), offset( value.offset ), length( value.length ), flags( flags ), type( value.type ) {
 }
 
 Variable &Variable::operator=( const Variable &value ) {
@@ -37,6 +37,10 @@ Variable Variable::to_Bool() const {
     }
 
     return *this;
+}
+
+Value Variable::get() const {
+    return { ref_anc->ref()->current, offset, length, type };
 }
 
 //Variable Variable::equal( const Variable &that ) const {

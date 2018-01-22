@@ -1,3 +1,4 @@
+#include "../src/Inst/WriteFd.h"
 #include "../src/Inst/Memcpy.h"
 #include "../src/Inst/Cst.h"
 #include "../src/Vm.h"
@@ -24,4 +25,15 @@ TEST( Variable, init ) {
     ASSERT_EQ( val, 18 );
 
     //
+}
+
+TEST( Variable, fd ) {
+    vm = new Vm;
+
+    // write 17 in file descriptor 0
+    make_WriteFd( make_Cst( 0 ), make_Cst( 17 ) );
+
+    Vec<Inst *> insts;
+    vm->ressource_map.visit_ext_changes( [&](Ref *ref) { P( ref ); insts << ref->current.inst.ptr(); } );
+    Inst::display_graphviz( insts );
 }
