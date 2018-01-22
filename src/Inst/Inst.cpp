@@ -5,6 +5,7 @@
 #include "../System/Deque.h"
 #include "../Ressource.h"
 #include "../Type.h"
+#include "../Ref.h"
 #include <fstream>
 
 size_t Inst::cur_op_id = 0;
@@ -25,9 +26,11 @@ void Inst::clear_children() {
     children.clear();
 }
 
-void Inst::add_child( const Ressource &ch ) {
-    ch.inst->parents << Parent{ this, int( children.size() ) };
+int Inst::add_child( const Ressource &ch ) {
+    int res = children.size();
+    ch.inst->parents << Parent{ this, res };
     children << ch;
+    return res;
 }
 
 void Inst::mod_child( int ninp, const Ressource &ch ) {
@@ -57,6 +60,86 @@ void Inst::rem_out( int nout, bool check_if_unused ) {
         if ( p.inst->children[ p.ninp ].nout > nout )
             --p.inst->children[ p.ninp ].nout;
     }
+}
+
+void Inst::init_attr( IiRessourceWithOffset &attr, const Ressource &ressource, const KuSI64 offset ) {
+    init_attr( attr.ressource, ressource );
+    init_attr( attr.offset   , offset    );
+}
+
+void Inst::init_attr( IiRessource &attr, const Ressource &ressource ) {
+    attr.index = add_child( ressource );
+}
+
+void Inst::init_attr( IiKuSI64 &attr, const KuSI64 &val ) {
+    if ( val.is_known() )
+        attr.kv = val.kv();
+    else
+        init_attr( *( attr.uv = new IiValue ), val.uv() );
+}
+
+void Inst::init_attr( IiValue &attr, const Value &val ) {
+    init_attr( attr.ressource, val.ressource );
+    init_attr( attr.offset   , val.offset    );
+    init_attr( attr.length   , val.length    );
+
+    attr.type = val.type;
+}
+
+Ref *Inst::new_created_output() {
+    Ref *res = new Ref( Ressource( this, created_outputs.size() ) );
+    created_outputs << Output{ res };
+    return res;
+}
+
+void Inst::get_base_refs( int nout, const std::function<void (Ref *)> &cb ) {
+    if ( nout >= (int)created_outputs.size() ) {
+        const Ressource &ch = children[ iomap[ nout - created_outputs.size() ] ];
+        return ch.inst->get_base_refs( ch.nout, cb );
+    }
+    cb( created_outputs[ nout ].ref );
+}
+
+Inst::FuncOnRefPtr Inst::add_wr_cb() {
+    return [this]( Ref *ref ) {
+        // if *this has modified the ref, there's nothing to do (ressource is already a child and ref has already been modified)
+        if ( ref->ressource.inst == this )
+            return;
+
+        size_t nc = 0;
+        for( ; ; ++nc ) {
+            // not in children ?
+            if ( nc == children.size() ) {
+                add_child( ref->ressource );
+                break;
+            }
+            // already in children ?
+            if ( ref->ressource == children[ nc ] )
+                break;
+        }
+        ref->set( Ressource( this, iomap.size() ) );
+        iomap << nc;
+    };
+}
+
+Inst::FuncOnRefPtr Inst::add_rd_cb() {
+    return [this]( Ref *ref ) {
+        // if *this has modified the ref, there's nothing to do (ressource is already a child)
+        if ( ref->ressource.inst == this )
+            return;
+
+        // else, we have to say that the ressource is needed
+        for( size_t nc = 0; ; ++nc ) {
+            // not in children ?
+            if ( nc == children.size() ) {
+                add_child( ref->ressource );
+                break;
+            }
+            // already in children ?
+            if ( ref->ressource == children[ nc ] )
+                break;
+        }
+    };
 }
 
 void Inst::replace_by( int nout, Inst *new_inst, int new_nout ) {
@@ -113,12 +196,6 @@ bool Inst::is_null( int nout, const KuSI64 &offset, const KuSI64 &length, Type *
     return false;
 }
 
-int Inst::nb_outputs() const {
-    write_dot( std::cerr << __FUNCTION__ << " " );
-    TODO;
-    return 0;
-}
-
 void Inst::write_to_stream( std::ostream &os, SI32 nout, Type *type, int offset ) const {
     write_dot( os );
     if ( nout >= 0 )
@@ -142,7 +219,7 @@ bool Inst::write_graph_rec( std::ostream &ss, std::set<const Inst *> &seen_insts
     int cpt = 0;
     for( const Ressource &v : children ) {
         std::ostringstream label;
-        if ( v.inst->nb_outputs() > 1 || v.nout )
+        if ( v.inst->created_outputs.size() + v.inst->iomap.size() > 1 )
             label << v.nout;        
         // label << v.type()->name;
 
@@ -219,7 +296,7 @@ bool Inst::can_be_inlined() const {
 void Inst::get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const {
 }
 
-void *Inst::rcast( SI32 nout, Type *type, SI32 offset ) {
+void *Inst::rcast( int nout ) {
     write_dot( std::cerr );
     TODO;
     return 0;

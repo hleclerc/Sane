@@ -2,7 +2,9 @@
 
 #include "../System/RcPtr.h"
 #include "../System/Deque.h"
+#include "IiRessourceWithOffset.h"
 #include "CodegenData.h"
+#include "IiValue.h"
 #include <functional>
 #include <set>
 class StreamPrio;
@@ -11,30 +13,46 @@ class StreamSep;
 class Codegen;
 class BoolVec;
 class KuSI64;
+class Value;
 class Type;
+class Ref;
 
 /**
 */
 class Inst : public RcObj {
 public:
     struct Parent { bool operator==( const Parent &p ) const { return inst == p.inst && ninp == p.ninp; } Inst *inst; int ninp; };
+    struct Output { Ref *ref; };
+
+    using FuncOnRefPtr = std::function<void(Ref *)>;
     using AssFunc = std::function<void(const PI8 *)>;
 
     Inst();
     virtual ~Inst();
 
     void             clear_children         ();
-    void             add_child              ( const Ressource &ch );
+    int              add_child              ( const Ressource &ch );
     void             mod_child              ( int ninp, const Ressource &ch );
     void             rem_child              ( int ninp );
     void             rem_out                ( int nout, bool check_if_unused = true ); ///< shifts outputs > nout
+
+    void             init_attr              ( IiRessourceWithOffset &attr, const Ressource &ressource, const KuSI64 offset );
+    void             init_attr              ( IiRessource           &attr, const Ressource &ressource );
+    void             init_attr              ( IiKuSI64              &attr, const KuSI64 &val );
+    void             init_attr              ( IiValue               &attr, const Value &val );
+
+    Ref             *new_created_output     ();
+
+    virtual void     get_base_refs          ( int nout, const std::function<void(Ref *)> &cb );
+
+    FuncOnRefPtr     add_wr_cb              (); ///< cb to add a ressource thay may be written by this
+    FuncOnRefPtr     add_rd_cb              (); ///< cb to add a ressource thay may be read by this
 
     void             replace_by             ( int nout, Inst *new_inst, int new_nout ); ///< replace { this, nout } by { new_inst, new_nout }
 
     bool             all_children_with_op_id( size_t oi ) const;
     int              nb_parents_on_nout     ( int nout ) const;
     virtual void     externalize            ( Inst *inst, size_t ninp );
-    virtual int      nb_outputs             () const;
     virtual int      inp_corr               ( int nout ) const;
     virtual Type    *out_type               ( int nout ) const;
     virtual KuSI64   out_size               ( int nout ) const;
@@ -48,7 +66,7 @@ public:
     virtual AssFunc  get_assign_func        ( int nout, int off, int len );
     virtual void     write_dot              ( std::ostream &os ) const = 0;
     virtual void     get_bytes              ( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const;
-    virtual void    *rcast                  ( SI32 nout, Type *type, SI32 offset );
+    virtual void    *rcast                  ( int nout );
 
     virtual void     write_inline_code      ( StreamPrio &ss, Codegen &cg, int nout, int flags ); ///< helper for case nb_outputs == 1
     virtual bool     expects_a_reg_at       ( int ninp ) const;
@@ -66,9 +84,11 @@ public:
     static void      dfs_rec                ( Inst *inst, const std::function<void(Inst*)> &f, bool deep = false, bool f_after = false, bool need_inc_ref = false );
     static void      dfs                    ( const Vec<Inst *> &lst, const std::function<void(Inst*)> &f, bool deep = false, bool f_after = false, bool need_inc_ref = false );
 
-    size_t           creation_date; ///< used mainly for ordering during code generation
+    Vec<Output>      created_outputs; ///<
+    size_t           creation_date;   ///< used mainly for ordering during code generation
     Vec<Ressource>   children;
     Vec<Parent>      parents;
+    Vec<int>         iomap;           ///< ( num output - created_outputs.size() ) => num child for each ressources potentially modified by this
 
     CodegenData      cd;
 

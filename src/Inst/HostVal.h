@@ -23,7 +23,7 @@ public:
         memset_bit( msk, beg_dst, false, len );
     }
 
-    virtual void *rcast( SI32 nout, Type *type, SI32 offset ) override {
+    virtual void *rcast( SI32 nout ) override {
         return &data;
     }
 

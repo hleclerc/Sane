@@ -1,10 +1,8 @@
 #pragma once
 
-#include "proute.h"
-
 #include "System/RcString.h"
 #include "ApplyFlags.h"
-#include "Ref.h"
+#include "RefAncestor.h"
 class TCI;
 
 /**
@@ -13,11 +11,13 @@ class Variable {
 public:
     enum class Flags: PI32 { NONE = 0, CONST = 1 };
 
-    Variable( const RcPtr<Ref> &ref, Type *type, SI32 offset = 0, Flags flags = Flags::NONE );
+    Variable( const RcPtr<RefAncestor> &ref, const KuSI64 &offset, const KuSI64 &length, Type *type, Flags flags = Flags::NONE );
     Variable( const Value &value, Flags flags = Flags::NONE ); // make a RefLeaf from a value
     Variable() : type( 0 ), flags( Flags::NONE ) {} // void Variable
 
     Variable   &operator=           ( const Variable &value );
+
+    Ressource  &ressource_ref       () { return ref->ressource_ref(); }
 
     operator    bool                () const { return ref; }
     bool        error               () const;
@@ -54,11 +54,12 @@ public:
     Variable    sub_part            ( Type *new_type, SI32 add_off ) const;
 
     template<class T>
-    T          *rcast               () const { return (T *)ref->get().rcast(); }
+    T          *rcast               () const { return (T *)ref->ressource_ref().rcast(); }
 
-    RcPtr<Ref>  ref;
+    RcPtr<RefAncestor>  ref;
     Type       *type;
     Flags       flags;
-    SI32        offset;
+    KuSI64      offset;
+    KuSI64      length;
 };
 ENUM_FLAGS( Variable::Flags )

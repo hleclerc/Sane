@@ -12,7 +12,7 @@ void Rand::write_dot( std::ostream &os ) const {
     os << "rand[" << *type << "]";
 }
 
-int Rand::nb_outputs() const {
+int Rand::nb_created_outputs() const {
     return 1;
 }
 

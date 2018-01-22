@@ -1,20 +1,26 @@
 #pragma once
 
-#include "Value.h"
-class Variable;
-class RcString;
+#include "System/EnumFlags.h"
+#include "RefAncestor.h"
 
 /**
 */
-class Ref : public RcObj {
+class Ref : public RefAncestor {
 public:
+    enum class Flags: PI32 { NONE = 0, NOT_CONSTRUCTED = 1, CONST = 2 };
+
+    Ref( const Ressource &ressource, Flags flags = Flags::NONE );
     virtual ~Ref();
 
-    virtual Variable intercept_find_attribute( const RcString &name, Type *type, bool is_const, SI32 offset ) const;
-    virtual void     write_to_stream         ( std::ostream &os ) const = 0;
-    virtual bool     is_shared               () const;
-    virtual void     constify                () = 0;
-    virtual Value    get                     () const = 0;
-    virtual void     set                     ( const Value &val, int cst = 0 ) = 0;
+    virtual void       write_to_stream( std::ostream &os ) const;
+    virtual bool       is_shared      () const;
+    virtual void       constify       ();
+    virtual Ressource &ressource_ref  ();
+    virtual void       set            ( const Ressource &src_ressource, int cst = 0 );
+
+    PI64               creation_inter_date; ///< value of inter_date during creation
+    Ressource          ressource;
+    Flags              flags;
 };
+ENUM_FLAGS( Ref::Flags )
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Type.h"
-#include "gvm.h"
+#include "Vm.h"
 
 /**
 */

@@ -13,21 +13,29 @@ class Value;
 */
 class KuSI64 {
 public:
+    struct ShallowCmp {
+        bool operator==( ShallowCmp &that ) const { return std::tie( ku.val, ku.kno ) == std::tie( that.ku.val, that.ku.kno ); }
+        bool operator< ( ShallowCmp &that ) const { return std::tie( ku.val, ku.kno ) <  std::tie( that.ku.val, that.ku.kno ); }
+        const KuSI64 &ku;
+    };
+
     KuSI64( SI64 kno = 0 ) : val( 0 ), kno( kno ) {}
     KuSI64( const Value &value );
     KuSI64( const KuSI64 &ku );
 
     ~KuSI64();
 
-    KuSI64      &operator=( const KuSI64 &ku );
-    bool         is_known () const { return val == 0; }
+    KuSI64      &operator=    ( const KuSI64 &ku );
+
+    bool         is_known     () const { return val == 0; }
     const Value &uv       () const { return *val; } ///< unknown Value (works only if is_known() == false)
     SI64         kv       () const { return kno; }  ///< known Value (works only if is_known() == true)
-    KuSI64       operator!() const;
-    operator     bool     () const;
+
+    KuSI64       operator!    () const;
+    explicit     operator bool() const;
 
 protected:
-    Value *val; ///<
-    SI64   kno; ///<
+    Value       *val; ///<
+    SI64         kno; ///<
 };
 

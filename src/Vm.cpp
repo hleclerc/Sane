@@ -28,7 +28,7 @@
 //#include "TypeClass.h"
 //#include "TypeType.h"
 //#include "TypeDef.h"
-//#include "TypeBT.h"
+#include "TypeBT.h"
 
 //// nsmake lib_name boost_filesystem
 
@@ -49,10 +49,10 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : /*main_scope( Scope::ScopeT
     #include "BaseTypes.h"
     #undef BT
 
-//    // arythmetic types
-//    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T );
-//    #include "ArythmeticTypes.h"
-//    #undef BT
+    // arythmetic types
+    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T );
+    #include "ArythmeticTypes.h"
+    #undef BT
 
 //    type_CallableWithSelf = new TypeCallableWithSelf;
 //    type_SlTrialClass     = new TypeSlTrialClass;

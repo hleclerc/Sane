@@ -15,8 +15,9 @@ KuSI64::~KuSI64() {
     delete val;
 }
 
-KuSI64::KuSI64(const Value &value) {
-    // ASSERT( value.type == vm->type_ )
+KuSI64::KuSI64( const Value &value ) {
+    ASSERT( value.type == vm->type_SI64, "TODO" );
+
     if ( value.get_bytes( &kno, 0 ) ) {
         if ( vm->reverse_endianness )
             kno = byte_swaped( kno );

@@ -1,13 +1,13 @@
 #include "KuSI64.h"
 #include "Type.h"
+#include "Vm.h"
 
 //#include "Variable.h"
 //#include "Class.h"
-//#include "Vm.h"
 
-//Type::Type( const LString &name ) : content( gvm ? gvm->type_Type : 0 ) {
-//    content.data.name = name;
-//}
+Type::Type( const LString &name ) : content( vm ? vm->type_Type : 0 ) {
+    content.data.name = name;
+}
 
 //bool Type::has_vtable_at_the_beginning() const {
 //    if ( content.data.has_new_vtable )
@@ -211,6 +211,20 @@
 //Class *Type::orig_class() const {
 //    return content.data.orig_class;
 //}
+
+void Type::write_cst( std::ostream &os, const PI8 *data, int offset_mod_8, bool always_add_braces ) const {
+    os << "{";
+    for( TypeContent::Attribute *attr = content.data.first_attribute; attr; attr = attr->next ) {
+        if ( attr != content.data.first_attribute )
+            os << ",";
+        attr->type->write_cst( os, data + ( offset_mod_8 + attr->off ) / 8, ( offset_mod_8 + attr->off ) % 8 );
+    }
+    os << "}";
+}
+
+bool Type::error() const {
+    return false;
+}
 
 KuSI64 Type::size() const {
     return 64;

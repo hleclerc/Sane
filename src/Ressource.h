@@ -12,9 +12,15 @@ public:
     Ressource( Inst *inst, int nout = 0 ) : inst( inst ), nout( nout ) {}
     Ressource() {}
 
+    Ressource  &operator=      ( const Ressource &that );
+
+    bool        operator==     ( const Ressource &that ) const;
+    bool        operator<      ( const Ressource &that ) const;
+
     Type       *type           () const { return inst->out_type( nout ); }
     KuSI64      size           () const { return inst->out_size( nout ); }
     operator    bool           () const { return inst; }
+    void       *rcast          ();
 
     void        write_to_stream( std::ostream &os ) const;
     void        thread_visitor ( const std::function<void( Inst *, int, int )> &cb, bool call_before = true ) const;

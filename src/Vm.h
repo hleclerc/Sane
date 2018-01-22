@@ -4,15 +4,13 @@
 #include "System/va_string.h"
 #include "System/Deque.h"
 #include "System/Vec.h"
-//#include "RessourceMap.h"
-//#include "Variable.h"
+#include "RessourceMap.h"
+#include "Variable.h"
 //#include "Scope.h"
 #include <map>
 class Interceptor;
 class Codegen;
 class Type;
-
-struct Variable {};
 
 /**
 */
@@ -82,7 +80,7 @@ public:
     PI64          inter_date;
     Interceptor  *interceptor;
     std::ostream *error_stream;
-    //    RessourceMap  ressource_map;      ///< modified file descriptors (fd -> last changes)
+    RessourceMap  ressource_map;  ///< modified file descriptors (fd -> last changes)
     bool          reverse_endianness;
 };
 

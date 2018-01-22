@@ -15,6 +15,7 @@ public:
     Value() {} // void value
 
     Value      &operator=      ( const Value &value );
+
     bool        operator<      ( const Value &value ) const;
     bool        operator==     ( const Value &value ) const;
 
@@ -24,8 +25,6 @@ public:
 
     bool        get_bytes      ( void *dst, PI32 beg_dst = 0 ) const;
     void        get_bytes      ( void *dst, PI32 beg_dst, void *msk ) const;
-
-    void       *rcast          ();
 
     bool        is_not_equal   ( const Value &that ) const; ///< works for a very limited number of cases (SI32, ...).
     bool        is_equal       ( const Value &that ) const; ///< works for a very limited number of cases (SI32, ...).
