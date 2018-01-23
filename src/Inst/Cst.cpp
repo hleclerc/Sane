@@ -67,7 +67,7 @@ public:
         return true;
     }
 
-    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+    virtual RcPtr<CanoInst> make_cano_inst( int nout, const CanoVal &offset, const CanoVal &length ) const override {
         return make_CanoCst( val.data, val.size );
     }
 

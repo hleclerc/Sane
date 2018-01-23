@@ -24,6 +24,14 @@ public:
         return true;
     }
 
+    virtual bool always_false( Type *type ) const {
+        return content.all_false();
+    }
+
+    virtual bool always_true( Type *type ) const {
+        return ! content.all_false();
+    }
+
     BoolVec content;
 };
 
@@ -32,13 +40,13 @@ static std::vector<RcPtr<CanoCst>> map_32;
 static RcPtr<CanoCst> cst_false;
 static RcPtr<CanoCst> cst_true;
 
-CanoVal make_gen_CanoCst( const void *content, int length ) {
+RcPtr<CanoInst> make_gen_CanoCst( const void *content, int length ) {
     TODO;
-    return {};
+    return 0;
 }
 
 template<class T>
-CanoVal make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length, Type *type ) {
+RcPtr<CanoInst> make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length ) {
     constexpr int ws = 512;
 
     if ( val >= 0 && val < ws ) {
@@ -55,12 +63,12 @@ CanoVal make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length, Ty
                 }
             }
         }
-        return { map[ val ], type };
+        return map[ val ];
     }
     return make_gen_CanoCst( &val, length );
 }
 
-CanoVal make_CanoCst( const void *content, int length ) {
+RcPtr<CanoInst> make_CanoCst( const void *content, int length ) {
     if ( length == 64 ) {
         SI64 val = *reinterpret_cast<const SI64 *>( content );
         return make_CanoCst( vm->reverse_endianness ? byte_swaped( val ) : val );
@@ -72,22 +80,22 @@ CanoVal make_CanoCst( const void *content, int length ) {
     return make_gen_CanoCst( content, length );
 }
 
-CanoVal make_CanoCst( SI64 val ) {
-    return make_CanoCst_kv<SI64>( map_64, val, 64, vm->type_SI64 );
+RcPtr<CanoInst> make_CanoCst( SI64 val ) {
+    return make_CanoCst_kv<SI64>( map_64, val, 64 );
 }
 
-CanoVal make_CanoCst( SI32 val ) {
-    return make_CanoCst_kv<SI32>( map_32, val, 32, vm->type_SI32 );
+RcPtr<CanoInst> make_CanoCst( SI32 val ) {
+    return make_CanoCst_kv<SI32>( map_32, val, 32 );
 }
 
 
-CanoVal make_CanoCst( Bool val ) {
+RcPtr<CanoInst> make_CanoCst( Bool val ) {
     if ( val ) {
         if ( ! cst_true )
             cst_true = new CanoCst( &val, 1 );
-        return { cst_true, vm->type_Bool };
+        return cst_true;
     }
     if ( ! cst_false )
         cst_false = new CanoCst( &val, 1 );
-    return { cst_false, vm->type_Bool };
+    return cst_false;
 }

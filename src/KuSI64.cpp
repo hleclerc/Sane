@@ -43,7 +43,7 @@ KuSI64 &KuSI64::operator=(const KuSI64 &ku) {
 }
 
 CanoVal KuSI64::cano_repr() const {
-    return val ? val->cano_repr() : make_CanoCst( kno );
+    return val ? val->cano_repr() : CanoVal{ make_CanoCst( kno ), vm->type_SI64 };
 }
 
 KuSI64 KuSI64::operator!() const {

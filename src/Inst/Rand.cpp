@@ -22,8 +22,8 @@ public:
         os << "rand[" << *type << "]";
     }
 
-    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const override {
-        return make_CanoSym( "rand", type );
+    virtual RcPtr<CanoInst> make_cano_inst( int nout, const CanoVal &offset, const CanoVal &length ) const override {
+        return make_CanoSym( "rand" );
     }
 
     Type *type;

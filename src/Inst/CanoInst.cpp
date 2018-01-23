@@ -9,6 +9,8 @@ CanoInst::CanoInst() : type( 0 ), op_id( 0 ) {
 }
 
 CanoInst::~CanoInst() {
+    for( int ninp = 0; ninp < (int)children.size(); ++ninp )
+        children[ ninp ].inst->parents.remove_first( Parent{ this, ninp } );
 }
 
 int CanoInst::add_child( const CanoVal &ch ) {
@@ -51,6 +53,14 @@ bool CanoInst::write_graph_rec( std::ostream &ss, std::set<const CanoInst *> &se
 }
 
 void CanoInst::get_out_insts( Deque<CanoInst *> &outs ) {
+}
+
+bool CanoInst::always_false( Type *type ) const {
+    return false;
+}
+
+bool CanoInst::always_true( Type *type ) const {
+    return false;
 }
 
 bool CanoInst::known_value() const {

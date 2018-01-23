@@ -14,6 +14,6 @@ public:
     String name;
 };
 
-CanoVal make_CanoSym( const String &name, Type *type ) {
-    return { new CanoSym( name ), type };
+CanoInst *make_CanoSym( const String &name ) {
+    return new CanoSym( name );
 }

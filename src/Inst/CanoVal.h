@@ -19,3 +19,6 @@ public:
     RcPtr<CanoInst> inst;
     Type           *type;
 };
+
+bool always_false( const CanoVal &val );
+bool always_true ( const CanoVal &val );

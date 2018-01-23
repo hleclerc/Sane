@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../System/Stream.h"
-class CanoVal;
+class CanoInst;
 
-CanoVal make_CanoSym( const String &name, Type *type );
+CanoInst *make_CanoSym( const String &name );
 

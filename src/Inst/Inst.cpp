@@ -163,6 +163,12 @@ void Inst::externalize( Inst *inst, size_t ninp ) {
     TODO;
 }
 
+CanoVal Inst::cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+    if ( ! cano_inst )
+        cano_inst = make_cano_inst( nout, offset, length );
+    return { cano_inst, type };
+}
+
 Type *Inst::out_type( int nout ) const {
     if ( nout < (int)created_outputs.size() )
         return created_outputs[ nout ].type;

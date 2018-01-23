@@ -86,9 +86,9 @@ public:
         return nout == 0 ? 0 : -1;
     }
 
-    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+    virtual RcPtr<CanoInst> make_cano_inst( int nout, const CanoVal &offset, const CanoVal &length ) const override {
         TODO;
-        return {};
+        return 0;
     }
 
 //    bool write_ssp_rec( StreamSep &ss, Codegen &cg, int dst.offset.kvset, Type *dst_type, String m ) const {
@@ -112,7 +112,7 @@ public:
     IiKuSI64              len;
 };
 
-void memcpy( Ref *dst, Ref *src, const KuSI64 &off_dst, const KuSI64 &off_src, const KuSI64 &len ) {
+void make_Memcpy( Ref *dst, Ref *src, const KuSI64 &off_dst, const KuSI64 &off_src, const KuSI64 &len ) {
     Memcpy *res = new Memcpy;
     res->init_attr( res->dst, dst->current, off_dst );
     res->init_attr( res->src, src->current, off_src );
