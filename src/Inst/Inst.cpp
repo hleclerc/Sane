@@ -170,6 +170,11 @@ RcPtr<CanoInst> Inst::cano_repr( const IiRessource &ressource, const CanoVal &of
     return ch.inst->cano_repr( ch.nout, offset, length );
 }
 
+RcPtr<CanoInst> Inst::cano_repr( const IiRessource &ressource ) const {
+    const Ressource &ch = children[ ressource.index ];
+    return ch.inst->cano_repr( ch.nout );
+}
+
 CanoVal Inst::cano_repr( const IiKuSI64 &value ) const {
     return value.is_known() ? CanoVal{ make_CanoCst( value.kv ), vm->type_SI64 } : cano_repr( *value.uv );
 }
@@ -179,8 +184,15 @@ CanoVal Inst::cano_repr( const IiValue &value ) const {
 }
 
 RcPtr<CanoInst> Inst::cano_repr( int nout, const CanoVal &offset, const CanoVal &length ) const {
+    RcPtr<CanoInst> res = cano_repr( nout );
+    if ( ! always_true( offset == 0 ) || ! always_true( length == out_size( nout ).cano_repr() ) )
+        TODO; // subpart
+    return res;
+}
+
+RcPtr<CanoInst> Inst::cano_repr( int nout ) const {
     if ( ! cano_inst )
-        cano_inst = make_cano_inst( nout, offset, length );
+        cano_inst = make_cano_inst( nout );
     return cano_inst;
 }
 

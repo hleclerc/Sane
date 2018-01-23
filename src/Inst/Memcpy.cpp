@@ -3,6 +3,7 @@
 #include "../Type.h"
 #include "../Vm.h"
 
+#include "CanoMemcpy.h"
 #include "Clonable.h"
 #include "Memcpy.h"
 
@@ -86,12 +87,8 @@ public:
         return nout == 0 ? 0 : -1;
     }
 
-    virtual RcPtr<CanoInst> make_cano_inst( int nout, const CanoVal &offset, const CanoVal &length ) const override {
-        // wa take src ?
-        if ( always_true( cano_repr( dst.offset ) == offset ) && always_true( cano_repr( len ) == length ) )
-            return cano_repr( src.ressource, cano_repr( src.offset ), length );
-        TODO;
-        return 0;
+    virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {
+        return make_CanoMemcpy( cano_repr( dst.ressource ), cano_repr( src.ressource ), cano_repr( dst.offset ), cano_repr( src.offset ), cano_repr( len ) );
     }
 
 //    bool write_ssp_rec( StreamSep &ss, Codegen &cg, int dst.offset.kvset, Type *dst_type, String m ) const {

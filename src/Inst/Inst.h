@@ -53,12 +53,14 @@ public:
 
     bool                    all_children_with_op_id( size_t oi ) const;
     int                     nb_parents_on_nout     ( int nout ) const;
-    virtual RcPtr<CanoInst> make_cano_inst         ( int nout, const CanoVal &offset, const CanoVal &length ) const = 0; ///< called by cano_repr if not already filled
+    virtual RcPtr<CanoInst> make_cano_inst         ( int nout ) const = 0; ///< called by cano_repr if not already filled
     virtual void            externalize            ( Inst *inst, size_t ninp );
     RcPtr<CanoInst>         cano_repr              ( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const;
+    RcPtr<CanoInst>         cano_repr              ( const IiRessource &ressource ) const;
     CanoVal                 cano_repr              ( const IiKuSI64 &value ) const;
     CanoVal                 cano_repr              ( const IiValue &value ) const; ///< canonical representation. Enables faster comparisons
     RcPtr<CanoInst>         cano_repr              ( int nout, const CanoVal &offset, const CanoVal &length ) const; ///< canonical representation. Enables faster comparisons
+    RcPtr<CanoInst>         cano_repr              ( int nout ) const; ///< canonical representation. Enables faster comparisons
     Type                   *out_type               ( int nout ) const;
     KuSI64                  out_size               ( int nout ) const;
     virtual int             inp_corr               ( int nout ) const;
