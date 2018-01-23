@@ -13,11 +13,15 @@ public:
         memcpy_bit( content.data, ptr, len );
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const {
+    virtual void write_dot( std::ostream &os, Type *type ) const override {
         if ( type )
             type->write_cst( os, content.data );
         else
             os << content;
+    }
+
+    virtual bool known_value() const override {
+        return true;
     }
 
     BoolVec content;
@@ -25,6 +29,8 @@ public:
 
 static std::vector<RcPtr<CanoCst>> map_64;
 static std::vector<RcPtr<CanoCst>> map_32;
+static RcPtr<CanoCst> cst_false;
+static RcPtr<CanoCst> cst_true;
 
 CanoVal make_gen_CanoCst( const void *content, int length ) {
     TODO;
@@ -32,7 +38,7 @@ CanoVal make_gen_CanoCst( const void *content, int length ) {
 }
 
 template<class T>
-CanoVal make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length ) {
+CanoVal make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length, Type *type ) {
     constexpr int ws = 512;
 
     if ( val >= 0 && val < ws ) {
@@ -49,7 +55,7 @@ CanoVal make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length ) {
                 }
             }
         }
-        return { map[ val ], vm->type_SI64 };
+        return { map[ val ], type };
     }
     return make_gen_CanoCst( &val, length );
 }
@@ -67,10 +73,21 @@ CanoVal make_CanoCst( const void *content, int length ) {
 }
 
 CanoVal make_CanoCst( SI64 val ) {
-    return make_CanoCst_kv<SI64>( map_64, val, 64 );
+    return make_CanoCst_kv<SI64>( map_64, val, 64, vm->type_SI64 );
 }
 
 CanoVal make_CanoCst( SI32 val ) {
-    return make_CanoCst_kv<SI32>( map_32, val, 32 );
+    return make_CanoCst_kv<SI32>( map_32, val, 32, vm->type_SI32 );
 }
 
+
+CanoVal make_CanoCst( Bool val ) {
+    if ( val ) {
+        if ( ! cst_true )
+            cst_true = new CanoCst( &val, 1 );
+        return { cst_true, vm->type_Bool };
+    }
+    if ( ! cst_false )
+        cst_false = new CanoCst( &val, 1 );
+    return { cst_false, vm->type_Bool };
+}

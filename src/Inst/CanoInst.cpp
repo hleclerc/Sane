@@ -11,6 +11,13 @@ CanoInst::CanoInst() : type( 0 ), op_id( 0 ) {
 CanoInst::~CanoInst() {
 }
 
+int CanoInst::add_child( const CanoVal &ch ) {
+    int res = children.size();
+    ch.inst->parents << Parent{ this, res };
+    children << ch;
+    return res;
+}
+
 void CanoInst::write_to_stream( std::ostream &os, Type *type ) const {
     write_dot( os, type );
     if ( children.size() ) {
@@ -44,6 +51,10 @@ bool CanoInst::write_graph_rec( std::ostream &ss, std::set<const CanoInst *> &se
 }
 
 void CanoInst::get_out_insts( Deque<CanoInst *> &outs ) {
+}
+
+bool CanoInst::known_value() const {
+    return false;
 }
 
 void CanoInst::display_graphviz( const Vec<CanoInst *> &lst, const std::function<void (std::ostream &, const CanoInst *)> &f, const std::string &filename, bool disp_parents, bool launch ) {

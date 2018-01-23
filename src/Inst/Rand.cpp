@@ -1,29 +1,35 @@
 #include "../Codegen/Codegen.h"
 #include "../Type.h"
+#include "Clonable.h"
+#include "CanoSym.h"
 #include "Rand.h"
 
-Rand::Rand( Type *type ) : type( type ) {
-}
+/**
+*/
+class Rand : public Clonable<Rand,Inst> {
+public:
+    Rand( Type *type ) : type( type ) {
+    }
 
-Rand::Rand( AttrClone, const Rand *inst ) : type( inst->type ) {
-}
+    Rand( AttrClone, const Rand *inst ) : type( inst->type ) {
+    }
 
-void Rand::write_dot( std::ostream &os ) const {
-    os << "rand[" << *type << "]";
-}
+    virtual void write_inline_code ( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
+        ss << "rand()";
+    }
 
-int Rand::nb_created_outputs() const {
-    return 1;
-}
+    virtual void write_dot( std::ostream &os ) const override {
+        os << "rand[" << *type << "]";
+    }
 
-Type *Rand::out_type( int nout ) const {
-    return type;
-}
+    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const override {
+        return make_CanoSym( "rand", type );
+    }
 
-Value make_Rand( Type *type ) {
-    return { new Rand( type ), 0 };
-}
+    Type *type;
+};
 
-void Rand::write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) {
-    ss << "rand()";
+Variable make_Rand( Type *type, const KuSI64 &size ) {
+    Rand *res = new Rand( type );
+    return { res->new_created_output( type, size ), 0, size, type };
 }

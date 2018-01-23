@@ -16,11 +16,14 @@ public:
     CanoInst();
     virtual ~CanoInst();
 
+    int             add_child       ( const CanoVal &ch );
+
     virtual void    write_to_stream ( std::ostream &os, Type *type ) const;
     virtual bool    write_graph_rec ( std::ostream &ss, std::set<const CanoInst *> &seen_insts, const std::function<void(std::ostream&, const CanoInst *)> &f ) const;
     virtual void    write_dot       ( std::ostream &os, Type *type ) const = 0;
 
     virtual void    get_out_insts   ( Deque<CanoInst *> &outs );
+    virtual bool    known_value     () const; ///<
 
     static void     display_graphviz( const Vec<CanoInst *> &lst, const std::function<void (std::ostream &, const CanoInst *)> &f = {}, const std::string &filename = ".res", bool disp_parents = false, bool launch = true );
     static void     dfs_rec         ( CanoInst *inst, const std::function<void(CanoInst*)> &f, bool deep = false, bool f_after = false, bool need_inc_ref = false );
