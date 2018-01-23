@@ -34,6 +34,8 @@ TEST( Variable, fd ) {
     make_WriteFd( make_Cst( 0 ), make_Cst( 17 ) );
 
     Vec<Inst *> insts;
-    vm->ressource_map.visit_ext_changes( [&](Ref *ref) { P( ref ); insts << ref->current.inst.ptr(); } );
+    vm->ressource_map.visit_ext_changes( [&](Ref *ref) { insts << ref->current.inst.ptr(); } );
     Inst::display_graphviz( insts );
+
+    // ASSERT_EQ( inst );
 }

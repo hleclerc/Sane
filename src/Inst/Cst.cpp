@@ -10,6 +10,7 @@
 #include "../Vm.h"
 
 #include "Clonable.h"
+#include "CanoCst.h"
 #include "Cst.h"
 
 /**
@@ -64,6 +65,10 @@ public:
         memcpy_bit( dst, beg_dst, val.data, beg_src, len, msk );
         memset_bit( msk, beg_dst, false, len );
         return true;
+    }
+
+    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+        return make_CanoCst( val.data, val.size );
     }
 
     Type   *type;

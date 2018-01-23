@@ -86,6 +86,11 @@ public:
         return nout == 0 ? 0 : -1;
     }
 
+    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+        TODO;
+        return {};
+    }
+
 //    bool write_ssp_rec( StreamSep &ss, Codegen &cg, int dst.offset.kvset, Type *dst_type, String m ) const {
 //        TODO;
 //        //        if ( dst.offset.kvset == 0 && dst_type == children[ 1 ].type ) {

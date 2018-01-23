@@ -14,23 +14,25 @@ public:
     Value( const Value &value ); //
     Value() {} // void value
 
-    Value      &operator=      ( const Value &value );
+    Value      &operator=         ( const Value &value );
 
-    bool        operator<      ( const Value &value ) const;
-    bool        operator==     ( const Value &value ) const;
+    bool        operator<         ( const Value &value ) const;
+    bool        operator==        ( const Value &value ) const;
 
-    operator    bool           () const { return ressource; }
+    operator    bool              () const { return ressource; }
 
-    void        write_to_stream( std::ostream &os ) const;
+    void        write_to_stream   ( std::ostream &os ) const;
 
-    bool        get_bytes      ( void *dst, PI32 beg_dst = 0 ) const;
-    bool        get_bytes      ( void *dst, PI32 beg_dst, void *msk ) const;
+    CanoVal     cano_repr         () const; ///< canonical representation. Enables faster comparisons
 
-    bool        is_not_equal   ( const Value &that ) const; ///< works for a very limited number of cases (SI32, ...).
-    bool        is_equal       ( const Value &that ) const; ///< works for a very limited number of cases (SI32, ...).
+    bool        get_bytes         ( void *dst, PI32 beg_dst = 0 ) const;
+    bool        get_bytes         ( void *dst, PI32 beg_dst, void *msk ) const;
 
-    bool        is_non_null    () const;
-    bool        is_null        () const;
+    bool        is_always_equal_to( const Value &that ) const; ///<
+    bool        is_never_equal_to ( const Value &that ) const; ///<
+
+    bool        is_non_null       () const;
+    bool        is_null           () const;
 
     // Ressource
     Ressource   ressource;

@@ -16,6 +16,11 @@ public:
         os << txt;
     }
 
+    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+        TODO;
+        return {};
+    }
+
     const char *txt;
 };
 

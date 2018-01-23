@@ -15,7 +15,7 @@ public:
     virtual void       write_to_stream( std::ostream &os ) const;
     virtual bool       is_shared      () const;
     virtual void       constify       ();
-    virtual Ref       *ref            () override;
+    virtual Ref       *ref            () const override;
     virtual void       set            ( const Ressource &src_ressource, int cst = 0 );
 
     PI64               creation_inter_date; ///< value of inter_date during creation

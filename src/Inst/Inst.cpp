@@ -88,7 +88,7 @@ void Inst::init_attr( IiValue &attr, const Value &val ) {
 
 Ref *Inst::new_created_output( Type *type, const KuSI64 &size ) {
     Ref *res = new Ref( Ressource( this, created_outputs.size() ) );
-    created_outputs << Output{ res, type, size };
+    created_outputs << CreatedOutput{ res, type, size };
     return res;
 }
 
@@ -163,6 +163,18 @@ void Inst::externalize( Inst *inst, size_t ninp ) {
     TODO;
 }
 
+Type *Inst::out_type( int nout ) const {
+    if ( nout < (int)created_outputs.size() )
+        return created_outputs[ nout ].type;
+    return children[ iomap[ nout - created_outputs.size() ] ].type();
+}
+
+KuSI64 Inst::out_size( int nout ) const {
+    if ( nout < (int)created_outputs.size() )
+        return created_outputs[ nout ].size;
+    return children[ iomap[ nout - created_outputs.size() ] ].size();
+}
+
 int Inst::inp_corr( int nout ) const {
     return -1;
 }
@@ -209,8 +221,8 @@ bool Inst::write_graph_rec( std::ostream &ss, std::set<const Inst *> &seen_insts
         // label << v.type()->name;
 
         const char *style = "solid";
-        //if ( v.type == gvm->type_Ressource )
-        //    style = "dotted";
+        if ( v.nout >= (int)v.inst->created_outputs.size() )
+            style = "dotted";
 
         if ( children.size() > 1 )
             ss << "  node_" << this << ":f" << cpt++ << " -> node_" << v.inst.ptr() << " [style=" << style << ",label=\"" << label.str() << "\"];\n";

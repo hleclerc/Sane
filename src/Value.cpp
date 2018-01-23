@@ -38,6 +38,10 @@ void Value::write_to_stream( std::ostream &os ) const {
         os << "NULL";
 }
 
+CanoVal Value::cano_repr() const {
+    return ressource.cano_repr( offset.cano_repr(), length.cano_repr(), type );
+}
+
 bool Value::get_bytes( void *dst, PI32 beg_dst ) const {
     if ( length.is_known() ) {
         BoolVec msk( length.kv(), true );
@@ -50,7 +54,7 @@ bool Value::get_bytes( void *dst, PI32 beg_dst, void *msk ) const {
     return offset.is_known() && length.is_known() && ressource.get_bytes( dst, beg_dst, offset.kv(), length.kv(), msk );
 }
 
-bool Value::is_equal( const Value &that ) const {
+bool Value::is_always_equal_to( const Value &that ) const {
     //    if ( type == that.type ) {
     //        BoolVec bv_this( this->type->size() );
     //        BoolVec bv_that( that. type->size() );
@@ -63,16 +67,7 @@ bool Value::is_equal( const Value &that ) const {
     TODO;
     return false;
 }
-
-bool Value::is_non_null() const {
-    return ressource.inst->is_non_null( ressource.nout, offset, length, type );
-}
-
-bool Value::is_null() const {
-    return ressource.inst->is_null( ressource.nout, offset, length, type );
-}
-
-bool Value::is_not_equal( const Value &that ) const {
+bool Value::is_never_equal_to( const Value &that ) const {
     //    if ( type == that.type ) {
     //        BoolVec bv_this( this->type->size() );
     //        BoolVec bv_that( that. type->size() );
@@ -84,5 +79,14 @@ bool Value::is_not_equal( const Value &that ) const {
 
     TODO;
     return false;
+}
+
+
+bool Value::is_non_null() const {
+    return ressource.inst->is_non_null( ressource.nout, offset, length, type );
+}
+
+bool Value::is_null() const {
+    return ressource.inst->is_null( ressource.nout, offset, length, type );
 }
 

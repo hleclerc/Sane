@@ -27,19 +27,21 @@ void RessourceMap::on_file_content( const Value &fd, const std::function<void(Re
 }
 
 void RessourceMap::on_file_cursor( const Value &fd, const std::function<void(Ref *)> &cb ) {
-    //    // check fd is present
-    //    auto iter = file_cursors.find( fd );
-    //    if ( iter == file_cursors.end() )
-    //        file_cursors.insert( iter, std::make_pair( fd, Rss( "file cursor" ) ) );
+    // check fd is present
+    auto iter = file_cursors.find( fd );
+    if ( iter == file_cursors.end() ) {
+        Variable v = make_RessourceInst( "file cursor" );
+        file_cursors.insert( iter, std::make_pair( fd, v.ref() ) );
+    }
 
-    //    // call cb on potentially equal fds
-    //    for( std::pair<const Value,Rss> &vr : file_cursors  )
-    //        if ( ! fd.is_not_equal( vr.first ) )
-    //            cb( &vr.second );
+    // call cb on potentially equal fds
+    for( std::pair<const Value,RcPtr<Ref>> &vr : file_cursors  )
+        if ( ! fd.is_never_equal_to( vr.first ) )
+            cb( vr.second.ptr() );
 }
 
 void RessourceMap::visit_ext_changes( const std::function<void(Ref *)> &visitor ) {
-    if ( file_content /*&& file_content->current != file_content->creator*/ )
+    if ( file_content && file_content->current != file_content->creator )
         visitor( file_content.ptr() );
 
     //    for( std::pair<const Value,Rss> &vr : file_cursors  )

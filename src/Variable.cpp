@@ -19,6 +19,10 @@ Variable &Variable::operator=( const Variable &value ) {
     return *this;
 }
 
+CanoVal Variable::cano_repr() const{
+    return ref()->current.cano_repr( offset.cano_repr(), length.cano_repr(), type );
+}
+
 bool Variable::error() const {
     return type == 0 || type->error();
 }

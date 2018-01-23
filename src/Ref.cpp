@@ -20,8 +20,8 @@ void Ref::constify() {
     flags |= Flags::CONST;
 }
 
-Ref *Ref::ref() {
-    return this;
+Ref *Ref::ref() const {
+    return const_cast<Ref *>( this );
 }
 
 void Ref::set( const Ressource &src_ressource, int cst ) {

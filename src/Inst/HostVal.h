@@ -29,6 +29,11 @@ public:
         return &data;
     }
 
+    virtual CanoVal cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+        TODO;
+        return {};
+    }
+
     Type *type;
     T     data;
 };

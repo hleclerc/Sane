@@ -1,3 +1,4 @@
+#include "Inst/CanoCst.h"
 #include "KuSI64.h"
 #include "Value.h"
 #include "Vm.h"
@@ -39,6 +40,10 @@ KuSI64 &KuSI64::operator=(const KuSI64 &ku) {
         val = 0;
     }
     return *this;
+}
+
+CanoVal KuSI64::cano_repr() const {
+    return val ? val->cano_repr() : make_CanoCst( kno );
 }
 
 KuSI64 KuSI64::operator!() const {

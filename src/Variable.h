@@ -18,13 +18,15 @@ public:
 
     Variable          &operator=           ( const Variable &value );
 
-    Ref               *ref                 () { return ref_anc->ref(); }
+    Ref               *ref                 () const { return ref_anc->ref(); }
 
-    operator           bool                () const { return ref_anc; }
-    bool               error               () const;
-    bool               is_true             () const;
-    bool               is_false            () const;
+    CanoVal            cano_repr           () const;
+
     bool               is_shared           () const;
+    bool               is_false            () const;
+    bool               is_true             () const;
+    bool               error               () const;
+    operator           bool                () const { return ref_anc; }
 
     void               write_to_stream     ( std::ostream &os ) const;
 
@@ -43,9 +45,9 @@ public:
     FP64               as_FP64             () const;
     SI32               as_SI32             () const;
 
-    Value              get                 () const;
     bool               get_bytes           ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const;
     bool               get_bytes           ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const;
+    Value              get                 () const;
 
     bool               get_value           ( SI32 &val ) const;
 

@@ -2,6 +2,7 @@
 
 #include "System/byte_swaped.h"
 #include "System/Stream.h"
+class CanoVal;
 class Value;
 
 /**
@@ -30,6 +31,8 @@ public:
     bool         is_known     () const { return val == 0; }
     const Value &uv           () const { return *val; } ///< unknown Value (works only if is_known() == false)
     SI64         kv           () const { return kno; }  ///< known Value (works only if is_known() == true)
+
+    CanoVal      cano_repr    () const; ///< canonical representation. Enables faster comparisons
 
     KuSI64       operator!    () const;
     explicit     operator bool() const;

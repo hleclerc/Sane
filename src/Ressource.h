@@ -15,10 +15,12 @@ public:
     Ressource  &operator=      ( const Ressource &that );
 
     bool        operator==     ( const Ressource &that ) const;
+    bool        operator!=     ( const Ressource &that ) const;
     bool        operator<      ( const Ressource &that ) const;
 
-    //    Type       *type           () const { return inst->out_type( nout ); }
-    //    KuSI64      size           () const { return inst->out_size( nout ); }
+    CanoVal     cano_repr      ( const CanoVal &offset, const CanoVal &length, Type *type ) const { return inst->cano_repr( nout, offset, length, type ); }
+    Type       *type           () const { return inst->out_type( nout ); }
+    KuSI64      size           () const { return inst->out_size( nout ); }
     operator    bool           () const { return inst; }
     void       *rcast          ();
 

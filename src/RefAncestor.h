@@ -12,7 +12,7 @@ public:
 
     virtual Variable   intercept_find_attribute( const RcString &name, Type *type, bool is_const, SI32 offset ) const;
     virtual void       write_to_stream         ( std::ostream &os ) const = 0;
-    virtual Ref       *ref                     () = 0;
+    virtual Ref       *ref                     () const = 0;
     virtual bool       is_shared               () const;
     virtual void       constify                () = 0;
     virtual void       set                     ( const Ressource &ressource, int cst = 0 ) = 0;

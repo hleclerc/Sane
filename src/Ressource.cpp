@@ -35,6 +35,10 @@ bool Ressource::operator==( const Ressource &that ) const {
     return std::tie( inst, nout ) == std::tie( that.inst, that.nout );
 }
 
+bool Ressource::operator!=(const Ressource &that) const {
+    return std::tie( inst, nout ) != std::tie( that.inst, that.nout );
+}
+
 bool Ressource::operator<( const Ressource &that ) const {
     return std::tie( inst, nout ) < std::tie( that.inst, that.nout );
 }
