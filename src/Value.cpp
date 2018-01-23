@@ -39,7 +39,7 @@ void Value::write_to_stream( std::ostream &os ) const {
 }
 
 CanoVal Value::cano_repr() const {
-    return ressource.cano_repr( offset.cano_repr(), length.cano_repr(), type );
+    return { ressource.cano_repr( offset.cano_repr(), length.cano_repr() ), type };
 }
 
 bool Value::get_bytes( void *dst, PI32 beg_dst ) const {

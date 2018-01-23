@@ -6,6 +6,8 @@
 #include "../Ressource.h"
 #include "../Type.h"
 #include "../Ref.h"
+#include "../Vm.h"
+#include "CanoCst.h"
 #include <fstream>
 
 size_t Inst::cur_op_id = 0;
@@ -163,10 +165,23 @@ void Inst::externalize( Inst *inst, size_t ninp ) {
     TODO;
 }
 
-CanoVal Inst::cano_repr( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+RcPtr<CanoInst> Inst::cano_repr( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const {
+    const Ressource &ch = children[ ressource.index ];
+    return ch.inst->cano_repr( ch.nout, offset, length );
+}
+
+CanoVal Inst::cano_repr( const IiKuSI64 &value ) const {
+    return value.is_known() ? CanoVal{ make_CanoCst( value.kv ), vm->type_SI64 } : cano_repr( *value.uv );
+}
+
+CanoVal Inst::cano_repr( const IiValue &value ) const {
+    return { cano_repr( value.ressource, cano_repr( value.offset ), cano_repr( value.length ) ), value.type };
+}
+
+RcPtr<CanoInst> Inst::cano_repr( int nout, const CanoVal &offset, const CanoVal &length ) const {
     if ( ! cano_inst )
         cano_inst = make_cano_inst( nout, offset, length );
-    return { cano_inst, type };
+    return cano_inst;
 }
 
 Type *Inst::out_type( int nout ) const {

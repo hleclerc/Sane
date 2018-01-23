@@ -11,7 +11,6 @@ public:
     }
 
     bool same( const CanoVal &a, const CanoVal &b ) const {
-        P( a, b, children[ 1 ], ::always_true( a == children[ 0 ] ) && ::always_true( b == children[ 1 ] ) );
         return ::always_true( a == children[ 0 ] ) && ::always_true( b == children[ 1 ] );
     }
 
