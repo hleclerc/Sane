@@ -2,6 +2,7 @@
 
 #include "System/byte_swaped.h"
 #include "System/Stream.h"
+#include "Inst/KcSI64.h"
 class CanoVal;
 class Value;
 
@@ -32,10 +33,10 @@ public:
     const Value &uv           () const { return *val; } ///< unknown Value (works only if is_known() == false)
     SI64         kv           () const { return kno; }  ///< known Value (works only if is_known() == true)
 
-    CanoVal      cano_val     () const; ///< canonical representation. Enables faster comparisons
+    KcSI64       cano         () const;
 
-    KuSI64       operator!    () const;
-    explicit     operator bool() const;
+    //    KuSI64       operator!    () const;
+    //    explicit     operator bool() const;
 
 protected:
     Value       *val; ///<

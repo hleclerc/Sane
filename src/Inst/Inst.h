@@ -15,6 +15,7 @@ class Ressource;
 class StreamSep;
 class Codegen;
 class BoolVec;
+class KcSI64;
 class Type;
 class Ref;
 
@@ -60,16 +61,17 @@ public:
     virtual int             inp_corr               ( int nout ) const;
     virtual Inst           *clone                  () const;
 
-    RcPtr<CanoInst>         cano_inst              ( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const;
+    RcPtr<CanoInst>         cano_inst              ( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length ) const;
     RcPtr<CanoInst>         cano_inst              ( const IiRessource &ressource ) const;
-    RcPtr<CanoInst>         cano_inst              ( int nout, const CanoVal &offset, const CanoVal &length ) const; ///< canonical representation. Enables faster comparisons
+    RcPtr<CanoInst>         cano_inst              ( int nout, const KcSI64 &offset, const KcSI64 &length ) const; ///< canonical representation. Enables faster comparisons
     RcPtr<CanoInst>         cano_inst              ( int nout ) const; ///< canonical representation. Enables faster comparisons
 
-    CanoVal                 cano_val               ( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length, Type *type ) const;
+    KcSI64                  cano_kcSI64              ( const IiKuSI64 &value ) const;
+
+    CanoVal                 cano_val               ( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, Type *type ) const;
     CanoVal                 cano_val               ( const IiRessource &ressource ) const;
-    CanoVal                 cano_val               ( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const; ///< canonical representation. Enables faster comparisons
+    CanoVal                 cano_val               ( int nout, const KcSI64 &offset, const KcSI64 &length, Type *type ) const; ///< canonical representation. Enables faster comparisons
     CanoVal                 cano_val               ( int nout ) const; ///< canonical representation. Enables faster comparisons
-    CanoVal                 cano_val               ( const IiKuSI64 &value ) const;
     CanoVal                 cano_val               ( const IiValue &value ) const; ///< canonical representation. Enables faster comparisons
 
 

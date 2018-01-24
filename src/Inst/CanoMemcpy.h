@@ -1,6 +1,7 @@
 #pragma once
 
-#include "CanoVal.h"
+#include "CanoInst.h"
+#include "KcSI64.h"
 
-RcPtr<CanoInst> make_CanoMemcpy( const CanoVal &dst, const CanoVal &src, const CanoVal &off_dst, const CanoVal &off_src, const CanoVal &len );
+RcPtr<CanoInst> make_CanoMemcpy( const CanoVal &dst, const CanoVal &src, const KcSI64 &off_dst, const KcSI64 &off_src, const KcSI64 &len );
 

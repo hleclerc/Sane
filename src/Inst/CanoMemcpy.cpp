@@ -4,29 +4,30 @@
 /***/
 class CanoMemcpy : public CanoInst {
 public:
-    CanoMemcpy( const CanoVal &dst, const CanoVal &src, const CanoVal &off_dst, const CanoVal &off_src, const CanoVal &len ) {
+    CanoMemcpy( const CanoVal &dst, const CanoVal &src, const KcSI64 &off_dst, const KcSI64 &off_src, const KcSI64 &len ) : off_dst( off_dst ), off_src( off_src ),len( len ) {
         add_child( dst     );
         add_child( src     );
-        add_child( off_dst );
-        add_child( off_src );
-        add_child( len     );
     }
 
-    bool same( const CanoVal &dst, const CanoVal &src, const CanoVal &off_dst, const CanoVal &off_src, const CanoVal &len ) const {
+    bool same( const CanoVal &dst, const CanoVal &src, const KcSI64 &off_dst, const KcSI64 &off_src, const KcSI64 &len ) const {
         return ::always_true( dst     == children[ 0 ] ) &&
                ::always_true( src     == children[ 1 ] ) &&
-               ::always_true( off_dst == children[ 2 ] ) &&
-               ::always_true( off_src == children[ 3 ] ) &&
-               ::always_true( len     == children[ 4 ] ) ;
+               ::always_true( off_dst == this->off_dst ) &&
+               ::always_true( off_src == this->off_src ) &&
+               ::always_true( len     == this->len     ) ;
     }
 
     virtual void write_dot( std::ostream &os, Type *type ) const override {
         os << "memcpy";
     }
+
+    KcSI64 off_dst;
+    KcSI64 off_src;
+    KcSI64 len;
 };
 
 
-RcPtr<CanoInst> make_CanoMemcpy( const CanoVal &dst, const CanoVal &src, const CanoVal &off_dst, const CanoVal &off_src, const CanoVal &len ) {
+RcPtr<CanoInst> make_CanoMemcpy( const CanoVal &dst, const CanoVal &src, const KcSI64 &off_dst, const KcSI64 &off_src, const KcSI64 &len ) {
     // dst is totally replaced by src
     if ( always_false( off_dst ) && always_false( off_src ) )
         return src.inst;

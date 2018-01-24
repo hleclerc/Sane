@@ -12,6 +12,6 @@ cmp: # test
 # 	kcachegrind callgrind.out.* &
 
 test:
-	nsmake gtest -g3 --cpp-flag -march=native --cpp-flag -Wall tests/test_KcSI64.cpp
+	nsmake gtest -g3 --cpp-flag -march=native --cpp-flag -Wall tests/test_CanoInst.cpp
 
 .PHONY: test cmp

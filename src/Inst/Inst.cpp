@@ -165,7 +165,7 @@ void Inst::externalize( Inst *inst, size_t ninp ) {
     TODO;
 }
 
-RcPtr<CanoInst> Inst::cano_inst( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const {
+RcPtr<CanoInst> Inst::cano_inst(const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length ) const {
     const Ressource &ch = children[ ressource.index ];
     return ch.inst->cano_inst( ch.nout, offset, length );
 }
@@ -174,17 +174,17 @@ RcPtr<CanoInst> Inst::cano_inst( const IiRessource &ressource ) const {
     return children[ ressource.index ].cano_inst();
 }
 
-CanoVal Inst::cano_val( const IiKuSI64 &value ) const {
-    return value.is_known() ? make_cano_val( value.kv ) : cano_val( *value.uv );
+KcSI64 Inst::cano_kcSI64( const IiKuSI64 &value ) const {
+    return value.is_known() ? KcSI64( value.kv ) : KcSI64( cano_val( *value.uv ) );
 }
 
 CanoVal Inst::cano_val( const IiValue &value ) const {
-    return cano_val( value.ressource, cano_val( value.offset ), cano_val( value.length ), value.type );
+    return cano_val( value.ressource, cano_kcSI64( value.offset ), cano_kcSI64( value.length ), value.type );
 }
 
-RcPtr<CanoInst> Inst::cano_inst( int nout, const CanoVal &offset, const CanoVal &length ) const {
+RcPtr<CanoInst> Inst::cano_inst(int nout, const KcSI64 &offset, const KcSI64 &length ) const {
     RcPtr<CanoInst> res = cano_inst( nout );
-    if ( ! always_true( offset == 0 ) || ! always_true( length == out_size( nout ).cano_val() ) )
+    if ( always_true( offset == 0 ) == false || always_true( length == out_size( nout ).cano() ) == false )
         TODO; // subpart
     return res;
 }
@@ -195,7 +195,7 @@ RcPtr<CanoInst> Inst::cano_inst( int nout ) const {
     return cano_inst_buf;
 }
 
-CanoVal Inst::cano_val( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+CanoVal Inst::cano_val(const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, Type *type ) const {
     return { cano_inst( ressource, offset, length ), type };
 }
 
@@ -203,7 +203,7 @@ CanoVal Inst::cano_val( const IiRessource &ressource ) const {
     return children[ ressource.index ].cano_val();
 }
 
-CanoVal Inst::cano_val( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+CanoVal Inst::cano_val(int nout, const KcSI64 &offset, const KcSI64 &length, Type *type ) const {
     return { cano_inst( nout, offset, length ), type };
 }
 

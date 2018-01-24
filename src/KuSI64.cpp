@@ -42,19 +42,19 @@ KuSI64 &KuSI64::operator=(const KuSI64 &ku) {
     return *this;
 }
 
-CanoVal KuSI64::cano_val() const {
-    return val ? val->cano_val() : make_cano_val( kno );
+KcSI64 KuSI64::cano() const {
+    return val ? KcSI64( val->cano_val() ) : KcSI64( kno );
 }
 
-KuSI64 KuSI64::operator!() const {
-    if ( val )
-        return val->is_non_null();
-    return ! kno;
-}
+//KuSI64 KuSI64::operator!() const {
+//    if ( val )
+//        return val->is_non_null();
+//    return ! kno;
+//}
 
-KuSI64::operator bool() const {
-    if ( val )
-        return val->is_null();
-    return kno;
-}
+//KuSI64::operator bool() const {
+//    if ( val )
+//        return val->is_null();
+//    return kno;
+//}
 

@@ -88,7 +88,7 @@ public:
     }
 
     virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {
-        return make_CanoMemcpy( cano_val( dst.ressource ), cano_val( src.ressource ), cano_val( dst.offset ), cano_val( src.offset ), cano_val( len ) );
+        return make_CanoMemcpy( cano_val( dst.ressource ), cano_val( src.ressource ), cano_kcSI64( dst.offset ), cano_kcSI64( src.offset ), cano_kcSI64( len ) );
     }
 
 //    bool write_ssp_rec( StreamSep &ss, Codegen &cg, int dst.offset.kvset, Type *dst_type, String m ) const {
