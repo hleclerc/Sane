@@ -9,6 +9,10 @@ Type::Type( const LString &name ) : content( vm ? vm->type_Type : 0 ) {
     content.data.name = name;
 }
 
+void Type::write_to_stream(std::ostream &os) const {
+    os << content.data.name;
+}
+
 //bool Type::has_vtable_at_the_beginning() const {
 //    if ( content.data.has_new_vtable )
 //        return true;
@@ -41,9 +45,6 @@ Type::Type( const LString &name ) : content( vm ? vm->type_Type : 0 ) {
 //    return true;
 //}
 
-//bool Type::primitive_number() const {
-//    return false;
-//}
 
 //void Type::write_to_stream( std::ostream &os ) const {
 //    os << content;
@@ -135,21 +136,6 @@ Type::Type( const LString &name ) : content( vm ? vm->type_Type : 0 ) {
 //    return content.data.size;
 //}
 
-//int Type::is_signed() const {
-//    return -1;
-//}
-
-//int Type::mantissa_len() const {
-//    return -1;
-//}
-
-//int Type::exponent_len() const {
-//    return -1;
-//}
-
-//bool Type::error() const {
-//    return false;
-//}
 
 //Variable Type::chbeba( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names ) {
 //    Variable op = self.find_attribute( "operator {}", false );
@@ -222,10 +208,63 @@ void Type::write_cst( std::ostream &os, const PI8 *data, int offset_mod_8, bool 
     os << "}";
 }
 
+bool Type::has_floating_point() const {
+    return false;
+}
+
+int Type::is_signed() const {
+    return -1;
+}
+
+int Type::mantissa_len() const {
+    return -1;
+}
+
+int Type::exponent_len() const {
+    return -1;
+}
+
 bool Type::error() const {
     return false;
 }
 
 KuSI64 Type::size() const {
     return 64;
+}
+
+bool Type::is_a_TypeBT() const {
+    return false;
+}
+
+RcPtr<CanoInst> Type::convert_cano_cst( const void *content, Type *target ) {
+    return 0;
+}
+
+SI64 Type::convert_cst_to_SI64( const void *content ) const {
+    ERROR( "..." );
+    return 0;
+}
+
+Type *type_promote_gen( Type *a, Type *b ) {
+    if ( a->is_a_TypeBT() && b->is_a_TypeBT() ) {
+        if ( a->has_floating_point() || b->has_floating_point() ) {
+            TODO;
+        }
+
+        int m = std::max( a->mantissa_len(), b->mantissa_len() );
+        if ( a->is_signed() || b->is_signed() ) {
+            if ( m <=  8 ) return vm->type_SI8 ;
+            if ( m <= 16 ) return vm->type_SI16;
+            if ( m <= 32 ) return vm->type_SI32;
+            return                vm->type_SI64;
+        }
+
+        if ( m <=  8 ) return vm->type_PI8 ;
+        if ( m <= 16 ) return vm->type_PI16;
+        if ( m <= 32 ) return vm->type_PI32;
+        return                vm->type_PI64;
+    }
+
+    TODO;
+    return 0;
 }

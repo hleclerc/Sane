@@ -18,10 +18,13 @@ public:
     bool            operator!=     ( const Ressource &that ) const;
     bool            operator<      ( const Ressource &that ) const;
 
-    RcPtr<CanoInst> cano_repr      ( const CanoVal &offset, const CanoVal &length ) const { return inst->cano_repr( nout, offset, length ); }
+    RcPtr<CanoInst> cano_inst      ( const CanoVal &offset, const CanoVal &length ) const { return inst->cano_inst( nout, offset, length ); }
+    RcPtr<CanoInst> cano_inst      () const { return inst->cano_inst( nout ); }
+    CanoVal         cano_val       ( const CanoVal &offset, const CanoVal &length, Type *type ) const { return inst->cano_val( nout, offset, length, type ); }
+    CanoVal         cano_val       () const { return inst->cano_val( nout ); }
     Type           *type           () const { return inst->out_type( nout ); }
     KuSI64          size           () const { return inst->out_size( nout ); }
-    operator        bool           () const { return inst; }
+    operator        bool           () const { return bool( inst ); }
     void           *rcast          ();
 
     void            write_to_stream( std::ostream &os ) const;

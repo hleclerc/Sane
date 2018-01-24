@@ -42,8 +42,8 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : /*main_scope( Scope::ScopeT
     nb_breaks    = 0;
     nb_calls     = 0;
 
-//    main_scope.parent = 0;
-//    scope = &main_scope;
+    //    main_scope.parent = 0;
+    //    scope = &main_scope;
 
     #define BT( T ) type_##T = 0;
     #include "BaseTypes.h"
@@ -51,7 +51,15 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : /*main_scope( Scope::ScopeT
 
     // arythmetic types
     #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T );
-    #include "ArythmeticTypes.h"
+    BT( Bool )
+    BT( SI64 )
+    BT( PI64 )
+    BT( SI32 )
+    BT( PI32 )
+    BT( SI16 )
+    BT( PI16 )
+    BT( SI8  )
+    BT( PI8  )
     #undef BT
 
 //    type_CallableWithSelf = new TypeCallableWithSelf;

@@ -10,13 +10,13 @@ CanoVal::CanoVal( const CanoVal &val ) : inst( val.inst ), type( val.type ) {
 CanoVal::CanoVal() : type( 0 ) {
 }
 
-CanoVal::CanoVal( SI64 val ) : CanoVal( make_CanoCst( val ), vm->type_SI64 ) {
+CanoVal::CanoVal( SI64 val ) : CanoVal( make_cano_val( val ) ) {
 }
 
-CanoVal::CanoVal( SI32 val ) : CanoVal( make_CanoCst( val ), vm->type_SI32 ) {
+CanoVal::CanoVal( SI32 val ) : CanoVal( make_cano_val( val ) ) {
 }
 
-CanoVal::CanoVal( Bool val ) : CanoVal( make_CanoCst( val ), vm->type_Bool ) {
+CanoVal::CanoVal( Bool val ) : CanoVal( make_cano_val( val ) ) {
 }
 
 void CanoVal::write_to_stream( std::ostream &os ) const {

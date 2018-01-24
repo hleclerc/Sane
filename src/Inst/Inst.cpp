@@ -165,35 +165,50 @@ void Inst::externalize( Inst *inst, size_t ninp ) {
     TODO;
 }
 
-RcPtr<CanoInst> Inst::cano_repr( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const {
+RcPtr<CanoInst> Inst::cano_inst( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const {
     const Ressource &ch = children[ ressource.index ];
-    return ch.inst->cano_repr( ch.nout, offset, length );
+    return ch.inst->cano_inst( ch.nout, offset, length );
 }
 
-RcPtr<CanoInst> Inst::cano_repr( const IiRessource &ressource ) const {
-    const Ressource &ch = children[ ressource.index ];
-    return ch.inst->cano_repr( ch.nout );
+RcPtr<CanoInst> Inst::cano_inst( const IiRessource &ressource ) const {
+    return children[ ressource.index ].cano_inst();
 }
 
-CanoVal Inst::cano_repr( const IiKuSI64 &value ) const {
-    return value.is_known() ? CanoVal{ make_CanoCst( value.kv ), vm->type_SI64 } : cano_repr( *value.uv );
+CanoVal Inst::cano_val( const IiKuSI64 &value ) const {
+    return value.is_known() ? make_cano_val( value.kv ) : cano_val( *value.uv );
 }
 
-CanoVal Inst::cano_repr( const IiValue &value ) const {
-    return { cano_repr( value.ressource, cano_repr( value.offset ), cano_repr( value.length ) ), value.type };
+CanoVal Inst::cano_val( const IiValue &value ) const {
+    return cano_val( value.ressource, cano_val( value.offset ), cano_val( value.length ), value.type );
 }
 
-RcPtr<CanoInst> Inst::cano_repr( int nout, const CanoVal &offset, const CanoVal &length ) const {
-    RcPtr<CanoInst> res = cano_repr( nout );
-    if ( ! always_true( offset == 0 ) || ! always_true( length == out_size( nout ).cano_repr() ) )
+RcPtr<CanoInst> Inst::cano_inst( int nout, const CanoVal &offset, const CanoVal &length ) const {
+    RcPtr<CanoInst> res = cano_inst( nout );
+    if ( ! always_true( offset == 0 ) || ! always_true( length == out_size( nout ).cano_val() ) )
         TODO; // subpart
     return res;
 }
 
-RcPtr<CanoInst> Inst::cano_repr( int nout ) const {
-    if ( ! cano_inst )
-        cano_inst = make_cano_inst( nout );
-    return cano_inst;
+RcPtr<CanoInst> Inst::cano_inst( int nout ) const {
+    if ( ! cano_inst_buf )
+        cano_inst_buf = make_cano_inst( nout );
+    return cano_inst_buf;
+}
+
+CanoVal Inst::cano_val( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+    return { cano_inst( ressource, offset, length ), type };
+}
+
+CanoVal Inst::cano_val( const IiRessource &ressource ) const {
+    return children[ ressource.index ].cano_val();
+}
+
+CanoVal Inst::cano_val( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const {
+    return { cano_inst( nout, offset, length ), type };
+}
+
+CanoVal Inst::cano_val( int nout ) const {
+    return { cano_inst( nout ), out_type( nout ) };
 }
 
 Type *Inst::out_type( int nout ) const {

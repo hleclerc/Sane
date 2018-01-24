@@ -20,7 +20,7 @@ Variable &Variable::operator=( const Variable &value ) {
 }
 
 CanoVal Variable::cano_repr() const{
-    return { ref()->current.cano_repr( offset.cano_repr(), length.cano_repr() ), type };
+    return ref()->current.cano_val( offset.cano_val(), length.cano_val(), type  );
 }
 
 bool Variable::error() const {

@@ -55,16 +55,23 @@ public:
     int                     nb_parents_on_nout     ( int nout ) const;
     virtual RcPtr<CanoInst> make_cano_inst         ( int nout ) const = 0; ///< called by cano_repr if not already filled
     virtual void            externalize            ( Inst *inst, size_t ninp );
-    RcPtr<CanoInst>         cano_repr              ( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const;
-    RcPtr<CanoInst>         cano_repr              ( const IiRessource &ressource ) const;
-    CanoVal                 cano_repr              ( const IiKuSI64 &value ) const;
-    CanoVal                 cano_repr              ( const IiValue &value ) const; ///< canonical representation. Enables faster comparisons
-    RcPtr<CanoInst>         cano_repr              ( int nout, const CanoVal &offset, const CanoVal &length ) const; ///< canonical representation. Enables faster comparisons
-    RcPtr<CanoInst>         cano_repr              ( int nout ) const; ///< canonical representation. Enables faster comparisons
     Type                   *out_type               ( int nout ) const;
     KuSI64                  out_size               ( int nout ) const;
     virtual int             inp_corr               ( int nout ) const;
     virtual Inst           *clone                  () const;
+
+    RcPtr<CanoInst>         cano_inst              ( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length ) const;
+    RcPtr<CanoInst>         cano_inst              ( const IiRessource &ressource ) const;
+    RcPtr<CanoInst>         cano_inst              ( int nout, const CanoVal &offset, const CanoVal &length ) const; ///< canonical representation. Enables faster comparisons
+    RcPtr<CanoInst>         cano_inst              ( int nout ) const; ///< canonical representation. Enables faster comparisons
+
+    CanoVal                 cano_val               ( const IiRessource &ressource, const CanoVal &offset, const CanoVal &length, Type *type ) const;
+    CanoVal                 cano_val               ( const IiRessource &ressource ) const;
+    CanoVal                 cano_val               ( int nout, const CanoVal &offset, const CanoVal &length, Type *type ) const; ///< canonical representation. Enables faster comparisons
+    CanoVal                 cano_val               ( int nout ) const; ///< canonical representation. Enables faster comparisons
+    CanoVal                 cano_val               ( const IiKuSI64 &value ) const;
+    CanoVal                 cano_val               ( const IiValue &value ) const; ///< canonical representation. Enables faster comparisons
+
 
     virtual bool            is_non_null            ( int nout, const KuSI64 &offset, const KuSI64 &length, Type *type ) const;
     virtual bool            is_null                ( int nout, const KuSI64 &offset, const KuSI64 &length, Type *type ) const;
@@ -94,7 +101,7 @@ public:
 
     Vec<CreatedOutput>      created_outputs; ///<
     size_t                  creation_date;   ///< used mainly for ordering during code generation
-    mutable RcPtr<CanoInst> cano_inst;
+    mutable RcPtr<CanoInst> cano_inst_buf;
     Vec<Ressource>          children;
     Vec<Parent>             parents;
     Vec<int>                iomap;           ///< ( num output - created_outputs.size() ) => num child for each ressources potentially modified by this

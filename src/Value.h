@@ -23,7 +23,7 @@ public:
 
     void        write_to_stream   ( std::ostream &os ) const;
 
-    CanoVal     cano_repr         () const; ///< canonical representation. Enables faster comparisons
+    CanoVal     cano_val          () const; ///< canonical representation. Enables faster comparisons
 
     bool        get_bytes         ( void *dst, PI32 beg_dst = 0 ) const;
     bool        get_bytes         ( void *dst, PI32 beg_dst, void *msk ) const;

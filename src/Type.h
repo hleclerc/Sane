@@ -18,7 +18,6 @@ public:
 //    virtual RcString      checks_type_constraint     ( const Variable &self, const Variable &tested_var, TCI &tci ) const;
 //    virtual unsigned      get_nb_conversions         ( const Variable &self ) const;
 //    virtual bool          has_a_constructor          () const; ///< false for types like Union, ...
-//    virtual bool          primitive_number           () const;
 //    virtual void          write_to_stream            ( std::ostream &os ) const;
 //    virtual double        get_pertinence             ( const Variable &self ) const;
 //    virtual Variable      find_attribute             ( const RcString &name, const Variable &self, Variable::Flags flags, SI32 off ) const;
@@ -41,16 +40,25 @@ public:
 
 //    //
 //    int                   size                       () const;
-//    virtual int           is_signed                  () const;
-//    virtual int           mantissa_len               () const;
-//    virtual int           exponent_len               () const;
 
-    virtual void          write_to_stream            ( std::ostream &os ) const { os << "rpoute"; }
-    virtual void          write_cst                  ( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const;
-    virtual bool          error                      () const;
-    KuSI64                size                       () const;
+    virtual void            write_to_stream            ( std::ostream &os ) const;
+    virtual void            write_cst                  ( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const;
+
+    // creation
+    virtual RcPtr<CanoInst> convert_cano_cst           ( const void *content, Type *target );
+
+    // properties
+    virtual SI64            convert_cst_to_SI64        ( const void *content ) const;
+    virtual bool            has_floating_point         () const;
+    virtual bool            is_a_TypeBT                () const;
+    virtual int             mantissa_len               () const;
+    virtual int             exponent_len               () const;
+    virtual int             is_signed                  () const;
+    virtual bool            error                      () const;
+    KuSI64                  size                       () const;
 
 
-    HostVal<TypeContent>  content;
+    HostVal<TypeContent>    content;
 };
 
+Type *type_promote_gen( Type *a, Type *b );

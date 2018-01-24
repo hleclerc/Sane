@@ -1,4 +1,6 @@
+#include "CanoConv.h"
 #include "CanoVal.h"
+#include "../Type.h"
 #include "../Vm.h"
 
 /***/
@@ -21,13 +23,19 @@ public:
     Op op;
 };
 
-struct Equ {
-    void write_to_stream( std::ostream &os ) const { os << "equ"; }
-};
 
-struct Add {
-    void write_to_stream( std::ostream &os ) const { os << "add"; }
-};
+struct Add    { void write_to_stream( std::ostream &os ) const { os << "add";     } };
+struct Sub    { void write_to_stream( std::ostream &os ) const { os << "sub";     } };
+struct Mul    { void write_to_stream( std::ostream &os ) const { os << "mul";     } };
+struct Div    { void write_to_stream( std::ostream &os ) const { os << "div";     } };
+struct Mod    { void write_to_stream( std::ostream &os ) const { os << "mod";     } };
+
+struct Inf    { void write_to_stream( std::ostream &os ) const { os << "inf";     } };
+struct Sup    { void write_to_stream( std::ostream &os ) const { os << "sup";     } };
+struct InfEqu { void write_to_stream( std::ostream &os ) const { os << "inf_equ"; } };
+struct SupEqu { void write_to_stream( std::ostream &os ) const { os << "sup_equ"; } };
+struct Equ    { void write_to_stream( std::ostream &os ) const { os << "equ";     } };
+
 
 template<class T>
 CanoVal make_CanoBinOp( Type *type, const CanoVal &a, const CanoVal &b ) {
@@ -36,9 +44,111 @@ CanoVal make_CanoBinOp( Type *type, const CanoVal &a, const CanoVal &b ) {
     return { new CanoBinOp<T>( a, b ), type };
 }
 
-CanoVal operator==( const CanoVal &a, const CanoVal &b ) {
-    if ( a.type != b.type )
+CanoVal operator+ ( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) + make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
         TODO;
+
+    return make_CanoBinOp<Add>( a.type, a, b );
+}
+
+CanoVal operator- ( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) - make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Sub>( a.type, a, b );
+}
+
+CanoVal operator* ( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) * make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Mul>( a.type, a, b );
+}
+
+CanoVal operator/ ( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) / make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Div>( a.type, a, b );
+}
+
+CanoVal operator% ( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) % make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Mod>( a.type, a, b );
+}
+
+CanoVal operator< ( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) < make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Inf>( vm->type_Bool, a, b );
+}
+
+CanoVal operator> ( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) > make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Sup>( vm->type_Bool, a, b );
+}
+
+CanoVal operator<=( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) <= make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<InfEqu>( vm->type_Bool, a, b );
+}
+
+CanoVal operator>=( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) >= make_CanoConv( b, tp );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<SupEqu>( vm->type_Bool, a, b );
+}
+
+
+CanoVal operator==( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return make_CanoConv( a, tp ) == make_CanoConv( b, tp );
+    }
 
     if ( a.inst == b.inst )
         return true;
@@ -47,11 +157,4 @@ CanoVal operator==( const CanoVal &a, const CanoVal &b ) {
         return false;
 
     return make_CanoBinOp<Equ>( vm->type_Bool, a, b );
-}
-
-CanoVal operator+( const CanoVal &a, const CanoVal &b ) {
-    if ( a.type != b.type )
-        TODO;
-
-    return make_CanoBinOp<Add>( a.type, a, b );
 }

@@ -26,7 +26,7 @@ public:
     bool               is_false            () const;
     bool               is_true             () const;
     bool               error               () const;
-    operator           bool                () const { return ref_anc; }
+    operator           bool                () const { return bool( ref_anc ); }
 
     void               write_to_stream     ( std::ostream &os ) const;
 

@@ -87,7 +87,7 @@ struct RcPtr {
     }
 
 
-    operator bool() const { return data; }
+    explicit operator bool() const { return data; }
 
     void clear() { if ( data ) { if ( --data->cpt_use == 0 ) _free( data ); data = nullptr; } }
 

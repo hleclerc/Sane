@@ -52,6 +52,11 @@ bool CanoInst::write_graph_rec( std::ostream &ss, std::set<const CanoInst *> &se
     return true;
 }
 
+SI64 CanoInst::get_SI64_value( Type *orig ) const {
+    ERROR( "not a known value" );
+    return 0;
+}
+
 void CanoInst::get_out_insts( Deque<CanoInst *> &outs ) {
 }
 
@@ -61,6 +66,10 @@ bool CanoInst::always_false( Type *type ) const {
 
 bool CanoInst::always_true( Type *type ) const {
     return false;
+}
+
+RcPtr<CanoInst> CanoInst::simp_CanoConv( Type *orig, Type *target ) {
+    return 0;
 }
 
 bool CanoInst::known_value() const {
