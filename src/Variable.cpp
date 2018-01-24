@@ -182,17 +182,6 @@ Variable Variable::constify( bool deep ) {
 //    return { res.inst, res.nout, type, res.offset + offset };
 //}
 
-bool Variable::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const {
-    BoolVec msk( len, true );
-    get_bytes( dst, beg_dst, beg_src, len, msk.data );
-    return msk.all_false();
-}
-
-bool Variable::get_bytes( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const {
-    return offset.is_known() && length.is_known() && offset.kv() + length.kv() > beg_src &&
-        ref_anc->ref()->current.get_bytes( dst, beg_dst, beg_src + offset.kv(), std::min( PI32( offset.kv() + length.kv() - beg_src ), len ), msk );
-}
-
 //bool Variable::get_value( SI32 &val ) const {
 //    #define TPT( BA, SI ) if ( type == vm->type_##BA##SI ) { BA##SI v; if ( ! get_bytes( &v, 0, 0, SI ) ) return false; if ( vm->reverse_endianness ) TODO; val = v; return true; }
 //    TPT( PI,  8 )

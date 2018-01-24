@@ -15,6 +15,8 @@ public:
             return reinterpret_cast<Inst *>( this->op_mp );
 
         T *res = new T( AttrClone(), static_cast<const T *>( this ) );
+        res->created_outputs = this->created_outputs;
+
         this->op_id = Inst::cur_op_id;
         this->op_mp = res;
 
@@ -22,6 +24,7 @@ public:
 
         for( const Ressource &ch : this->children )
             res->add_child( { ch.inst->clone(), ch.nout }  );
+
 
         return res;
     }

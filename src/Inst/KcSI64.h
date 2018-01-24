@@ -3,6 +3,7 @@
 #include "../System/byte_swaped.h"
 #include "../System/Stream.h"
 class CanoVal;
+class Value;
 
 /**
   Known or unknown value
@@ -21,6 +22,7 @@ public:
 
     KcSI64( SI64 kno = 0 ) : val( 0 ), kno( kno ) {}
     KcSI64( const CanoVal &value );
+    KcSI64( const Value &value );
     KcSI64( const KcSI64 &ku );
 
     ~KcSI64();

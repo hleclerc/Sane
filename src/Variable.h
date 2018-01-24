@@ -45,11 +45,7 @@ public:
     FP64               as_FP64             () const;
     SI32               as_SI32             () const;
 
-    bool               get_bytes           ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const;
-    bool               get_bytes           ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const;
     Value              get                 () const;
-
-    bool               get_value           ( SI32 &val ) const;
 
     void               set_bv              ( const Value &src_val, int cst = 0 );
     void               memcpy              ( const Value &src_val, int cst = 0 );

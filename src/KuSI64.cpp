@@ -17,18 +17,17 @@ KuSI64::~KuSI64() {
 }
 
 KuSI64::KuSI64( const Value &value ) {
-    ASSERT( value.type == vm->type_SI64, "TODO" );
-
-    if ( value.get_bytes( &kno, 0 ) ) {
-        if ( vm->reverse_endianness )
-            kno = byte_swaped( kno );
+    // if ( value.type == vm->type_SI64, "TODO" );
+    KcSI64 kc( value );
+    if ( kc.is_known() ) {
+        kno = kc.kv();
         val = 0;
     } else {
         val = new Value( value );
     }
 }
 
-KuSI64 &KuSI64::operator=(const KuSI64 &ku) {
+KuSI64 &KuSI64::operator=( const KuSI64 &ku ) {
     if ( ku.val ) {
         if ( val )
             *val = *ku.val;

@@ -32,7 +32,6 @@ public:
 //    virtual void          construct                  ( const Variable &self, const Vec<Variable> &args, const Vec<RcString> &names );
 //    virtual Variable      with_self                  ( Variable &orig, const Variable &new_self ) const;
 //    virtual void          destroy                    ( const Variable &self, bool use_virtual );
-//    virtual String        c_name                     () const;
 //    virtual bool          error                      () const;
 //    virtual Variable      chbeba                     ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names );
 //    virtual Variable      select                     ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names );
@@ -54,6 +53,7 @@ public:
     virtual int             mantissa_len               () const;
     virtual int             exponent_len               () const;
     virtual int             is_signed                  () const;
+    virtual String          c_name                     () const;
     virtual bool            error                      () const;
     KuSI64                  size                       () const;
 

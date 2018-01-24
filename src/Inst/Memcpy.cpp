@@ -15,8 +15,7 @@ public:
     Memcpy() {
     }
 
-    Memcpy( AttrClone, const Memcpy *a ) {
-        TODO;
+    Memcpy( AttrClone, const Memcpy *orig ) : dst( orig->dst ), src( orig->src ), len( orig->len ) {
     }
 
     virtual bool expects_a_reg_at( int ninp ) const override {
@@ -63,25 +62,25 @@ public:
         os << "Memcpy";
     }
 
-    virtual bool get_bytes( int nout, void *w_dst, int beg_w_dst, int beg_w_src, int w_len, void *msk ) const override {
-        if ( nout )
-            return false;
-        // look if we can get something from children[ 1 ]
-        if ( dst.offset.is_known() && src.offset.is_known() && len.is_known() ) {
-            int beg_l_src = std::max( beg_w_src, int( dst.offset.kv ) );
-            int end_l_src = std::min( beg_w_src + w_len, int( dst.offset.kv + len.kv ) );
-            int beg_n_dst = beg_l_src - dst.offset.kv;
-            int beg_n_src = beg_l_src - dst.offset.kv + src.offset.kv;
-            int n_len = end_l_src - beg_l_src;
-            if ( beg_l_src < end_l_src &&
-                 memcmp_bit( msk, beg_n_dst, n_len, false ) &&
-                 children[ 1 ].inst->get_bytes( children[ 1 ].nout, w_dst, beg_n_dst, beg_n_src, n_len, msk ) == false )
-                return false;
-        }
-        return memcmp_bit( msk, beg_w_dst, w_len, false ) ?
-            children[ 0 ].inst->get_bytes( children[ 0 ].nout, w_dst, beg_w_dst, beg_w_src, w_len, msk ) :
-            true;
-    }
+    //    virtual bool get_bytes( int nout, void *w_dst, int beg_w_dst, int beg_w_src, int w_len, void *msk ) const override {
+    //        if ( nout )
+    //            return false;
+    //        // look if we can get something from children[ 1 ]
+    //        if ( dst.offset.is_known() && src.offset.is_known() && len.is_known() ) {
+    //            int beg_l_src = std::max( beg_w_src, int( dst.offset.kv ) );
+    //            int end_l_src = std::min( beg_w_src + w_len, int( dst.offset.kv + len.kv ) );
+    //            int beg_n_dst = beg_l_src - dst.offset.kv;
+    //            int beg_n_src = beg_l_src - dst.offset.kv + src.offset.kv;
+    //            int n_len = end_l_src - beg_l_src;
+    //            if ( beg_l_src < end_l_src &&
+    //                 memcmp_bit( msk, beg_n_dst, n_len, false ) &&
+    //                 children[ 1 ].inst->get_bytes( children[ 1 ].nout, w_dst, beg_n_dst, beg_n_src, n_len, msk ) == false )
+    //                return false;
+    //        }
+    //        return memcmp_bit( msk, beg_w_dst, w_len, false ) ?
+    //            children[ 0 ].inst->get_bytes( children[ 0 ].nout, w_dst, beg_w_dst, beg_w_src, w_len, msk ) :
+    //            true;
+    //    }
 
     virtual int inp_corr( int nout ) const override {
         return nout == 0 ? 0 : -1;

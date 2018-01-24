@@ -1,6 +1,6 @@
 #include "../Inst/Gatherer.h"
 #include "../Type.h"
-#include "../gvm.h"
+#include "../Vm.h"
 
 #include "Codegen_C.h"
 #include "Reg.h"
@@ -18,7 +18,7 @@ Codegen_C::Codegen_C( Codegen_C *parent ) : parent( parent ) {
     nb_reg = parent ? parent->nb_reg : 0;
 
     // base arythmetic types
-    #define BT( T ) type_reprs[ gvm->type_##T ] = #T;
+    #define BT( T ) type_reprs[ vm->type_##T ] = #T;
     #include "../ArythmeticTypes.h"
     #undef BT
 
@@ -41,17 +41,18 @@ Codegen_C::Codegen_C( Codegen_C *parent ) : parent( parent ) {
 }
 
 void Codegen_C::gen_code_for( const Vec<Inst *> &targets ) {
-    RcPtr<Inst> gatherer = new Gatherer;
     ++Inst::cur_op_id;
+    Vec<Ressource> clones;
     for( Inst *inst : targets )
-        gatherer->add_child( Value( inst->clone(), 0, gvm->type_Void ) );
+        clones << Ressource( inst->clone(), 0 );
+    RcPtr<Inst> gatherer = make_Gatherer( clones );
 
     base_simplifications( gatherer.ptr() );
 
-    Inst::display_graphviz( gatherer->children.map( []( const Value &v ) { return v.inst.ptr(); } ) );
+    // Inst::display_graphviz( gatherer->children.map( []( const Ressource &ressource ) { return ressource.inst.ptr(); } ) );
 
     StreamSep st( main_block, "    " );
-    write_block( st, gatherer->children.map( []( const Value &val ) { return val.inst.ptr(); } ) );
+    write_block( st, gatherer->children.map( []( const Ressource &ressource ) { return ressource.inst.ptr(); } ) );
 }
 
 String Codegen_C::code() {
@@ -112,17 +113,21 @@ void Codegen_C::write_repr( std::ostream &os, Type *type ) {
 void Codegen_C::write_repr( std::ostream &os, const Value &value, int prio, int flags ) {
     Type *reg_type = 0;
     std::function<void(StreamPrio &)> reg_writer;
-    if ( Reg *reg = value.inst->cd.out_regs.secure_get( value.nout, 0 ) ) {
+    if ( Reg *reg = value.ressource.inst->cd.out_regs.secure_get( value.ressource.nout, 0 ) ) {
         reg_type = reg->type;
         reg_writer = [reg]( StreamPrio &ss ) { ss << *reg; };
     } else {
-        reg_type = value.inst->out_type( value.nout );
-        reg_writer = [&]( StreamPrio &ss ) { value.inst->write_inline_code( ss, *this, value.nout, flags ); };
+        reg_type = value.ressource.inst->out_type( value.ressource.nout );
+        reg_writer = [&]( StreamPrio &ss ) { value.ressource.inst->write_inline_code( ss, *this, value.ressource.nout, flags ); };
     }
 
     StreamPrio ss( os, prio );
-    if ( write_repr_rec( ss, reg_writer, reg_type, value.type, value.offset ) )
-        return;
+    if ( value.offset.is_known() ) {
+        if ( write_repr_rec( ss, reg_writer, reg_type, value.type, value.offset.kv() ) )
+            return;
+    } else {
+        TODO;
+    }
 
     P( value );
     TODO;

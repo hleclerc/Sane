@@ -20,6 +20,9 @@ KcSI64::KcSI64( const CanoVal &value ) {
         val = new CanoVal( value );
 }
 
+KcSI64::KcSI64(const Value &value ) : KcSI64( value.cano_val() ) {
+}
+
 KcSI64::~KcSI64() {
     delete val;
 }

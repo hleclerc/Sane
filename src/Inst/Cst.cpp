@@ -32,11 +32,10 @@ public:
     }
 
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
-        //    if ( ! kno.all_false() )
-        //        type->write_cst( ss.stream, val.data, 0, false );
-        //    else
-        //        ss << "{}";
-        TODO;
+        if ( ! kno.all_false() )
+            type->write_cst( ss.stream, val.data, 0, false );
+        else
+            ss << "{}";
     }
 
     virtual void write_to_stream  ( std::ostream &os, SI32 nout = -1, Type *type = 0, int offset = -1 ) const {
@@ -55,16 +54,6 @@ public:
 
     virtual void write_dot( std::ostream &os ) const override {
         type->write_cst( os, val.data, 0 );
-    }
-
-    virtual bool get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const override {
-        if ( PI32( beg_src ) >= val.size )
-            return true;
-        if ( PI32( beg_src + len ) > val.size )
-            len = val.size - beg_src;
-        memcpy_bit( dst, beg_dst, val.data, beg_src, len, msk );
-        memset_bit( msk, beg_dst, false, len );
-        return true;
     }
 
     virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {

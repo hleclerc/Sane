@@ -25,13 +25,6 @@ public:
 
     CanoVal     cano_val          () const; ///< canonical representation. Enables faster comparisons
 
-    bool        get_bytes         ( void *dst, PI32 beg_dst = 0 ) const;
-    bool        get_bytes         ( void *dst, PI32 beg_dst, void *msk ) const;
-
-    bool        is_non_null       () const;
-    bool        is_null           () const;
-
-    // Ressource
     Ressource   ressource;
     KuSI64      offset;
     KuSI64      length;

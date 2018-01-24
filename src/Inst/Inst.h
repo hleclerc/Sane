@@ -43,6 +43,10 @@ public:
     void                    init_attr              ( IiKuSI64              &attr, const KuSI64 &val );
     void                    init_attr              ( IiValue               &attr, const Value &val );
 
+    Ressource              &to_Ressource           ( IiRessource           &attr );
+    KuSI64                  to_KuSI64              ( IiKuSI64              &attr );
+    Value                   to_Value               ( IiValue               &attr );
+
     Ref                    *new_created_output     ( Type *type, const KuSI64 &size );
 
     virtual void            get_linked_refs        ( int nout, const KcSI64 &offset, const KcSI64 &length, const std::function<void (Ref *)> &cb );
@@ -61,12 +65,12 @@ public:
     virtual int             inp_corr               ( int nout ) const;
     virtual Inst           *clone                  () const;
 
+    KcSI64                  cano_kcSI64            ( const IiKuSI64 &value ) const;
+
     RcPtr<CanoInst>         cano_inst              ( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length ) const;
     RcPtr<CanoInst>         cano_inst              ( const IiRessource &ressource ) const;
     RcPtr<CanoInst>         cano_inst              ( int nout, const KcSI64 &offset, const KcSI64 &length ) const; ///< canonical representation. Enables faster comparisons
     RcPtr<CanoInst>         cano_inst              ( int nout ) const; ///< canonical representation. Enables faster comparisons
-
-    KcSI64                  cano_kcSI64              ( const IiKuSI64 &value ) const;
 
     CanoVal                 cano_val               ( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, Type *type ) const;
     CanoVal                 cano_val               ( const IiRessource &ressource ) const;
@@ -82,7 +86,6 @@ public:
     virtual bool            write_graph_rec        ( std::ostream &ss, std::set<const Inst *> &seen_insts, const std::function<void(std::ostream&, const Inst *)> &f, bool disp_parents ) const;
     virtual AssFunc         get_assign_func        ( int nout, int off, int len );
     virtual void            write_dot              ( std::ostream &os ) const = 0;
-    virtual bool            get_bytes              ( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const;
     virtual void           *rcast                  ( int nout );
 
     virtual void            write_inline_code      ( StreamPrio &ss, Codegen &cg, int nout, int flags ); ///< helper for case nb_outputs == 1

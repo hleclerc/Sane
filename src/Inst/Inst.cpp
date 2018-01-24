@@ -1,6 +1,4 @@
-// #include "../Codegen/Codegen.h"
-// #include "../gvm.h"
-
+#include "../Codegen/Codegen.h"
 #include "../System/DotOut.h"
 #include "../System/Deque.h"
 #include "../Ressource.h"
@@ -86,6 +84,20 @@ void Inst::init_attr( IiValue &attr, const Value &val ) {
     init_attr( attr.length   , val.length    );
 
     attr.type = val.type;
+}
+
+Ressource &Inst::to_Ressource( IiRessource &attr ) {
+    return children[ attr.index ];
+}
+
+KuSI64 Inst::to_KuSI64( IiKuSI64 &attr ) {
+    if ( attr.uv )
+        return to_Value( *attr.uv );
+    return attr.kv;
+}
+
+Value Inst::to_Value( IiValue &attr ) {
+    return { to_Ressource( attr.ressource ), to_KuSI64( attr.offset ), to_KuSI64( attr.length ), attr.type };
 }
 
 Ref *Inst::new_created_output( Type *type, const KuSI64 &size ) {
@@ -304,19 +316,18 @@ bool Inst::write_graph_rec( std::ostream &ss, std::set<const Inst *> &seen_insts
 }
 
 void Inst::write_code( StreamSep &ss, Codegen &cg ) {
-    TODO;
-    //    // if this inst can be inlined inside a future inst, we don't do nothing here
-    //    if ( can_be_inlined() )
-    //        return;
+    // if this inst can be inlined inside a future inst, we don't do nothing here
+    if ( can_be_inlined() )
+        return;
 
-    //    if ( nb_outputs() != 1 )
-    //        TODO;
+    if ( created_outputs.size() != 1 )
+        TODO;
 
-    //    Type *type = out_type( 0 );
-    //    ss.write_beg() << cg.repr( type ) << " " << *cg.new_reg_for( this, type, 0 ) << " = ";
-    //    StreamPrio sp{ *ss, PRIO_Assignment };
-    //    write_inline_code( sp, cg, 0, Codegen::WriteInlineCodeFlags::type_is_forced );
-    //    ss.write_end( ";" );
+    Type *type = created_outputs[ 0 ].type;
+    ss.write_beg() << cg.repr( type ) << " " << *cg.new_reg_for( this, type, 0 ) << " = ";
+    StreamPrio sp{ *ss, PRIO_Assignment };
+    write_inline_code( sp, cg, 0, Codegen::WriteInlineCodeFlags::type_is_forced );
+    ss.write_end( ";" );
 }
 
 void Inst::write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) {
@@ -333,10 +344,6 @@ bool Inst::can_be_inlined() const {
         if ( p.inst->expects_a_reg_at( p.ninp ) )
             return false;
     return true;
-}
-
-bool Inst::get_bytes( int nout, void *dst, int beg_dst, int beg_src, int len, void *msk ) const {
-    return false;
 }
 
 void *Inst::rcast( int nout ) {

@@ -64,13 +64,6 @@ void Type::write_to_stream(std::ostream &os) const {
 //void Type::destroy( const Variable &self, bool use_virtual ) {
 //}
 
-//String Type::c_name() const {
-//    String res = content.data.name;
-//    for( Variable *var : content.data.parameters ) {
-//        res += to_string( *var );
-//    }
-//    return res;
-//}
 
 //void Type::spread_in( const Variable &self, Vec<Variable> &res, Vec<RcString> &names ) {
 //    PE( content.data.name );
@@ -243,6 +236,14 @@ RcPtr<CanoInst> Type::convert_cano_cst( const void *content, Type *target ) {
 SI64 Type::convert_cst_to_SI64( const void *content ) const {
     ERROR( "..." );
     return 0;
+}
+
+String Type::c_name() const {
+    String res = content.data.name;
+    for( Variable *var : content.data.parameters ) {
+        res += to_string( *var );
+    }
+    return res;
 }
 
 Type *type_promote_gen( Type *a, Type *b ) {

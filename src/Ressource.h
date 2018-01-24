@@ -30,9 +30,6 @@ public:
     void            write_to_stream( std::ostream &os ) const;
     void            thread_visitor ( const std::function<void( Inst *, int, int )> &cb, bool call_before = true ) const;
 
-    bool            get_bytes      ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len ) const;
-    bool            get_bytes      ( void *dst, PI32 beg_dst, PI32 beg_src, PI32 len, void *msk ) const;
-
     RcPtr<Inst>     inst;
     int             nout; ///< num output of inst
 };
