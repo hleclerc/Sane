@@ -4,6 +4,7 @@
 #include "../System/RcPtr.h"
 #include <set>
 class CanoVal;
+class KcSI64;
 class Type;
 
 /**
@@ -11,31 +12,36 @@ class Type;
 */
 class CanoInst : public RcObj {
 public:
-    struct Parent { bool operator==( const Parent &p ) const { return inst == p.inst && ninp == p.ninp; } CanoInst *inst; int ninp; };
+    struct AttrVisitor {
+        virtual ~AttrVisitor() {}
+        virtual void on( const char *, const RcPtr<CanoInst> & ) {}
+        virtual void on( const char *, const CanoVal & ) {}
+        virtual void on( const char *, const KcSI64 & ) {}
+        virtual void on( const char *, Type * ) {}
+    };
 
     CanoInst();
     virtual ~CanoInst();
-
-    int                     add_child       ( const CanoVal &ch );
 
     virtual void            write_to_stream ( std::ostream &os, Type *type = 0 ) const;
     virtual bool            write_graph_rec ( std::ostream &ss, std::set<const CanoInst *> &seen_insts, const std::function<void(std::ostream&, const CanoInst *)> &f ) const;
     virtual void            write_dot       ( std::ostream &os, Type *type ) const = 0;
 
+    virtual void            children_visitor( const std::function<void( const char *, CanoInst * )> &visitor );
     virtual SI64            get_SI64_value  ( Type *orig ) const;
     virtual void            get_out_insts   ( Deque<CanoInst *> &outs );
     virtual RcPtr<CanoInst> simp_CanoConv   ( Type *orig, Type *target );
+    virtual void            attr_visitor    ( AttrVisitor &visitor ) const = 0;
     virtual bool            always_false    ( Type *type ) const;
     virtual bool            always_true     ( Type *type ) const;
-    virtual bool            known_value     () const; ///<
+    virtual bool            known_value     () const;                                 ///<
+    virtual RcPtr<CanoInst> sub_part        ( const KcSI64 &off, const KcSI64 &len );
+    virtual KcSI64          length          () const = 0;                             ///< size in memory (in bits)
 
     static void             display_graphviz( const Vec<CanoInst *> &lst, const std::function<void (std::ostream &, const CanoInst *)> &f = {}, const std::string &filename = ".res", bool disp_parents = false, bool launch = true );
-    static void             dfs_rec         ( CanoInst *inst, const std::function<void(CanoInst*)> &f, bool deep = false, bool f_after = false, bool need_inc_ref = false );
-    static void             dfs             ( const Vec<CanoInst *> &lst, const std::function<void(CanoInst*)> &f, bool deep = false, bool f_after = false, bool need_inc_ref = false );
 
-    Vec<CanoVal>            children;
-    Vec<Parent>             parents;
-    Type                   *type;     ///< optionnal
+    CanoInst               *child_for_fact;
+    Vec<CanoInst *>         parents;
 
     mutable void           *op_mp;
     mutable size_t          op_id;
@@ -43,11 +49,5 @@ public:
     static size_t           cur_op_id;
 };
 
-template<class Op,class... Args>
-CanoInst *common_parent( CanoInst *inst, Args&& ...args ) {
-    for( const CanoInst::Parent &p : inst->parents )
-        if ( const Op *op = dynamic_cast<const Op *>( p.inst ) )
-            if ( op->same( std::forward<Args>( args )... ) )
-                return p.inst;
-    return 0;
-}
+#define CANO_INST_ATTR_VISIT( NAME ) visitor.on( #NAME, NAME );
+

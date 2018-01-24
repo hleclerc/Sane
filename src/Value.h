@@ -28,9 +28,6 @@ public:
     bool        get_bytes         ( void *dst, PI32 beg_dst = 0 ) const;
     bool        get_bytes         ( void *dst, PI32 beg_dst, void *msk ) const;
 
-    bool        is_always_equal_to( const Value &that ) const; ///<
-    bool        is_never_equal_to ( const Value &that ) const; ///<
-
     bool        is_non_null       () const;
     bool        is_null           () const;
 

@@ -14,7 +14,7 @@ public:
     Rand( AttrClone, const Rand *inst ) : type( inst->type ) {
     }
 
-    virtual void write_inline_code ( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
+    virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
         ss << "rand()";
     }
 
@@ -23,7 +23,7 @@ public:
     }
 
     virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {
-        return make_CanoSym( "rand" );
+        return make_CanoSym( "rand", type->content.data.size );
     }
 
     Type *type;

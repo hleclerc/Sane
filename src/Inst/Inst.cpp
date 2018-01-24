@@ -94,7 +94,7 @@ Ref *Inst::new_created_output( Type *type, const KuSI64 &size ) {
     return res;
 }
 
-void Inst::get_linked_refs( int nout, const std::function<void (Ref *)> &cb ) {
+void Inst::get_linked_refs( int nout, const KcSI64 &offset, const KcSI64 &length, const std::function<void (Ref *)> &cb ) {
 }
 
 Inst::FuncOnRefPtr Inst::add_wr_cb() {
@@ -182,11 +182,8 @@ CanoVal Inst::cano_val( const IiValue &value ) const {
     return cano_val( value.ressource, cano_kcSI64( value.offset ), cano_kcSI64( value.length ), value.type );
 }
 
-RcPtr<CanoInst> Inst::cano_inst(int nout, const KcSI64 &offset, const KcSI64 &length ) const {
-    RcPtr<CanoInst> res = cano_inst( nout );
-    if ( always_true( offset == 0 ) == false || always_true( length == out_size( nout ).cano() ) == false )
-        TODO; // subpart
-    return res;
+RcPtr<CanoInst> Inst::cano_inst( int nout, const KcSI64 &offset, const KcSI64 &length ) const {
+    return cano_inst( nout )->sub_part( offset, length );
 }
 
 RcPtr<CanoInst> Inst::cano_inst( int nout ) const {

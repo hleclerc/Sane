@@ -80,3 +80,6 @@ KcSI64 operator> ( const KcSI64 &a, const KcSI64 &b ) { return a.is_known() && b
 KcSI64 operator<=( const KcSI64 &a, const KcSI64 &b ) { return a.is_known() && b.is_known() ? KcSI64( a.kv() <= b.kv() ) : KcSI64( a.cano_val() <= b.cano_val() ); }
 KcSI64 operator>=( const KcSI64 &a, const KcSI64 &b ) { return a.is_known() && b.is_known() ? KcSI64( a.kv() >= b.kv() ) : KcSI64( a.cano_val() >= b.cano_val() ); }
 KcSI64 operator==( const KcSI64 &a, const KcSI64 &b ) { return a.is_known() && b.is_known() ? KcSI64( a.kv() == b.kv() ) : KcSI64( a.cano_val() == b.cano_val() ); }
+
+KcSI64 min       ( const KcSI64 &a, const KcSI64 &b ) { return a.is_known() && b.is_known() ? KcSI64( std::min( a.kv(), b.kv() ) ) : KcSI64( min( a.cano_val(), b.cano_val() ) ); }
+KcSI64 max       ( const KcSI64 &a, const KcSI64 &b ) { return a.is_known() && b.is_known() ? KcSI64( std::max( a.kv(), b.kv() ) ) : KcSI64( max( a.cano_val(), b.cano_val() ) ); }

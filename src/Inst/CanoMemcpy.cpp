@@ -1,50 +1,77 @@
+#include "reuse_or_create.h"
 #include "CanoVal.h"
 #include "../Vm.h"
 
 /***/
 class CanoMemcpy : public CanoInst {
 public:
-    CanoMemcpy( const CanoVal &dst, const CanoVal &src, const KcSI64 &off_dst, const KcSI64 &off_src, const KcSI64 &len ) : off_dst( off_dst ), off_src( off_src ),len( len ) {
-        add_child( dst     );
-        add_child( src     );
+    struct Sp {
+        RcPtr<CanoInst> src;
+        KcSI64          off; ///< offset in dst
+    };
+
+    CanoMemcpy( const CanoVal &base, const Vec<Sp> &sub_parts ) : base( base ), sub_parts( sub_parts ) {
     }
 
-    bool same( const CanoVal &dst, const CanoVal &src, const KcSI64 &off_dst, const KcSI64 &off_src, const KcSI64 &len ) const {
-        return ::always_true( dst     == children[ 0 ] ) &&
-               ::always_true( src     == children[ 1 ] ) &&
-               ::always_true( off_dst == this->off_dst ) &&
-               ::always_true( off_src == this->off_src ) &&
-               ::always_true( len     == this->len     ) ;
+    bool same( const CanoVal &base, const Vec<Sp> &sub_parts ) const {
+        if ( ::always_true( this->base == base ) == false )
+            return false;
+        if ( this->sub_parts.size() != sub_parts.size() )
+            return false;
+        for( size_t i = 0; i < sub_parts.size(); ++i )
+            if (                this->sub_parts[ i ].src != sub_parts[ i ].src || // TODO: more general equ
+                 ::always_true( this->sub_parts[ i ].off == sub_parts[ i ].off ) == false )
+                return false;
+        return true;
     }
 
     virtual void write_dot( std::ostream &os, Type *type ) const override {
         os << "memcpy";
     }
 
-    KcSI64 off_dst;
-    KcSI64 off_src;
-    KcSI64 len;
-};
+    virtual void attr_visitor( AttrVisitor &visitor ) const override {
+        CANO_INST_ATTR_VISIT( base );
+        for( const Sp &sp : sub_parts ) {
+            CANO_INST_ATTR_VISIT( sp.src );
+            CANO_INST_ATTR_VISIT( sp.off );
+        }
+    }
 
-
-RcPtr<CanoInst> make_CanoMemcpy( const CanoVal &dst, const CanoVal &src, const KcSI64 &off_dst, const KcSI64 &off_src, const KcSI64 &len ) {
-    // dst is totally replaced by src
-    if ( always_false( off_dst ) && always_false( off_src ) )
-        return src.inst;
-
-    // zero length
-    if ( always_false( len ) )
-        return dst.inst;
-
-    // dst or src are memcpy
-    CanoMemcpy *m_dst = dynamic_cast<CanoMemcpy *>( dst.inst.ptr() );
-    CanoMemcpy *m_src = dynamic_cast<CanoMemcpy *>( src.inst.ptr() );
-    if ( m_dst || m_src ) {
-        TODO;
+    virtual KcSI64 length() const override {
+        return base.inst->length();
     }
 
 
-    if ( CanoInst *p = common_parent<CanoMemcpy>( dst.inst.ptr(), dst, src, off_dst, off_src, len ) )
-        return p;
-    return new CanoMemcpy( dst, src, off_dst, off_src, len );
+    CanoVal base;
+    Vec<Sp> sub_parts; ///< ordered by (inst *,offset)
+};
+
+
+RcPtr<CanoInst> make_CanoMemcpy( const CanoVal &dst, const RcPtr<CanoInst> &src, const KcSI64 &off ) {
+    // if dst is totally replaced by src
+    if ( always_true( src->length() == dst.length() ) )
+        return src;
+
+    // zero length
+    if ( always_false( src->length() ) )
+        return dst.inst;
+
+    // construction of an ordered list of subpart
+    CanoVal base;
+    Vec<CanoMemcpy::Sp> sub_parts;
+    if ( CanoMemcpy *m_dst = dynamic_cast<CanoMemcpy *>( dst.inst.ptr() ) ) {
+        sub_parts = m_dst->sub_parts;
+        base = m_dst->base;
+    } else {
+        base = dst;
+    }
+
+    if ( CanoMemcpy *m_src = dynamic_cast<CanoMemcpy *>( src.ptr() ) ) {
+        sub_parts << CanoMemcpy::Sp{ m_src->base.inst, off };
+        for( CanoMemcpy::Sp &sp : m_src->sub_parts )
+            sub_parts << CanoMemcpy::Sp{ sp.src, off + sp.off };
+    } else
+        sub_parts << CanoMemcpy::Sp{ src, off };
+
+    return reuse_or_create<CanoMemcpy>( base, sub_parts );
 }

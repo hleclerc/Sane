@@ -43,6 +43,11 @@ public:
         os << "WriteFd";
     }
 
+    virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {
+        TODO;
+        return 0;
+    }
+
     IiValue      fd;
     Vec<IiValue> args;
 };
@@ -56,8 +61,8 @@ void make_WriteFd( const Variable &fd, const Vec<Variable> &args ) {
         res->init_attr( *res->args.push_back(), arg.get() );
 
     // for each potentially modified/read ressource
-    vm->ressource_map.on_file_content( fd.get(), res->add_wr_cb() );
-    vm->ressource_map.on_file_cursor ( fd.get(), res->add_wr_cb() );
+    vm->ressource_map.on_file_content( fd.cano_repr(), res->add_wr_cb() );
+    vm->ressource_map.on_file_cursor ( fd.cano_repr(), res->add_wr_cb() );
 }
 
 void make_WriteFd( const Variable &fd, const Variable &ptr, const Variable &len ) {

@@ -1,3 +1,4 @@
+#include "reuse_or_create.h"
 #include "CanoConv.h"
 #include "CanoVal.h"
 #include "../Type.h"
@@ -7,20 +8,29 @@
 template<class Op>
 class CanoBinOp : public CanoInst {
 public:
-    CanoBinOp( const CanoVal &a, const CanoVal &b ) {
-        add_child( a );
-        add_child( b );
+    CanoBinOp( const CanoVal &a, const CanoVal &b ) : a( a ), b( b ) {
     }
 
     bool same( const CanoVal &a, const CanoVal &b ) const {
-        return ::always_true( a == children[ 0 ] ) && ::always_true( b == children[ 1 ] );
+        return ::always_true( this->a == a ) && ::always_true( this->b == b );
     }
 
     virtual void write_dot( std::ostream &os, Type *type ) const override {
         os << op;
     }
 
-    Op op;
+    virtual void attr_visitor( AttrVisitor &visitor ) const override {
+        CANO_INST_ATTR_VISIT( a );
+        CANO_INST_ATTR_VISIT( b );
+    }
+
+    virtual KcSI64 length() const override {
+        return type_promote_gen( a.type, b.type )->content.data.size;
+    }
+
+    Op      op;
+    CanoVal a;
+    CanoVal b;
 };
 
 
@@ -36,15 +46,16 @@ struct InfEqu { void write_to_stream( std::ostream &os ) const { os << "inf_equ"
 struct SupEqu { void write_to_stream( std::ostream &os ) const { os << "sup_equ"; } };
 struct Equ    { void write_to_stream( std::ostream &os ) const { os << "equ";     } };
 
+struct Min    { void write_to_stream( std::ostream &os ) const { os << "min";     } };
+struct Max    { void write_to_stream( std::ostream &os ) const { os << "max";     } };
+
 
 template<class T>
 CanoVal make_CanoBinOp( Type *type, const CanoVal &a, const CanoVal &b ) {
-    if ( CanoInst *p = common_parent<CanoBinOp<T>>( a.inst.ptr(), a, b ) )
-        return { p, type };
-    return { new CanoBinOp<T>( a, b ), type };
+    return { reuse_or_create<CanoBinOp<T>>( a, b ), type };
 }
 
-CanoVal operator+ ( const CanoVal &a, const CanoVal &b ) {
+CanoVal operator+( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
         Type *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) + make_CanoConv( b, tp );
@@ -157,4 +168,26 @@ CanoVal operator==( const CanoVal &a, const CanoVal &b ) {
         return false;
 
     return make_CanoBinOp<Equ>( vm->type_Bool, a, b );
+}
+
+CanoVal min( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return min( make_CanoConv( a, tp ), make_CanoConv( b, tp ) );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Min>( a.type, a, b );
+}
+
+CanoVal max( const CanoVal &a, const CanoVal &b ) {
+    if ( a.type != b.type ) {
+        Type *tp = type_promote_gen( a.type, b.type );
+        return max( make_CanoConv( a, tp ), make_CanoConv( b, tp ) );
+    }
+    if ( a.inst->known_value() && b.inst->known_value() )
+        TODO;
+
+    return make_CanoBinOp<Max>( a.type, a, b );
 }

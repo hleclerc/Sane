@@ -24,6 +24,10 @@ public:
         return true;
     }
 
+    virtual KcSI64 length() const override {
+        return content.size;
+    }
+
     virtual bool always_false( Type *type ) const override {
         return content.all_false();
     }
@@ -40,6 +44,9 @@ public:
         if ( RcPtr<CanoInst> res = orig->convert_cano_cst( content.data, target ) )
             return res;
         return 0;
+    }
+
+    virtual void attr_visitor( AttrVisitor &visitor ) const override {
     }
 
     BoolVec content;

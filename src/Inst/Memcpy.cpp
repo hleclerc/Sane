@@ -88,7 +88,7 @@ public:
     }
 
     virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {
-        return make_CanoMemcpy( cano_val( dst.ressource ), cano_val( src.ressource ), cano_kcSI64( dst.offset ), cano_kcSI64( src.offset ), cano_kcSI64( len ) );
+        return make_CanoMemcpy( cano_val( dst.ressource ), cano_inst( src.ressource, cano_kcSI64( src.offset ), cano_kcSI64( len ) ), cano_kcSI64( dst.offset ) );
     }
 
 //    bool write_ssp_rec( StreamSep &ss, Codegen &cg, int dst.offset.kvset, Type *dst_type, String m ) const {
@@ -119,6 +119,6 @@ void make_Memcpy( Ref *dst, Ref *src, const KuSI64 &off_dst, const KuSI64 &off_s
     res->init_attr( res->len, len                   );
 
     // for each potentially modified/read ressource
-    vm->ressource_map.get_linked_refs( dst, off_dst, len, res->add_wr_cb() );
-    vm->ressource_map.get_linked_refs( src, off_src, len, res->add_rd_cb() );
+    vm->ressource_map.get_linked_refs( dst, off_dst.cano(), len.cano(), res->add_wr_cb() );
+    vm->ressource_map.get_linked_refs( src, off_src.cano(), len.cano(), res->add_rd_cb() );
 }

@@ -1,3 +1,4 @@
+#include "reuse_or_create.h"
 #include "CanoConv.h"
 #include "CanoVal.h"
 #include "../Type.h"
@@ -6,19 +7,28 @@
 /***/
 class CanoConv : public CanoInst {
 public:
-    CanoConv( const CanoVal &val, Type *type ) : type( type ) {
-        add_child( val );
+    CanoConv( const CanoVal &val, Type *type ) : val( val ), type( type ) {
     }
 
     bool same( const CanoVal &val, Type *type ) const {
-        return ::always_true( val == children[ 0 ] ) && this->type == type;
+        return ::always_true( this->val == val ) && this->type == type;
     }
 
     virtual void write_dot( std::ostream &os, Type *type ) const override {
-        os << "(" << *type << ")";
+        os << "conv";
     }
 
-    Type *type;
+    virtual void attr_visitor( AttrVisitor &visitor ) const {
+        CANO_INST_ATTR_VISIT( val  );
+        CANO_INST_ATTR_VISIT( type );
+    }
+
+    virtual KcSI64 length() const {
+        return type->content.data.size;
+    }
+
+    CanoVal val;
+    Type   *type;
 };
 
 CanoVal make_CanoConv( const CanoVal &val, Type *type ) {
@@ -28,7 +38,5 @@ CanoVal make_CanoConv( const CanoVal &val, Type *type ) {
     if ( RcPtr<CanoInst> res = val.inst->simp_CanoConv( val.type, type ) )
         return { res, type };
 
-    if ( CanoInst *p = common_parent<CanoConv>( val.inst.ptr(), val, type ) )
-        return { p, type };
-    return { new CanoConv( val, type ), type };
+    return { reuse_or_create<CanoConv>( val, type ), type };
 }

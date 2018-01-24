@@ -2,6 +2,7 @@
 
 #include "CanoBinOp.h"
 #include "CanoInst.h"
+#include "KcSI64.h"
 
 /**
 */
@@ -15,6 +16,7 @@ public:
     CanoVal();
 
     void            write_to_stream ( std::ostream &os ) const;
+    KcSI64          length          () const { return inst->length(); }
 
     RcPtr<CanoInst> inst;
     Type           *type;

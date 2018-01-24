@@ -53,3 +53,5 @@ KcSI64 operator> ( const KcSI64 &a, const KcSI64 &b );
 KcSI64 operator<=( const KcSI64 &a, const KcSI64 &b );
 KcSI64 operator>=( const KcSI64 &a, const KcSI64 &b );
 KcSI64 operator==( const KcSI64 &a, const KcSI64 &b );
+KcSI64 min       ( const KcSI64 &a, const KcSI64 &b );
+KcSI64 max       ( const KcSI64 &a, const KcSI64 &b );

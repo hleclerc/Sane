@@ -45,7 +45,7 @@ public:
 
     Ref                    *new_created_output     ( Type *type, const KuSI64 &size );
 
-    virtual void            get_linked_refs        ( int nout, const std::function<void(Ref *)> &cb );
+    virtual void            get_linked_refs        ( int nout, const KcSI64 &offset, const KcSI64 &length, const std::function<void (Ref *)> &cb );
 
     FuncOnRefPtr            add_wr_cb              (); ///< cb to add a ressource thay may be written by this
     FuncOnRefPtr            add_rd_cb              (); ///< cb to add a ressource thay may be read by this

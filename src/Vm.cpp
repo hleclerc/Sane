@@ -50,7 +50,7 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : /*main_scope( Scope::ScopeT
     #undef BT
 
     // arythmetic types
-    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T );
+    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T ); type_##T->content.data.size = 8 * sizeof( T );
     BT( Bool )
     BT( SI64 )
     BT( PI64 )
@@ -61,6 +61,8 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : /*main_scope( Scope::ScopeT
     BT( SI8  )
     BT( PI8  )
     #undef BT
+
+    type_Bool->content.data.size = 1;
 
 //    type_CallableWithSelf = new TypeCallableWithSelf;
 //    type_SlTrialClass     = new TypeSlTrialClass;

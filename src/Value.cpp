@@ -54,34 +54,6 @@ bool Value::get_bytes( void *dst, PI32 beg_dst, void *msk ) const {
     return offset.is_known() && length.is_known() && ressource.get_bytes( dst, beg_dst, offset.kv(), length.kv(), msk );
 }
 
-bool Value::is_always_equal_to( const Value &that ) const {
-    //    if ( type == that.type ) {
-    //        BoolVec bv_this( this->type->size() );
-    //        BoolVec bv_that( that. type->size() );
-    //        if ( this->get_bytes( bv_this.data, 0, 0, this->type->size() ) &&
-    //             that. get_bytes( bv_that.data, 0, 0, that. type->size() ) )
-    //            return bv_this == bv_that;
-    //        return false;
-    //    }
-
-    TODO;
-    return false;
-}
-bool Value::is_never_equal_to( const Value &that ) const {
-    //    if ( type == that.type ) {
-    //        BoolVec bv_this( this->type->size() );
-    //        BoolVec bv_that( that. type->size() );
-    //        if ( this->get_bytes( bv_this.data, 0, 0, this->type->size() ) &&
-    //             that. get_bytes( bv_that.data, 0, 0, that. type->size() ) )
-    //            return bv_this != bv_that;
-    //        return false;
-    //    }
-
-    TODO;
-    return false;
-}
-
-
 bool Value::is_non_null() const {
     return ressource.inst->is_non_null( ressource.nout, offset, length, type );
 }
