@@ -1,4 +1,5 @@
 #include "Inst/CanoCst.h"
+#include "Inst/BinOp.h"
 #include "KuSI64.h"
 #include "Value.h"
 #include "Vm.h"
@@ -45,15 +46,4 @@ KcSI64 KuSI64::cano() const {
     return val ? KcSI64( val->cano_val() ) : KcSI64( kno );
 }
 
-//KuSI64 KuSI64::operator!() const {
-//    if ( val )
-//        return val->is_non_null();
-//    return ! kno;
-//}
-
-//KuSI64::operator bool() const {
-//    if ( val )
-//        return val->is_null();
-//    return kno;
-//}
-
+KuSI64 operator+( const KuSI64 &a, const KuSI64 &b ) { return a.is_known() && b.is_known() ? KuSI64( a.kv() + b.kv() ) : KuSI64( make_Add( a.uv(), b.uv() ) ); }

@@ -1,8 +1,11 @@
-#include "RcString.h"
+#include "LString.h"
 
 RcString::RcString( const std::string &str ) : RcString( str.size() ) {
     memcpy( _begin, str.data(), str.size() );
     _begin[ str.size() ] = 0;
+}
+
+RcString::RcString( const LString &str ) : RcString( str.data(), str.data() + str.size() ) {
 }
 
 RcString::RcString( const char *b, const char *e ) : RcString( e - b ) {

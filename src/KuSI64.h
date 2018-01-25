@@ -22,6 +22,9 @@ public:
     };
 
     KuSI64( SI64 kno = 0 ) : val( 0 ), kno( kno ) {}
+    KuSI64( PI64 kno ) : val( 0 ), kno( kno ) {}
+    KuSI64( SI32 kno ) : val( 0 ), kno( kno ) {}
+    KuSI64( PI32 kno ) : val( 0 ), kno( kno ) {}
     KuSI64( const Value &value );
     KuSI64( const KuSI64 &ku );
 
@@ -42,4 +45,6 @@ protected:
     Value       *val; ///<
     SI64         kno; ///<
 };
+
+KuSI64 operator+( const KuSI64 &a, const KuSI64 &b );
 

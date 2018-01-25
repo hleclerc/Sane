@@ -7,7 +7,7 @@
 Variable::Variable( const RcPtr<RefAncestor> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Variable::Flags flags ) : ref_anc( ref_anc ), offset( offset ), length( length ), flags( flags ), type( type ) {
 }
 
-Variable::Variable( const Value &value, Variable::Flags flags ) : ref_anc( new Ref( value.ressource ) ), offset( value.offset ), length( value.length ), flags( flags ), type( value.type ) {
+Variable::Variable( const RcPtr<RefAncestor> &ref_anc, Variable::Flags flags ) : Variable( ref_anc, 0, ref_anc->ref()->creator.size(), ref_anc->ref()->creator.type(), flags ) {
 }
 
 Variable &Variable::operator=( const Variable &value ) {
@@ -51,19 +51,23 @@ Value Variable::get() const {
 //    return find_attribute( "operator ==" ).apply( true, that );
 //}
 
-//bool Variable::is_false() const {
-//    if ( type != vm->type_Bool )
-//        return to_Bool().is_false();
-//    Bool data;
-//    return get_bytes( &data, 0, 0, 1 ) && data == false;
-//}
+bool Variable::is_false() const {
+    TODO;
+    return 0;
+    //    if ( type != vm->type_Bool )
+    //        return to_Bool().is_false();
+    //    Bool data;
+    //    return get_bytes( &data, 0, 0, 1 ) && data == false;
+}
 
-//bool Variable::is_true() const {
-//    if ( type != vm->type_Bool )
-//        return to_Bool().is_false();
-//    Bool data;
-//    return get_bytes( &data, 0, 0, 1 ) && data == true;
-//}
+bool Variable::is_true() const {
+    TODO;
+    return 0;
+    //    if ( type != vm->type_Bool )
+    //        return to_Bool().is_false();
+    //    Bool data;
+    //    return get_bytes( &data, 0, 0, 1 ) && data == true;
+}
 
 void Variable::write_to_stream( std::ostream &os ) const {
     if ( ref_anc )
@@ -72,13 +76,15 @@ void Variable::write_to_stream( std::ostream &os ) const {
         os << "NULL";
 }
 
-//RcString Variable::valid_constraint_for( const Variable &tested_var, TCI &tci ) const {
-//    return type->checks_type_constraint( *this, tested_var, tci );
-//}
+RcString Variable::valid_constraint_for( const Variable &tested_var, TCI &tci ) const {
+    return type->checks_type_constraint( *this, tested_var, tci );
+}
 
-//Variable Variable::find_attribute( const RcString &name, bool ret_err, bool msg_if_err ) const {
+Variable Variable::find_attribute( const RcString &name, bool ret_err, bool msg_if_err ) const {
+    TODO;
+    return {};
 //    //
-//    if ( Variable res = ref->intercept_find_attribute( name, type, bool( flags & Flags::CONST ), offset ) )
+//    if ( Variable res = ref_anc->intercept_find_attribute( name, type, bool( flags & Flags::CONST ), offset ) )
 //        return res;
 
 //    // data from the type
@@ -113,11 +119,11 @@ void Variable::write_to_stream( std::ostream &os ) const {
 //    if ( msg_if_err )
 //        vm->add_error( "{} has no attribute {}", *type, name );
 //    return ret_err ? vm->ref_error : Variable{};
-//}
+}
 
-//void Variable::setup_vtables() {
-//    // TODO;
-//}
+void Variable::setup_vtables() {
+    // TODO;
+}
 
 Variable Variable::constify( bool deep ) {
     flags |= Flags::CONST;
@@ -128,54 +134,54 @@ Variable Variable::constify( bool deep ) {
     return *this;
 }
 
-//Variable Variable::chbeba( bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names ) {
-//    return type->chbeba( *this, want_ret, args, names );
-//}
+Variable Variable::chbeba( bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names ) {
+    return type->chbeba( *this, want_ret, args, names );
+}
 
-//Variable Variable::select( bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names ) {
-//    return type->select( *this, want_ret, args, names );
-//}
+Variable Variable::select( bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names ) {
+    return type->select( *this, want_ret, args, names );
+}
 
-//Variable Variable::apply( bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, ApplyFlags apply_flags, const Vec<size_t> &spreads ) {
-//    if ( spreads.size() ) {
-//        Vec<RcString> v_names( Rese(), names.size() );
-//        Vec<Variable> v_args( Rese(), args.size() );
-//        bool has_err = false;
-//        for( size_t i = 0, n = args.size() - names.size(); i < args.size(); ++i ) {
-//            if ( spreads.contains( i ) ) {
-//                if ( args[ i ].error() )
-//                    has_err = true;
-//                else
-//                    args[ i ].type->spread_in( args[ i ], v_args, v_names );
-//            } else {
-//                if ( i < n )
-//                    v_args.insert( v_args.size() - v_names.size(), args[ i ] );
-//                else {
-//                    v_names << names[ i - n ];
-//                    v_args << args[ i ];
-//                }
-//            }
-//        }
-//        return has_err ? vm->ref_error : apply( want_ret, v_args, v_names, apply_flags );
-//    }
+Variable Variable::apply( bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, ApplyFlags apply_flags, const Vec<size_t> &spreads ) {
+    if ( spreads.size() ) {
+        Vec<RcString> v_names( Rese(), names.size() );
+        Vec<Variable> v_args( Rese(), args.size() );
+        bool has_err = false;
+        for( size_t i = 0, n = args.size() - names.size(); i < args.size(); ++i ) {
+            if ( spreads.contains( i ) ) {
+                if ( args[ i ].error() )
+                    has_err = true;
+                else
+                    args[ i ].type->spread_in( args[ i ], v_args, v_names );
+            } else {
+                if ( i < n )
+                    v_args.insert( v_args.size() - v_names.size(), args[ i ] );
+                else {
+                    v_names << names[ i - n ];
+                    v_args << args[ i ];
+                }
+            }
+        }
+        return has_err ? vm->ref_error : apply( want_ret, v_args, v_names, apply_flags );
+    }
 
-//    return type->apply( *this, want_ret, args, names, {}, apply_flags );
-//}
+    return type->apply( *this, want_ret, args, names, {}, apply_flags );
+}
 
-//String Variable::as_String() const {
-//    TODO;
-//    return {};
-//}
+String Variable::as_String() const {
+    TODO;
+    return {};
+}
 
-//FP64 Variable::as_FP64() const {
-//    TODO;
-//    return {};
-//}
+FP64 Variable::as_FP64() const {
+    TODO;
+    return {};
+}
 
-//SI32 Variable::as_SI32() const {
-//    TODO;
-//    return {};
-//}
+SI32 Variable::as_SI32() const {
+    TODO;
+    return {};
+}
 
 //Value Variable::get() const {
 //    Value res = ref->get();
@@ -200,20 +206,24 @@ Variable Variable::constify( bool deep ) {
 //    return vm->scope->find_variable( "SI32" ).get_value( val );
 //}
 
-//void Variable::set_bv( const Value &src_val, int cst ) {
-//    if ( flags & Flags::CONST ) {
-//        vm->add_error( "Const variable, should not be modified" );
-//        return;
-//    }
-//    ASSERT( ref, "..." );
-//    ref->set( src_val, cst );
-//}
+void Variable::set_bv( const Value &src_val, int cst ) {
+    TODO;
+    //    if ( flags & Flags::CONST ) {
+    //        vm->add_error( "Const variable, should not be modified" );
+    //        return;
+    //    }
+    //    ASSERT( ref, "..." );
+    //    ref->set( src_val, cst );
+}
 
-//void Variable::memcpy( const Value &src_val, int cst ) {
-//    set_bv( make_MemcpyKV( ref->get(), src_val, offset ), cst );
-//}
+void Variable::memcpy( const Value &src_val, int cst ) {
+    TODO;
+    // set_bv( make_MemcpyKV( ref->get(), src_val, offset ), cst );
+}
 
-//Variable Variable::sub_part( Type *new_type, SI32 add_off ) const {
-//    return { ref, new_type, offset + add_off, flags };
-//}
+Variable Variable::sub_part( Type *new_type, SI32 add_off ) const {
+    TODO;
+    return {};
+    // return { ref, new_type, offset + add_off, flags };
+}
 

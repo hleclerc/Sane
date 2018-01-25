@@ -3,6 +3,7 @@
 #include <string.h>
 #include "xxhash.h"
 #include "RcPtr.h"
+class LString;
 
 /**
 */
@@ -13,6 +14,7 @@ public:
     RcString( RcString &rc, char *b, char *e ) : _content( rc._content ), _begin( b ), _end( e ) { ASSERT_IF_DEBUG( _end == 0 || _end <= _content->data + _content->rese ); }
     RcString( const char *b, const char *e );
     RcString( const std::string &str );
+    RcString( const LString &str );
     RcString( const char *str );
     RcString( size_t size );
     RcString() { _begin = 0; _end = 0; }

@@ -5,7 +5,7 @@
 Value::Value( const Ressource &ressource, const KuSI64 &offset, const KuSI64 &length, Type *type ) : ressource( ressource ), offset( offset ), length( length ), type( type ) {
 }
 
-Value::Value( Inst *inst, int nout ) : Value( Ressource{ inst, nout }, 0, inst->created_outputs[ nout ].size, inst->created_outputs[ nout ].type ) {
+Value::Value( Inst *inst, int nout ) : Value( Ressource{ inst, nout }, 0, inst->out_size( nout ), inst->out_type( nout ) ) {
 }
 
 Value::Value( const Ressource &ressource ) : Value( ressource.inst.ptr(), ressource.nout ) {

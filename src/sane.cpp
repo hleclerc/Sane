@@ -1,7 +1,7 @@
 #include <boost/filesystem.hpp>
 #include "Codegen/Codegen_C.h"
 #include <fstream>
-#include "gvm.h"
+#include "Vm.h"
 
 int main( int argc, char **argv ) {
     bool want_graph_only = 0;
@@ -11,26 +11,26 @@ int main( int argc, char **argv ) {
     #endif
 
     // new Vm
-    gvm = new Vm;
-    gvm->includes << ( INSTALL_DIR / "lib" ).string();
+    vm = new Vm;
+    vm->includes << ( INSTALL_DIR / "lib" ).string();
 
     // base variables
     if ( want_graph_only == false ) {
         std::string line;
-        gvm->init_mode = true;
+        vm->init_mode = true;
         std::ifstream imports( ( INSTALL_DIR / "lib" / "globals" / "imports" ).string() );
         while ( std::getline( imports, line ) )
             if ( line.empty() == false && line[ 0 ] != '#' )
-                gvm->import( ( INSTALL_DIR / "lib" / "globals" / line ).string() );
-        gvm->init_mode = false;
+                vm->import( ( INSTALL_DIR / "lib" / "globals" / line ).string() );
+        vm->init_mode = false;
     }
 
     // user script(s)
-    gvm->import( argv[ 1 ], {}, want_graph_only );
+    vm->import( argv[ 1 ], {}, want_graph_only );
 
     // code generation
     Codegen_C cg;
-    gvm->codegen( cg );
+    vm->codegen( cg );
 
     // compilation
     std::ofstream fout( "res.cpp" );

@@ -4,7 +4,8 @@
 
 /**
 */
-struct LString {
+class LString {
+public:
     enum {
         short_data_size = 3 * sizeof( void * ) - 1
     };

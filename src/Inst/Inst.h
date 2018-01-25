@@ -24,7 +24,7 @@ class Ref;
 class Inst : public RcObj {
 public:
     struct Parent { bool operator==( const Parent &p ) const { return inst == p.inst && ninp == p.ninp; } Inst *inst; int ninp; };
-    struct CreatedOutput { Ref *ref; Type *type; KuSI64 size; };
+    struct CreatedOutput { Ref *ref; Type *type; IiKuSI64 size; };
 
     using FuncOnRefPtr = std::function<void(Ref *)>;
     using AssFunc = std::function<void(const PI8 *)>;
@@ -43,9 +43,10 @@ public:
     void                    init_attr              ( IiKuSI64              &attr, const KuSI64 &val );
     void                    init_attr              ( IiValue               &attr, const Value &val );
 
-    Ressource              &to_Ressource           ( IiRessource           &attr );
-    KuSI64                  to_KuSI64              ( IiKuSI64              &attr );
-    Value                   to_Value               ( IiValue               &attr );
+    const Ressource        &to_Ressource           ( const IiRessource &attr ) const;
+    KuSI64                  to_KuSI64              ( const IiKuSI64    &attr ) const;
+    Value                   to_Value               ( const IiValue     &attr ) const;
+
 
     Ref                    *new_created_output     ( Type *type, const KuSI64 &size );
 
@@ -58,8 +59,9 @@ public:
 
     bool                    all_children_with_op_id( size_t oi ) const;
     int                     nb_parents_on_nout     ( int nout ) const;
-    virtual RcPtr<CanoInst> make_cano_inst         ( int nout ) const = 0; ///< called by cano_repr if not already filled
+    virtual RcPtr<CanoInst> make_cano_inst         ( int nout ) const; ///< called by cano_repr if not already filled
     virtual void            externalize            ( Inst *inst, size_t ninp );
+    virtual int             nb_outputs             () const;
     Type                   *out_type               ( int nout ) const;
     KuSI64                  out_size               ( int nout ) const;
     virtual int             inp_corr               ( int nout ) const;

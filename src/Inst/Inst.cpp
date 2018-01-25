@@ -86,23 +86,24 @@ void Inst::init_attr( IiValue &attr, const Value &val ) {
     attr.type = val.type;
 }
 
-Ressource &Inst::to_Ressource( IiRessource &attr ) {
+const Ressource &Inst::to_Ressource( const IiRessource &attr ) const {
     return children[ attr.index ];
 }
 
-KuSI64 Inst::to_KuSI64( IiKuSI64 &attr ) {
+KuSI64 Inst::to_KuSI64( const IiKuSI64 &attr ) const {
     if ( attr.uv )
         return to_Value( *attr.uv );
     return attr.kv;
 }
 
-Value Inst::to_Value( IiValue &attr ) {
+Value Inst::to_Value( const IiValue &attr ) const  {
     return { to_Ressource( attr.ressource ), to_KuSI64( attr.offset ), to_KuSI64( attr.length ), attr.type };
 }
 
 Ref *Inst::new_created_output( Type *type, const KuSI64 &size ) {
     Ref *res = new Ref( Ressource( this, created_outputs.size() ) );
-    created_outputs << CreatedOutput{ res, type, size };
+    created_outputs << CreatedOutput{ res, type, {} };
+    init_attr( created_outputs.back().size, size );
     return res;
 }
 
@@ -172,9 +173,19 @@ int Inst::nb_parents_on_nout( int nout ) const {
     return res;
 }
 
+RcPtr<CanoInst> Inst::make_cano_inst( int nout ) const {
+    write_dot( std::cerr << __FUNCTION__ << " " );
+    TODO;
+    return 0;
+}
+
 void Inst::externalize( Inst *inst, size_t ninp ) {
     write_dot( std::cerr << __FUNCTION__ << " " );
     TODO;
+}
+
+int Inst::nb_outputs() const {
+    return 0;
 }
 
 RcPtr<CanoInst> Inst::cano_inst(const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length ) const {
@@ -228,12 +239,12 @@ Type *Inst::out_type( int nout ) const {
 
 KuSI64 Inst::out_size( int nout ) const {
     if ( nout < (int)created_outputs.size() )
-        return created_outputs[ nout ].size;
+        return to_KuSI64( created_outputs[ nout ].size );
     return children[ iomap[ nout - created_outputs.size() ] ].size();
 }
 
 int Inst::inp_corr( int nout ) const {
-    return -1;
+    return nout >= (int)created_outputs.size() ? iomap[ nout - created_outputs.size() ] : -1;
 }
 
 Inst *Inst::clone() const {

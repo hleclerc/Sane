@@ -4,6 +4,9 @@
 #include "KcSI64.h"
 
 
+inline CanoInst *first_CanoInst() {
+    return 0;
+}
 template<class... Args>
 CanoInst *first_CanoInst( const CanoVal &val, const Args &...args ) {
     return val.inst.ptr();
@@ -21,9 +24,6 @@ CanoInst *first_CanoInst( const KcSI64 &kc, const Args &...args ) {
 template<class T,class... Args>
 CanoInst *first_CanoInst( const T &, const Args &...args ) {
     return first_CanoInst( args... );
-}
-inline CanoInst *first_CanoInst() {
-    return 0;
 }
 
 

@@ -28,7 +28,7 @@ public:
             this->kno.set( bool( val ) );
     }
 
-    Cst( AttrClone, const Cst *cst ) : type( cst->type ), val( cst->val ), kno( cst->kno ) {
+    Cst( AttrClone, const Cst *orig ) : type( orig->type ), val( orig->val ), kno( orig->kno ) {
     }
 
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
@@ -38,14 +38,14 @@ public:
             ss << "{}";
     }
 
-    virtual void write_to_stream  ( std::ostream &os, SI32 nout = -1, Type *type = 0, int offset = -1 ) const {
+    virtual void write_to_stream( std::ostream &os, SI32 nout = -1, Type *type = 0, int offset = -1 ) const {
         if ( type )
             type->write_cst( os, val.data + offset / 8, offset % 8 );
         else
             this->type->write_cst( os, val.data, 0 );
     }
 
-    virtual AssFunc get_assign_func  ( int nout, int off, int len ) override {
+    virtual AssFunc get_assign_func( int nout, int off, int len ) override {
         return [this,off,len]( const PI8 *data ) {
             memcpy_bit( val.data, off, data, 0, len );
             memset_bit( kno.data, off, true, len );

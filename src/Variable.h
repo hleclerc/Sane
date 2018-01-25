@@ -13,7 +13,7 @@ public:
     enum class Flags: PI32 { NONE = 0, CONST = 1 };
 
     Variable( const RcPtr<RefAncestor> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Flags flags = Flags::NONE );
-    Variable( const Value &value, Flags flags = Flags::NONE ); // make a RefLeaf from a value
+    Variable( const RcPtr<RefAncestor> &ref_anc, Flags flags = Flags::NONE );
     Variable() : flags( Flags::NONE ), type( 0 ) {} // void Variable
 
     Variable          &operator=           ( const Variable &value );
