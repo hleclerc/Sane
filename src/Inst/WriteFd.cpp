@@ -43,9 +43,9 @@ public:
 
 void make_WriteFd( const Variable &fd, const Vec<Variable> &args ) {
     WriteFd *res = new WriteFd;
-    res->init_attr( res->fd, fd.get() );
+    res->init_attr( res->fd, fd.to_Value() );
     for( Variable &arg : args )
-        res->init_attr( *res->args.push_back(), arg.get() );
+        res->init_attr( *res->args.push_back(), arg.to_Value() );
 
     // for each potentially modified/read ressource
     vm->ressource_map.on_file_content( fd.cano_repr(), res->add_wr_cb() );

@@ -33,7 +33,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
     // else, make a new one
     Type *res = vm->type_ptr_for( def->name, args );
     Scope new_scope( Scope::ScopeType::TYPE_CTOR );
-    PI32 old_size = res->content.data.size;
+    PI32 old_size = res->content.data.kv_size;
     res->content.data.orig_class = def;
     def->instances << res;
 
@@ -79,7 +79,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
             Type *inh_type = new_scope.find_variable( name ).type;
             if ( inh_type->has_vtable_at_the_beginning() )
                 return false;
-            if ( inh_type->content.data.size )
+            if ( inh_type->content.data.kv_size )
                 break;
         }
         for( Scope::NV *m : variables ) {
@@ -148,7 +148,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
         }
 
         // else, look if we have fixed size information from the types
-        int attr_kv_size = m.var.type->content.data.size;
+        int attr_kv_size = m.var.type->content.data.kv_size;
         int attr_kv_alig = m.var.type->content.data.alig;
         if ( kv_size >= 0 && kv_alig >= 0 && attr_kv_size >= 0 && attr_kv_alig >= 0 ) {
             kv_alig = lcm ( kv_alig, attr_kv_alig );
@@ -171,7 +171,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
 
     // if size has not been specified before, we store the result of the computation
     if ( old_size == 0 ) {
-        res->content.data.size = kv_size;
+        res->content.data.kv_size = kv_size;
         res->content.data.alig = kv_alig;
     }
 
@@ -342,7 +342,7 @@ Variable TypeClass::make_sl_trial( bool want_ret, const Variable &func, const Va
             tr->condition.kv = 1;
         else {
             tr->condition.kv = 0;
-            tr->condition.val = cond_ref.get();
+            tr->condition.val = cond_ref.to_Value();
         }
     } else
         tr->condition.kv = 1;

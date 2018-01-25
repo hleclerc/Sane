@@ -3,7 +3,7 @@
 #include "Vm.h"
 
 TypeUnion::TypeUnion( SI32 size, SI32 alig ) : Type( "union" ) {
-    content.data.size = size;
+    content.data.kv_size = size;
     content.data.alig = alig;
 }
 

@@ -35,6 +35,10 @@ public:
         return type;
     }
 
+    virtual KuSI64 created_out_size( int nout ) const override {
+        return val.size;
+    }
+
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
         if ( ! kno.all_false() )
             type->write_cst( ss.stream, val.data, 0, false );
@@ -71,7 +75,7 @@ public:
 
 Variable make_Cst( Type *type, int size, void *val, void *kno ) {
     Cst *res = new Cst( type, size, val, kno );
-    return { res->new_created_output(), 0, size, type };
+    return { res->new_created_output(), 0, type };
 }
 
 

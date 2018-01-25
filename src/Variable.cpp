@@ -4,23 +4,22 @@
 #include "Ref.h"
 #include "Vm.h"
 
-Variable::Variable( const RcPtr<RefAncestor> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Variable::Flags flags ) : ref_anc( ref_anc ), offset( offset ), length( length ), flags( flags ), type( type ) {
+Variable::Variable( const RcPtr<Ref> &ref, const KuSI64 &offset, Type *type, Variable::Flags flags ) : ref( ref ), offset( offset ), flags( flags ), type( type ) {
 }
 
-Variable::Variable( const RcPtr<RefAncestor> &ref_anc, Variable::Flags flags ) : Variable( ref_anc, 0, ref_anc->ref()->creator.size(), ref_anc->ref()->creator.type(), flags ) {
+Variable::Variable( const RcPtr<Ref> &ref, Variable::Flags flags ) : Variable( ref, 0, ref->creator.type(), flags ) {
 }
 
 Variable &Variable::operator=( const Variable &value ) {
-    ref_anc = value.ref_anc;
-    type    = value.type   ;
-    offset  = value.offset ;
-    length  = value.length ;
-    flags   = value.flags  ;
+    ref     = value.ref   ;
+    type    = value.type  ;
+    offset  = value.offset;
+    flags   = value.flags ;
     return *this;
 }
 
 CanoVal Variable::cano_repr() const{
-    return ref()->current.cano_val( offset.cano(), length.cano(), type  );
+    return ref->current.cano_val( offset.cano(), size().cano(), type );
 }
 
 bool Variable::error() const {
@@ -28,7 +27,7 @@ bool Variable::error() const {
 }
 
 bool Variable::is_shared() const {
-    return ref_anc->is_shared();
+    return ref->is_shared();
 }
 
 Variable Variable::to_Bool() const {
@@ -43,8 +42,8 @@ Variable Variable::to_Bool() const {
     return *this;
 }
 
-Value Variable::get() const {
-    return { ref_anc->ref()->current, offset, length, type };
+Value Variable::to_Value() const {
+    return { ref->current, offset, type };
 }
 
 //Variable Variable::equal( const Variable &that ) const {
@@ -70,8 +69,8 @@ bool Variable::is_true() const {
 }
 
 void Variable::write_to_stream( std::ostream &os ) const {
-    if ( ref_anc )
-        os << *ref_anc;
+    if ( ref )
+        os << *ref;
     else
         os << "NULL";
 }
@@ -84,7 +83,7 @@ Variable Variable::find_attribute( const RcString &name, bool ret_err, bool msg_
     TODO;
     return {};
 //    //
-//    if ( Variable res = ref_anc->intercept_find_attribute( name, type, bool( flags & Flags::CONST ), offset ) )
+//    if ( Variable res = ref->intercept_find_attribute( name, type, bool( flags & Flags::CONST ), offset ) )
 //        return res;
 
 //    // data from the type
@@ -129,7 +128,7 @@ Variable Variable::constify( bool deep ) {
     flags |= Flags::CONST;
 
     if ( deep )
-        ref_anc->constify();
+        ref->constify();
 
     return *this;
 }
@@ -166,6 +165,10 @@ Variable Variable::apply( bool want_ret, const Vec<Variable> &args, const Vec<Rc
     }
 
     return type->apply( *this, want_ret, args, names, {}, apply_flags );
+}
+
+KuSI64 Variable::size() const {
+    return type->size( *this, offset );
 }
 
 String Variable::as_String() const {

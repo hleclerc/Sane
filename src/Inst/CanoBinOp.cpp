@@ -25,7 +25,7 @@ public:
     }
 
     virtual KcSI64 length() const override {
-        return type_promote_gen( a.type, b.type )->content.data.size;
+        return type_promote_gen( a.type, b.type )->content.data.kv_size;
     }
 
     Op      op;

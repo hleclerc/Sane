@@ -20,12 +20,8 @@ void Ref::constify() {
     flags |= Flags::CONST;
 }
 
-Ref *Ref::ref() const {
-    return const_cast<Ref *>( this );
-}
-
-void Ref::set( const Ressource &src_ressource, int cst ) {
-    if ( current == src_ressource )
+void Ref::set( const Ressource &new_current, int cst ) {
+    if ( current == new_current )
         return;
 
     if ( flags & Flags::CONST )
@@ -40,7 +36,7 @@ void Ref::set( const Ressource &src_ressource, int cst ) {
     }
 
     // change value
-    current = src_ressource;
+    current = new_current;
 
     //    auto mod = [&]() {
     //        if ( creation_inter_date < inter_date && inter_map ) {

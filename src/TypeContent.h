@@ -23,12 +23,12 @@ struct TypeContent {
     using MSA = std::map<RcString,Variable *>;
     using SFS = std::set<FunctionSignature>;
 
-    TypeContent() { last_attribute = 0; first_attribute = 0; orig_class = 0; size = 0; alig = 1; type_promote_score = -1; has_new_vtable = false; }
+    TypeContent() { last_attribute = 0; first_attribute = 0; orig_class = 0; kv_size = 0; alig = 1; type_promote_score = -1; has_new_vtable = false; }
 
     void            write_to_stream( std::ostream &os ) const { os << name; }
 
     LString         name;
-    SI32            size;
+    SI32            kv_size;
     SI32            alig;
     MSA             methods;
     MA              attributes;

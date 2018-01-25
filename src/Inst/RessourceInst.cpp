@@ -26,5 +26,5 @@ public:
 
 Variable make_RessourceInst( const char *txt ) {
     RessourceInst *res = new RessourceInst( txt );
-    return { res->new_created_output(), 0, 0, vm->type_Ressource };
+    return { res->new_created_output(), 0, vm->type_Ressource };
 }

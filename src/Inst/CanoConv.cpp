@@ -24,7 +24,7 @@ public:
     }
 
     virtual KcSI64 length() const {
-        return type->content.data.size;
+        return type->content.data.kv_size;
     }
 
     CanoVal val;

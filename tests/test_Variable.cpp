@@ -14,7 +14,7 @@ TEST( Variable, init ) {
 
     // memcpy
     Variable b = make_Cst( 18 );
-    make_Memcpy( a.ref(), b.ref(), 0, 0, 32 );
+    make_Memcpy( a.ref.ptr(), b.ref.ptr(), 0, 0, 32 );
     ASSERT_EQ  ( to_string( a             ), "Memcpy[0](17,18)" );
     ASSERT_EQ  ( to_string( a.cano_repr() ), "18" );
 }

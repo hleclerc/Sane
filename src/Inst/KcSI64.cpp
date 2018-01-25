@@ -1,7 +1,9 @@
+#include "../Value.h"
+#include "../Vm.h"
+
 #include "CanoCst.h"
 #include "CanoVal.h"
 #include "KcSI64.h"
-#include "../Vm.h"
 
 KcSI64::KcSI64( const KcSI64 &ku ) {
     if ( ku.val )
@@ -20,7 +22,7 @@ KcSI64::KcSI64( const CanoVal &value ) {
         val = new CanoVal( value );
 }
 
-KcSI64::KcSI64(const Value &value ) : KcSI64( value.cano_val() ) {
+KcSI64::KcSI64( const Value &value ) : KcSI64( value.cano_val() ) {
 }
 
 KcSI64::~KcSI64() {

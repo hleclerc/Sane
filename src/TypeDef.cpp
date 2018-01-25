@@ -201,7 +201,7 @@ Variable TypeDef::make_sl_trial( bool want_ret, const Variable &func, const Vari
             tr->condition.kv = 1;
         else {
             tr->condition.kv = 0;
-            tr->condition.val = cond_ref.get();
+            tr->condition.val = cond_ref.to_Value();
         }
     } else
         tr->condition.kv = 1;
@@ -324,12 +324,12 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
     // post
     if ( def->name == "destroy" && with_self && with_self.type->destroy_attrs() ) {
         // we don't want with_self to be destroyed again
-        with_self.ref()->cpt_use = 654;
+        with_self.ref->cpt_use = 654;
 
         // destruction of attributes
         for( TypeContent::Attribute *attr = with_self.type->content.data.last_attribute; attr; attr = attr->prev ) {
             ASSERT( attr->off % 8 == 0, "..." );
-            Variable v( with_self.ref_anc, with_self.offset + attr->off, attr->type->size(), attr->type, with_self.flags );
+            Variable v( with_self.ref, with_self.offset + attr->off, attr->type, with_self.flags );
             v.type->destroy( v, false );
         }
     }

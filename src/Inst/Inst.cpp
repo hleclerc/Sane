@@ -81,7 +81,6 @@ void Inst::init_attr( IiKuSI64 &attr, const KuSI64 &val ) {
 void Inst::init_attr( IiValue &attr, const Value &val ) {
     init_attr( attr.ressource, val.ressource );
     init_attr( attr.offset   , val.offset    );
-    init_attr( attr.length   , val.length    );
 
     attr.type = val.type;
 }
@@ -97,7 +96,7 @@ KuSI64 Inst::to_KuSI64( const IiKuSI64 &attr ) const {
 }
 
 Value Inst::to_Value( const IiValue &attr ) const  {
-    return { to_Ressource( attr.ressource ), to_KuSI64( attr.offset ), to_KuSI64( attr.length ), attr.type };
+    return { to_Ressource( attr.ressource ), to_KuSI64( attr.offset ), attr.type };
 }
 
 Ref *Inst::new_created_output() {
@@ -172,7 +171,7 @@ Type *Inst::created_out_type( int nout ) const {
 }
 
 KuSI64 Inst::created_out_size( int nout ) const {
-    return out_type( nout )->size();
+    return out_type( nout )->kv_size();
 }
 
 int Inst::nb_parents_on_nout( int nout ) const {
@@ -220,7 +219,7 @@ RcPtr<CanoInst> Inst::cano_inst( int nout ) const {
     return cano_inst_buf;
 }
 
-CanoVal Inst::cano_val(const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, Type *type ) const {
+CanoVal Inst::cano_val( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, Type *type ) const {
     return { cano_inst( ressource, offset, length ), type };
 }
 

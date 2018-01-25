@@ -19,7 +19,7 @@ bool Type::has_vtable_at_the_beginning() const {
             Type *inh_type = content.data.attributes.find( name )->second.type;
             if ( inh_type->has_vtable_at_the_beginning() )
                 return true;
-            if ( inh_type->content.data.size )
+            if ( inh_type->content.data.kv_size )
                 break;
         }
     }
@@ -200,6 +200,10 @@ int Type::is_signed() const {
     return -1;
 }
 
+SI32 Type::kv_size() const {
+    return content.data.kv_size;
+}
+
 int Type::mantissa_len() const {
     return -1;
 }
@@ -212,8 +216,8 @@ bool Type::error() const {
     return false;
 }
 
-KuSI64 Type::size() const {
-    return 64;
+KuSI64 Type::size( const Variable &var, const KuSI64 &offset ) const {
+    return kv_size();
 }
 
 bool Type::is_a_TypeBT() const {

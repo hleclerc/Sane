@@ -51,7 +51,7 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     #undef BT
 
     // arythmetic types
-    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T ); type_##T->content.data.size = 8 * sizeof( T );
+    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T ); type_##T->content.data.kv_size = 8 * sizeof( T );
     BT( Bool )
     BT( SI64 )
     BT( PI64 )
@@ -63,7 +63,7 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     BT( PI8  )
     #undef BT
 
-    type_Bool->content.data.size = 1;
+    type_Bool->content.data.kv_size = 1;
 
     type_CallableWithSelf = new TypeCallableWithSelf;
     type_SlTrialClass     = new TypeSlTrialClass;
@@ -240,11 +240,13 @@ Variable Vm::make_inst( Type *type, const Vec<Variable> &ctor_args, const Vec<Rc
     }
 
     // make an instance
-    Variable res = make_UninitializedData( type, type->size() );
+    if ( type->kv_size() < 0 )
+        TODO;
+    Variable res = make_UninitializedData( type, type->kv_size() );
 
     // call constructor if necessary
     if ( apply_flags & ApplyFlags::DONT_CALL_CTOR )
-        res.ref()->flags |= Ref::Flags::NOT_CONSTRUCTED;
+        res.ref->flags |= Ref::Flags::NOT_CONSTRUCTED;
     else
         type->construct( res, ctor_args, ctor_names );
 

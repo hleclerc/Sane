@@ -9,6 +9,12 @@ void *Ressource::rcast() {
     return inst->rcast( nout );
 }
 
+Ref *Ressource::ref() const {
+    return nout < (int)inst->created_outputs.size() ?
+                inst->created_outputs[ nout ].ref :
+                inst->children[ inst->inp_corr( nout ) ].ref();
+}
+
 void Ressource::write_to_stream( std::ostream &os ) const {
     if ( inst )
         inst->write_to_stream( os, nout );

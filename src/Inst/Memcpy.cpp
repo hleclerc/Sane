@@ -111,7 +111,7 @@ public:
     IiKuSI64              len;
 };
 
-void make_Memcpy( Ref *dst, Ref *src, const KuSI64 &off_dst, const KuSI64 &off_src, const KuSI64 &len ) {
+void make_Memcpy( Ref *dst, const Ref *src, const KuSI64 &off_dst, const KuSI64 &off_src, const KuSI64 &len ) {
     Memcpy *res = new Memcpy;
     res->init_attr( res->dst, dst->current, off_dst );
     res->init_attr( res->src, src->current, off_src );

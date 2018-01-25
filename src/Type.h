@@ -2,6 +2,7 @@
 
 #include "Inst/HostVal.h"
 #include "TypeContent.h"
+#include "Value.h"
 //#include "ApplyFlags.h"
 //#include "Variable.h"
 //class Class;
@@ -49,9 +50,10 @@ public:
     virtual int             exponent_len               () const;
     virtual bool            is_a_TypeBT                () const;
     virtual int             is_signed                  () const;
+    virtual SI32            kv_size                    () const;
     virtual String          c_name                     () const;
     virtual bool            error                      () const;
-    KuSI64                  size                       () const;
+    virtual KuSI64          size                       ( const Variable &var, const KuSI64 &offset ) const;
 
 
     HostVal<TypeContent>    content;

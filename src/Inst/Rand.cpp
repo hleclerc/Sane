@@ -8,10 +8,11 @@
 */
 class Rand : public Clonable<Rand,Inst> {
 public:
-    Rand( Type *type ) : type( type ) {
+    Rand( Type *type, const KuSI64 &size ) : type( type ) {
+        init_attr( this->size, size );
     }
 
-    Rand( AttrClone, const Rand *inst ) : type( inst->type ) {
+    Rand( AttrClone, const Rand *orig ) : type( orig->type ), size( orig->size ) {
     }
 
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
@@ -23,13 +24,14 @@ public:
     }
 
     virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {
-        return make_CanoSym( "rand", type->content.data.size );
+        return make_CanoSym( "rand", to_KuSI64( size ).cano() );
     }
 
-    Type *type;
+    Type    *type;
+    IiKuSI64 size;
 };
 
 Variable make_Rand( Type *type, const KuSI64 &size ) {
-    Rand *res = new Rand( type );
-    return { res->new_created_output(), 0, size, type };
+    Rand *res = new Rand( type, size );
+    return { res->new_created_output(), 0, type };
 }

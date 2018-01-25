@@ -25,7 +25,7 @@ void RessourceMap::on_file_content( const CanoVal &fd, const std::function<void(
 
     if ( ! file_content ) {
         Variable v = make_RessourceInst( "file content" );
-        file_content = v.ref();
+        file_content = v.ref;
     }
 
     cb( file_content.ptr() );
@@ -39,7 +39,7 @@ void RessourceMap::on_file_cursor( const CanoVal &fd, const std::function<void(R
     auto iter = file_cursors.find( fd.inst );
     if ( iter == file_cursors.end() ) {
         Variable v = make_RessourceInst( "file cursor" );
-        file_cursors.insert( iter, std::make_pair( fd.inst, v.ref() ) );
+        file_cursors.insert( iter, std::make_pair( fd.inst, v.ref ) );
     }
 
     // call cb on potentially equal fds

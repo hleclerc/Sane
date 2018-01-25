@@ -97,7 +97,7 @@ REG_PRIMITIVE_TYPE( ct_info ) {
     REG_PRIMITIVE_TYPE( NAME ) { \
         if ( args.size() != 1 ) \
             return vm->add_error( "__primitive_" #NAME " expects exactly 1 argument" ); \
-        return make_##NAME( args[ 0 ].get() ); \
+        return make_##NAME( args[ 0 ].to_Value() ); \
     }
 REG_PRIMITIVE_TYPE_UNA_OP( Neg         )
 REG_PRIMITIVE_TYPE_UNA_OP( Not_logical )
@@ -107,7 +107,7 @@ REG_PRIMITIVE_TYPE_UNA_OP( Not_bitwise )
     REG_PRIMITIVE_TYPE( NAME ) { \
         if ( args.size() != 2 ) \
             return vm->add_error( "__primitive_" #NAME " expects exactly 2 argument" ); \
-        return make_##NAME( args[ 0 ].get(), args[ 1 ].get() ); \
+        return make_##NAME( args[ 0 ].to_Value(), args[ 1 ].to_Value() ); \
     }
 REG_PRIMITIVE_TYPE_BIN_OP( Add         )
 REG_PRIMITIVE_TYPE_BIN_OP( Sub         )
@@ -167,18 +167,18 @@ REG_PRIMITIVE_TYPE( reassign ) {
     // primitive numbers
     if ( va.type->is_a_TypeBT() ) {
         if ( va.type == vb.type )
-            return va.memcpy( vb.get() ), va;
+            return va.memcpy( vb.to_Value() ), va;
         if ( vb.type->is_a_TypeBT() )
-            return va.memcpy( make_Conv( vb.get(), va.type ) ), va;
+            return va.memcpy( make_Conv( vb.to_Value(), va.type ) ), va;
         TODO;
     }
 
     // AT
     if ( va.type == vm->type_AT || va.type == vm->type_NullableAT ) {
         if ( vb.type == vm->type_AT || vb.type == vm->type_NullableAT )
-            return va.memcpy( vb.get() ), va;
+            return va.memcpy( vb.to_Value() ), va;
         if ( vb.type->is_a_TypeBT() )
-            return va.memcpy( make_Conv( vb.get(), vm->type_PT ) ), va;
+            return va.memcpy( make_Conv( vb.to_Value(), vm->type_PT ) ), va;
         TODO;
         return args[ 0 ];
     }
@@ -440,7 +440,7 @@ REG_PRIMITIVE_TYPE( write_fd ) {
 REG_PRIMITIVE_TYPE( read_fd ) {
     if ( args.size() != 3 )
         return vm->add_error( "__primitive_read_fd expects 3 arguments" );
-    Value inst = make_ReadFd( &vm->ressource_map, args[ 0 ].get(), args[ 1 ].get(), args[ 2 ].get() );
+    Value inst = make_ReadFd( &vm->ressource_map, args[ 0 ].to_Value(), args[ 1 ].to_Value(), args[ 2 ].to_Value() );
     const_cast<Variable &>( args[ 1 ] ).set_bv( inst );
     return vm->ref_void;
 }
@@ -448,7 +448,7 @@ REG_PRIMITIVE_TYPE( read_fd ) {
 REG_PRIMITIVE_TYPE( read_fd_at ) {
     if ( args.size() != 4 )
         return vm->add_error( "__primitive_read_fd_at expects 3 arguments" );
-    Value inst = make_ReadFdAt( &vm->ressource_map, args[ 0 ].get(), args[ 1 ].get(), args[ 2 ].get(), args[ 3 ].get() );
+    Value inst = make_ReadFdAt( &vm->ressource_map, args[ 0 ].to_Value(), args[ 1 ].to_Value(), args[ 2 ].to_Value(), args[ 3 ].to_Value() );
     const_cast<Variable &>( args[ 1 ] ).set_bv( inst );
     return vm->ref_void;
 }
@@ -497,7 +497,7 @@ REG_PRIMITIVE_TYPE( _union ) {
     SI32 max_size = 0, max_alig = 1;
     for( size_t i = 0; i < args.size(); ++i ) {
         types << const_cast<Variable &>( args[ i ] ).apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
-        max_size = std::max( max_size, types.back()->content.data.size );
+        max_size = std::max( max_size, types.back()->content.data.kv_size );
         max_alig = lcm( max_alig, types.back()->content.data.alig );
     }
     Type *res = vm->types.push_back_val( new TypeUnion( max_size, max_alig ) );
