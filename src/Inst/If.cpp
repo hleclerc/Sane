@@ -12,7 +12,7 @@
 //    return true;
 //}
 
-//int IfInp::nb_outputs() const {
+//int IfInp::created_outputs.size() const {
 //    return if_inst->children.size();
 //}
 
@@ -43,7 +43,7 @@ void IfOut::write_dot( std::ostream &os ) const {
     os << "IfOut";
 }
 
-//int IfOut::nb_outputs() const {
+//int IfOut::created_outputs.size() const {
 //    return 0;
 //}
 
@@ -192,7 +192,7 @@ bool If::can_be_inlined() const {
 
 void If::write_code( StreamSep &ss, Codegen &cg ) {
     //    // some registers may have to be pre-declared
-    //    for( int nout = 0; nout < nb_outputs(); ++nout ) {
+    //    for( int nout = 0; nout < created_outputs.size(); ++nout ) {
     //        int ninp = inp_corr( nout );
     //        if ( ninp < 0 ) {
     //            // get a new reg for the ok part
@@ -252,7 +252,7 @@ void If::write_code( StreamSep &ss, Codegen &cg ) {
     }
 
     // store regs
-    for( int nout = 0; nout < nb_outputs(); ++nout )
+    for( int nout = 0; nout < (int)created_outputs.size(); ++nout )
         cd.out_regs.secure_set( nout, out_ok->children[ nout ].inst->cd.out_regs.secure_get( out_ok->children[ nout ].nout, 0 ) );
 }
 
@@ -295,6 +295,6 @@ RcPtr<Inst> new_If( const Vec<Value> &inp, IfInp *inp_ok, IfOut *out_ok, IfInp *
     return new If( inp, inp_ok, out_ok, inp_ko, out_ko );
 }
 
-//int If::nb_outputs() const {
+//int If::created_outputs.size() const {
 //    return out_ok->children.size();
 //}

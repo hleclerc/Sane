@@ -9,9 +9,10 @@
 template<class Op>
 class UnaOp : public Clonable<UnaOp<Op>> {
 public:
-    UnaOp( const Value &a ){
-        this->add_child( a );
+    UnaOp( const Value &a ) {
+        this->init_attr( this->a, a );
     }
+
     UnaOp( AttrClone, const UnaOp *orig ) {
     }
 
@@ -19,17 +20,15 @@ public:
         os << Op::name();
     }
 
-    virtual int nb_outputs() const override {
-        return 1;
-    }
-
-    virtual Type *out_type( int nout ) const override {
-        return Op::type( this->children[ 0 ].type );
+    virtual Type *created_out_type( int nout ) const override {
+        return Op::type( a.type );
     }
 
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
-        ss( Op::prio ) << Op::str() << " " << cg.repr( this->children[ 0 ], Op::prio );
+        ss( Op::prio ) << Op::str() << " " << cg.repr( this->to_Value( a ), Op::prio );
     }
+
+    IiValue a;
 };
 
 #define DECL_UNA_OP( NAME, PRIO, STR, TYPE ) \

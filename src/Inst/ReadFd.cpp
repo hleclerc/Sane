@@ -49,10 +49,6 @@ int ReadFd::inp_corr( int nout ) const {
 //    return false;
 //}
 
-int ReadFd::nb_outputs() const {
-    return 1 + ( children.size() - beg_cursors );
-}
-
 Value make_ReadFd( RessourceMap *ressource_map, const Value &fd, const Value &val, const Value &len ) {
     TODO;
     return {}; // { new ReadFd( ressource_map, fd, val, len ), 0, val.type };

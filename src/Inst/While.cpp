@@ -14,10 +14,6 @@ WhileInp::WhileInp( AttrClone, const WhileInp *a ) {
 //    return while_inst->children[ nout ].get_cpt_ref( rc );
 //}
 
-int WhileInp::nb_outputs() const {
-    return while_inst->children.size();
-}
-
 void WhileInp::write_dot( std::ostream &os ) const {
     os << "WhileInp";
 }
@@ -91,10 +87,6 @@ void WhileOut::externalize( Inst *inst, size_t ninp ) {
     //    //    ch.inst = inc_ref( inp_inst );
 }
 
-int WhileOut::nb_outputs() const {
-    return 0;
-}
-
 void WhileOut::write_code( StreamSep &ss, Codegen &cg ) {
 }
 
@@ -124,10 +116,6 @@ void While::attr_clone( const While *a ) {
     inp_inst->while_inst = this;
     out_inst->while_inst = this;
     out_inst->inp_inst = inp_inst.ptr();
-}
-
-int While::nb_outputs() const {
-    return out_inst->children.size();
 }
 
 void While::write_dot( std::ostream &os ) const {

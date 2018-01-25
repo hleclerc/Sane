@@ -24,7 +24,7 @@ class Ref;
 class Inst : public RcObj {
 public:
     struct Parent { bool operator==( const Parent &p ) const { return inst == p.inst && ninp == p.ninp; } Inst *inst; int ninp; };
-    struct CreatedOutput { Ref *ref; Type *type; IiKuSI64 size; };
+    struct CreatedOutput { Ref *ref; };
 
     using FuncOnRefPtr = std::function<void(Ref *)>;
     using AssFunc = std::function<void(const PI8 *)>;
@@ -48,7 +48,7 @@ public:
     Value                   to_Value               ( const IiValue     &attr ) const;
 
 
-    Ref                    *new_created_output     ( Type *type, const KuSI64 &size );
+    Ref                    *new_created_output     ();
 
     virtual void            get_linked_refs        ( int nout, const KcSI64 &offset, const KcSI64 &length, const std::function<void (Ref *)> &cb );
 
@@ -59,9 +59,10 @@ public:
 
     bool                    all_children_with_op_id( size_t oi ) const;
     int                     nb_parents_on_nout     ( int nout ) const;
+    virtual Type           *created_out_type       ( int nout ) const;
+    virtual KuSI64          created_out_size       ( int nout ) const;
     virtual RcPtr<CanoInst> make_cano_inst         ( int nout ) const; ///< called by cano_repr if not already filled
     virtual void            externalize            ( Inst *inst, size_t ninp );
-    virtual int             nb_outputs             () const;
     Type                   *out_type               ( int nout ) const;
     KuSI64                  out_size               ( int nout ) const;
     virtual int             inp_corr               ( int nout ) const;
@@ -90,7 +91,7 @@ public:
     virtual void            write_dot              ( std::ostream &os ) const = 0;
     virtual void           *rcast                  ( int nout );
 
-    virtual void            write_inline_code      ( StreamPrio &ss, Codegen &cg, int nout, int flags ); ///< helper for case nb_outputs == 1
+    virtual void            write_inline_code      ( StreamPrio &ss, Codegen &cg, int nout, int flags ); ///< helper for case nb_created_outputs == 1
     virtual bool            expects_a_reg_at       ( int ninp ) const;
     virtual bool            can_be_inlined         () const;
     virtual void            write_code             ( StreamSep &ss, Codegen &cg );

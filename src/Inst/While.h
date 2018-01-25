@@ -10,7 +10,6 @@ public:
     WhileInp( AttrClone, const WhileInp *a );
 
     // virtual bool   get_cpt_ref( int nout, Ref_count &rc ) const override;
-    virtual int    nb_outputs () const override;
     virtual void   write_code ( StreamSep &ss, Codegen &cg ) override;
     virtual void   write_dot  ( std::ostream &os ) const override;
     // virtual Inp    val_corr   ( int nout ) const override;
@@ -29,7 +28,6 @@ public:
     virtual Inst *parent_out_inst() const override;
     virtual void  externalize    ( Inst *inst, size_t ninp ) override;
     // virtual bool  get_cpt_ref    ( int nout, Ref_count &rc ) const override;
-    virtual int   nb_outputs     () const override;
     virtual void  write_code     ( StreamSep &ss, Codegen &cg ) override;
     virtual void  write_dot      ( std::ostream &os ) const override;
 
@@ -48,7 +46,6 @@ public:
     virtual void    get_out_insts  ( Deque<Inst *> &outs ) override;
     // virtual bool    get_cpt_ref    ( int nout, Ref_count &rc ) const override; ///< return false if cpt_ref is not decidable
     void            attr_clone     ( const While *a );
-    virtual int     nb_outputs     () const override;
     virtual void    write_code     ( StreamSep &ss, Codegen &cg ) override;
     virtual void    write_dot      ( std::ostream &os ) const override;
     // virtual Inst   *dcast          ( int nout ) override;

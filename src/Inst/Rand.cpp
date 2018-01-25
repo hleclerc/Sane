@@ -31,5 +31,5 @@ public:
 
 Variable make_Rand( Type *type, const KuSI64 &size ) {
     Rand *res = new Rand( type );
-    return { res->new_created_output( type, size ), 0, size, type };
+    return { res->new_created_output(), 0, size, type };
 }

@@ -19,7 +19,6 @@ public:
     ReadFd( RessourceMap *ressource_map, const Value &fd, const Value &val, const Value &len );
     ReadFd( AttrClone, const ReadFd * );
 
-    virtual int  nb_outputs         () const override;
     virtual void write_dot          ( std::ostream &os ) const override;
     virtual int  inp_corr           ( int nout ) const override;
 

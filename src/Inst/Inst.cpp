@@ -100,10 +100,9 @@ Value Inst::to_Value( const IiValue &attr ) const  {
     return { to_Ressource( attr.ressource ), to_KuSI64( attr.offset ), to_KuSI64( attr.length ), attr.type };
 }
 
-Ref *Inst::new_created_output( Type *type, const KuSI64 &size ) {
+Ref *Inst::new_created_output() {
     Ref *res = new Ref( Ressource( this, created_outputs.size() ) );
-    created_outputs << CreatedOutput{ res, type, {} };
-    init_attr( created_outputs.back().size, size );
+    created_outputs << CreatedOutput{ res };
     return res;
 }
 
@@ -166,6 +165,16 @@ bool Inst::all_children_with_op_id( size_t oi ) const {
     return true;
 }
 
+Type *Inst::created_out_type( int nout ) const {
+    write_dot( std::cerr << __FUNCTION__ << " " );
+    TODO;
+    return 0;
+}
+
+KuSI64 Inst::created_out_size( int nout ) const {
+    return out_type( nout )->size();
+}
+
 int Inst::nb_parents_on_nout( int nout ) const {
     size_t res = 0;
     for( const Parent &p : parents )
@@ -182,10 +191,6 @@ RcPtr<CanoInst> Inst::make_cano_inst( int nout ) const {
 void Inst::externalize( Inst *inst, size_t ninp ) {
     write_dot( std::cerr << __FUNCTION__ << " " );
     TODO;
-}
-
-int Inst::nb_outputs() const {
-    return 0;
 }
 
 RcPtr<CanoInst> Inst::cano_inst(const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length ) const {
@@ -233,13 +238,13 @@ CanoVal Inst::cano_val( int nout ) const {
 
 Type *Inst::out_type( int nout ) const {
     if ( nout < (int)created_outputs.size() )
-        return created_outputs[ nout ].type;
+        return created_out_type( nout );
     return children[ iomap[ nout - created_outputs.size() ] ].type();
 }
 
 KuSI64 Inst::out_size( int nout ) const {
     if ( nout < (int)created_outputs.size() )
-        return to_KuSI64( created_outputs[ nout ].size );
+        return created_out_size( nout );
     return children[ iomap[ nout - created_outputs.size() ] ].size();
 }
 
@@ -334,7 +339,7 @@ void Inst::write_code( StreamSep &ss, Codegen &cg ) {
     if ( created_outputs.size() != 1 )
         TODO;
 
-    Type *type = created_outputs[ 0 ].type;
+    Type *type = out_type( 0 );
     ss.write_beg() << cg.repr( type ) << " " << *cg.new_reg_for( this, type, 0 ) << " = ";
     StreamPrio sp{ *ss, PRIO_Assignment };
     write_inline_code( sp, cg, 0, Codegen::WriteInlineCodeFlags::type_is_forced );

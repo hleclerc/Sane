@@ -8,7 +8,7 @@ template<class T>
 class HostVal : public Inst {
 public:
     template<class ...Args>
-    HostVal( Args&& ...args ) : data( std::forward<Args>( args )... ) {}
+    HostVal( Type *type, Args&& ...args ) : type( type ), data( std::forward<Args>( args )... ) {}
 
     virtual void write_dot( std::ostream &os ) const override {
         os << "HostVal";
@@ -23,13 +23,14 @@ public:
         return 0;
     }
 
+    Type *type;
     T     data;
 };
 
 template<class T,class ...Args>
 Variable make_HostVal( Type *type, Args&& ...args ) {
-    HostVal<T> *res = new HostVal<T>( std::forward<Args>( args )... );
-    return { res->new_created_output( type, 8 * sizeof( T ) ) };
+    HostVal<T> *res = new HostVal<T>( type, std::forward<Args>( args )... );
+    return { res->new_created_output() };
 }
 
 #define MAKE_KV( T, ... ) make_HostVal<T>( vm->type_##T, ##__VA_ARGS__ )

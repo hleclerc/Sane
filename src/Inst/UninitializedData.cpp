@@ -12,10 +12,15 @@
 */
 class UninitializedData : public Clonable<UninitializedData,Inst> {
 public:
-    UninitializedData() {
+    UninitializedData( Type *type, const KuSI64 &size ) : type( type ) {
+        init_attr( this->size, size );
     }
 
     UninitializedData( AttrClone, const UninitializedData *UninitializedData ) {
+    }
+
+    virtual Type *created_out_type( int nout ) const override {
+        return type;
     }
 
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
@@ -29,9 +34,12 @@ public:
     virtual RcPtr<CanoInst> make_cano_inst( int nout ) const override {
         return make_CanoUninitializedData( out_size( nout ).cano() );
     }
+
+    Type    *type;
+    IiKuSI64 size;
 };
 
 Variable make_UninitializedData( Type *type, const KuSI64 &size ) {
-    UninitializedData *res = new UninitializedData;
-    return { res->new_created_output( type, size ) };
+    UninitializedData *res = new UninitializedData( type, size );
+    return { res->new_created_output() };
 }

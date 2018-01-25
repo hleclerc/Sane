@@ -14,7 +14,7 @@ void Conv::write_dot( std::ostream &os ) const {
     os << "Conv[" << *target_type << "]";
 }
 
-//int Conv::nb_outputs() const {
+//int Conv::created_outputs.size() const {
 //    return 1;
 //}
 

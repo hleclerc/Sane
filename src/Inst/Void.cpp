@@ -6,17 +6,24 @@
 */
 class Void : public Inst {
 public:
-    virtual void write_dot( std::ostream &os ) const override;
+    Void( Type *type ) : type( type ) {
+    }
+
+    virtual void write_dot( std::ostream &os ) const override {
+        os << "void";
+    }
+
+    virtual Type *created_out_type( int nout ) const override {
+        return type;
+    }
+
+    Type *type;
 };
 
 
-void Void::write_dot( std::ostream &os ) const {
-    os << "void";
-}
-
 Variable make_Void( Type *type ) {
-    Void *res = new Void;
-    return { res->new_created_output( type, type->content.data.size ) };
+    Void *res = new Void( type );
+    return { res->new_created_output() };
 }
 
 Variable make_Void() {

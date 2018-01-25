@@ -4,7 +4,6 @@
 class Variable;
 class Type;
 
-
 Variable make_Cst( Type *type, int size, void *val = 0, void *kno = 0 );
 
 Variable make_Cst_PI64( PI64 val );

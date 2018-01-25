@@ -31,6 +31,10 @@ public:
     Cst( AttrClone, const Cst *orig ) : type( orig->type ), val( orig->val ), kno( orig->kno ) {
     }
 
+    virtual Type *created_out_type( int nout ) const override {
+        return type;
+    }
+
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
         if ( ! kno.all_false() )
             type->write_cst( ss.stream, val.data, 0, false );
@@ -67,7 +71,7 @@ public:
 
 Variable make_Cst( Type *type, int size, void *val, void *kno ) {
     Cst *res = new Cst( type, size, val, kno );
-    return { res->new_created_output( type, size ), 0, size, type };
+    return { res->new_created_output(), 0, size, type };
 }
 
 

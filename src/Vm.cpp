@@ -86,10 +86,10 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     #include "BaseTypes.h"
     #undef BT
 
-    // correction of type of type_...->content
-    //    #define BT( T ) type_##T->content.type = type_Type;
-    //    #include "BaseTypes.h"
-    //    #undef BT
+    // correction of type of type_...->content (HostVal)
+    #define BT( T ) type_##T->content.type = type_Type;
+    #include "BaseTypes.h"
+    #undef BT
 
     for( Primitive_decl *pd = last_Primitive_decl; pd; pd = pd->prev )
         predefs[ RcString( "__primitive_" ) + pd->name ] = make_Void( types.push_back_val( pd->func() ) );

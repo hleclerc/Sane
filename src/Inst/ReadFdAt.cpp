@@ -17,10 +17,6 @@ ReadFdAt::ReadFdAt( RessourceMap *ressource_map, const Value &fd, const Value &v
 ReadFdAt::ReadFdAt( AttrClone, const ReadFdAt *orig ) {
 }
 
-int ReadFdAt::nb_outputs() const {
-    return 1;
-}
-
 int ReadFdAt::inp_corr( int nout ) const {
     return 1;
 }

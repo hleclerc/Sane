@@ -3,9 +3,7 @@
 #include "Type.h"
 #include "Vm.h"
 
-//#include "Variable.h"
-
-Type::Type( const LString &name ) { //  : content( vm ? vm->type_Type : 0 )
+Type::Type( const LString &name ) : content( vm ? vm->type_Type : 0 ) {
     content.data.name = name;
 }
 

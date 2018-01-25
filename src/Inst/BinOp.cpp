@@ -6,12 +6,6 @@
 
 // #include "(test_known.ts).h"
 
-//Type *type_promote( Type *ta, Type *tb ) {
-//    if ( ta == gvm->type_AT )
-//        return ta;
-//    return ta->content.data.type_promote_score >= tb->content.data.type_promote_score ? ta : tb;
-//}
-
 Variable make_Add( const Value &a, const Value &b, int flags ) {
     //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va + vb ); }, Value{} ) )
     //        return r;
@@ -34,7 +28,7 @@ Variable make_Add( const Value &a, const Value &b, int flags ) {
     //            return res;
     //    }
 
-    return { ( new BinOp<Add>( a, b ) )->new_created_output( 0, 0 ) };
+    return { ( new BinOp<Add>( a, b ) )->new_created_output() };
 }
 
 Variable make_Sub( const Value &a, const Value &b, int flags ) {
