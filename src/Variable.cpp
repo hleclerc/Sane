@@ -19,8 +19,9 @@ Variable &Variable::operator=( const Variable &that ) {
     return *this;
 }
 
-CanoVal Variable::cano() const{
-    return ref->current.cano_val( offset.cano(), length.cano(), type );
+CanoVal Variable::cano( bool fully_solved ) const{
+    RcPtr<CanoInst> res = ref->current.cano_inst()->sub_part( offset.cano(), length.cano() );
+    return { fully_solved ? res->fully_solved() : res, type };
 }
 
 bool Variable::error() const {
@@ -71,44 +72,42 @@ RcString Variable::valid_constraint_for( const Variable &tested_var, TCI &tci ) 
 }
 
 Variable Variable::find_attribute( const RcString &name, bool ret_err, bool msg_if_err ) const {
-    TODO;
-    return {};
-//    //
-//    if ( Variable res = ref->intercept_find_attribute( name, type, bool( flags & Flags::CONST ), offset ) )
-//        return res;
+    //    //
+    //    if ( Variable res = ref->intercept_find_attribute( name, type, bool( flags & Flags::CONST ), offset ) )
+    //        return res;
 
-//    // data from the type
-//    if ( Variable res = type->find_attribute( name, *this, flags, offset )  )
-//        return res;
+    // data from the type
+    if ( Variable res = type->find_attribute( name, *this, flags, offset )  )
+        return res;
 
-//    // look for a 'self' function (external method), from the current scope to the deeper ones
-//    for( Scope *s = vm->scope; s; s = s->parent_for_vars() ) {
-//        auto iter = s->variables.find( name );
-//        if ( iter != s->variables.end() && iter->second.flags & Scope::VariableFlags::SELF_AS_ARG )
-//            return iter->second.var.type->with_self( iter->second.var, *this );
-//    }
+    // look for a 'self' function (external method), from the current scope to the deeper ones
+    for( Scope *s = vm->scope; s; s = s->parent_for_vars() ) {
+        auto iter = s->variables.find( name );
+        if ( iter != s->variables.end() && iter->second.flags & Scope::VariableFlags::SELF_AS_ARG )
+            return iter->second.var.type->with_self( iter->second.var, *this );
+    }
 
-//    // try with get_, set_, mod_, typeof_, or 'operator .'
-//    if ( name.begins_with( "get_" ) == false && name.begins_with( "set_" ) == false && name.begins_with( "mod_" ) == false && name.begins_with( "typeof_" ) == false && name != "operator ." ) {
-//        Variable g = find_attribute( "get_" + name, false );
-//        Variable s = find_attribute( "set_" + name, false );
-//        Variable m = find_attribute( "mod_" + name, false );
-//        if ( g || s || m ) {
-//            RefGetsetter *rf = new RefGetsetter( g, s, m, find_attribute( "typeof_" + name, false ) );
-//            return { rf, rf->type };
-//        }
+    //    // try with get_, set_, mod_, typeof_, or 'operator .'
+    //    if ( name.begins_with( "get_" ) == false && name.begins_with( "set_" ) == false && name.begins_with( "mod_" ) == false && name.begins_with( "typeof_" ) == false && name != "operator ." ) {
+    //        Variable g = find_attribute( "get_" + name, false );
+    //        Variable s = find_attribute( "set_" + name, false );
+    //        Variable m = find_attribute( "mod_" + name, false );
+    //        if ( g || s || m ) {
+    //            RefGetsetter *rf = new RefGetsetter( g, s, m, find_attribute( "typeof_" + name, false ) );
+    //            return { rf, rf->type };
+    //        }
 
-//        if ( Variable op = find_attribute( "operator .", false ) ) {
-//            TODO;
-//            //            Variable str( scope->vm, scope->vm->type_String );
-//            //            reinterpret_cast<String *>( str.ptr() )->init( name );
-//            //            return op.apply( scope, true, str );
-//        }
-//    }
+    //        if ( Variable op = find_attribute( "operator .", false ) ) {
+    //            TODO;
+    //            //            Variable str( scope->vm, scope->vm->type_String );
+    //            //            reinterpret_cast<String *>( str.ptr() )->init( name );
+    //            //            return op.apply( scope, true, str );
+    //        }
+    //    }
 
-//    if ( msg_if_err )
-//        vm->add_error( "{} has no attribute {}", *type, name );
-//    return ret_err ? vm->ref_error : Variable{};
+    if ( msg_if_err )
+        vm->add_error( "{} has no attribute {}", *type, name );
+    return ret_err ? vm->ref_error : Variable{};
 }
 
 void Variable::setup_vtables() {

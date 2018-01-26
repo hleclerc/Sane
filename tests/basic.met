@@ -1,0 +1,14 @@
+# if __primitive_rand()
+#     stdout << 10
+
+# if rand()
+#     a := 5
+#     stdout.read a, 11
+#     stdout.read a, 12
+
+# stdout << 10
+
+if rand()
+    stdout << 2
+
+# __primitive_ct_display_graph()

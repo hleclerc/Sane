@@ -6,12 +6,14 @@
 size_t CanoInst::cur_op_id = 0;
 
 
-CanoInst::CanoInst() : child_for_fact( 0 ), op_id( 0 ) {
+CanoInst::CanoInst() : fully_solved_buf( 0 ), child_for_fact( 0 ), op_id( 0 ) {
 }
 
 CanoInst::~CanoInst() {
     if ( child_for_fact )
         child_for_fact->parents.remove_first( this );
+    if ( fully_solved_buf != this )
+        reinterpret_cast<RcPtr<CanoInst> &>( fully_solved_buf ).~RcPtr();
 }
 
 struct CanoInstWriteWisitor : CanoInst::AttrVisitor {
@@ -88,6 +90,10 @@ bool CanoInst::write_graph_rec( std::ostream &ss, std::set<const CanoInst *> &se
     return true;
 }
 
+CanoInst *CanoInst::make_fully_solved() {
+    return this;
+}
+
 struct ChildrenVisitor : public CanoInst::AttrVisitor {
     virtual void on( const char *name, const RcPtr<CanoInst> &val ) { (*visitor)( name, val.ptr() ); }
     virtual void on( const char *name, const CanoVal &val ) { on( name, val.inst ); }
@@ -121,6 +127,12 @@ bool CanoInst::always_true( Type *type ) const {
 
 RcPtr<CanoInst> CanoInst::simp_CanoConv( Type *orig, Type *target ) {
     return 0;
+}
+
+CanoInst *CanoInst::fully_solved() {
+    if ( fully_solved_buf == 0 )
+        fully_solved_buf = make_fully_solved();
+    return fully_solved_buf;
 }
 
 bool CanoInst::known_value() const {

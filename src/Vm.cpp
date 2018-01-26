@@ -43,8 +43,8 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     nb_breaks    = 0;
     nb_calls     = 0;
 
-    //    main_scope.parent = 0;
-    //    scope = &main_scope;
+    main_scope.parent = 0;
+    scope = &main_scope;
 
     #define BT( T ) type_##T = 0;
     #include "BaseTypes.h"

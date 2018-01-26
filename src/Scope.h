@@ -40,7 +40,7 @@ public:
     size_t              nb_scopes_to_ret         () const;
 
     Scope              *parent_interp            ( bool squeeze_for_beg = false ) const;
-    Scope              *parent_for_vars          () { return type == ScopeType::CALL || type == ScopeType::FOR_EXE ? root : parent; }
+    Scope              *parent_for_vars          ();
     Variable           *add_static_variable      ( const Variable &var );
 
 
@@ -56,7 +56,6 @@ public:
     Scope              *parent;
     Import             *import;
     Variable            self;
-    Scope              *root;
     ScopeType           type;
     Position            pos;
     Variable            ret;

@@ -23,6 +23,14 @@ public:
         return 0;
     }
 
+    virtual Type *created_out_type( int nout ) const {
+        return type;
+    }
+
+    virtual KuSI64 created_out_size( int nout ) const {
+        return 8 * sizeof( T );
+    }
+
     Type *type;
     T     data;
 };

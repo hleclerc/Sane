@@ -18,7 +18,7 @@ bool TypeError::error() const {
     return true;
 }
 
-Variable TypeError::find_attribute( const RcString &name, const Variable &self , Variable::Flags flags, SI32 off ) const {
+Variable TypeError::find_attribute( const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const {
     return {};
 }
 

@@ -133,7 +133,7 @@ Variable Type::select( Variable &self, bool want_ret, const Vec<Variable> &args,
     return op.apply( want_ret, args, names );
 }
 
-Variable Type::find_attribute( const RcString &name, const Variable &self, Variable::Flags flags, SI32 off ) const {
+Variable Type::find_attribute( const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const {
     // instance attributes
     auto iter_attr = content.data.attributes.find( name );
     if ( iter_attr != content.data.attributes.end() ) {

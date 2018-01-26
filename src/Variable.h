@@ -18,7 +18,7 @@ public:
 
     Variable          &operator=           ( const Variable &value );
 
-    CanoVal            cano                () const;
+    CanoVal            cano                ( bool fully_solved = false ) const; ///< complex tasks are executed only
 
     bool               is_shared           () const;
     bool               is_false            () const;

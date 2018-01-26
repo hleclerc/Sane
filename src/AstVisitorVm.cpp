@@ -337,7 +337,7 @@ Variable AstVisitorVm::on_def( RcString name, RcString cname, PI8 nb_scopes_rec,
     std::function<AstCrepr(const RcString &)> ms = [&]( const RcString &cm ) { return AstCrepr{ this->names, cm }; };
 
     // enrich or make a surdef (we have to make this before the class creation, to get the class as catched variable if necessary)
-    Scope *l_scope = flags & CALLABLE_FLAG_global ? vm->scope->root : store;
+    Scope *l_scope = flags & CALLABLE_FLAG_global ? &vm->main_scope : store;
     auto iter_scope = l_scope->variables.find( name );
     Variable sl_var;
     if ( iter_scope != l_scope->variables.end() ) {
@@ -448,7 +448,7 @@ Variable AstVisitorVm::on_class( RcString name, RcString cname, PI8 nb_scopes_re
     std::function<AstCrepr(const RcString &)> ms = [&]( const RcString &cm ) { return AstCrepr{ this->names, cm }; };
 
     // enrich or make a surdef (we have to make this before the class creation, to get the class as catched variable if necessary)
-    Scope *l_scope = flags & CALLABLE_FLAG_global ? vm->scope->root : store;
+    Scope *l_scope = flags & CALLABLE_FLAG_global ? &vm->main_scope : store;
     auto iter_scope = l_scope->variables.find( name );
     Variable sl_var;
     if ( iter_scope != l_scope->variables.end() ) {

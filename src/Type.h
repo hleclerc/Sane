@@ -21,7 +21,7 @@ public:
     virtual unsigned        get_nb_conversions         ( const Variable &self ) const;
     virtual bool            has_a_constructor          () const; ///< false for types like Union, ...
     virtual double          get_pertinence             ( const Variable &self ) const;
-    virtual Variable        find_attribute             ( const RcString &name, const Variable &self, Variable::Flags flags, SI32 off ) const;
+    virtual Variable        find_attribute             (const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const;
     virtual CondVal         get_condition              ( const Variable &self ) const;
     virtual void            get_fail_info              ( const Variable &self, size_t &offset, RcString &source, RcString &msg ) const;
     virtual bool            destroy_attrs              () const;

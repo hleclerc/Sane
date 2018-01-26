@@ -9,7 +9,6 @@ Scope::Scope( Scope::ScopeType type ) : parent( vm ? vm->scope : 0 ), type( type
     in_construction = 0;
     last_var        = 0;
     import          = 0;
-    root            = parent ? parent->root : this;
     wpc             = 0;
 
     if ( vm )
@@ -124,7 +123,7 @@ void Scope::reg_var( const RcString &name, const Variable &var, Scope::VariableF
         import->exports << Import::Export{ name, var };
     // global
     if ( flags & VariableFlags::GLOBAL )
-        return root->reg_var( name, var, flags & ~ VariableFlags::GLOBAL );
+        return vm->main_scope.reg_var( name, var, flags & ~ VariableFlags::GLOBAL );
     // already registered ?
     bool already_present = variables.count( name );
     if ( already_present && check ) {
@@ -212,6 +211,10 @@ Scope *Scope::parent_interp( bool squeeze_for_beg ) const {
     if ( type == ScopeType::IF_EXE )
         return parent->parent;
     return parent;
+}
+
+Scope *Scope::parent_for_vars() {
+    return type == ScopeType::CALL || type == ScopeType::FOR_EXE ? &vm->main_scope : parent;
 }
 
 Variable *Scope::add_static_variable(const Variable &var) {

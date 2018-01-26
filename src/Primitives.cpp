@@ -479,7 +479,7 @@ REG_PRIMITIVE_TYPE( rand ) {
 REG_PRIMITIVE_TYPE( add_room_in_type ) {
     if ( args.size() != 2 )
         return vm->add_error( "__primitive_add_room_in_type expects exactly 2 arguments" );
-    TODO;
+    KcSI64 size = args[ 0 ].cano( true );
     SI32 size = 0, alig = 0;
 //    if ( ! args[ 0 ].get_value( size ) || ! args[ 1 ].get_value( alig ) )
 //        return vm->add_error( "__primitive_add_room_in_type expexts arguments convertible to PT" );

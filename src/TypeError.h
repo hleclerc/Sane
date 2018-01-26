@@ -15,7 +15,7 @@ public:
 
     virtual bool        error                      () const override;
 
-    virtual Variable    find_attribute             ( const RcString &name, const Variable &self, Variable::Flags flags, SI32 off ) const override;
+    virtual Variable    find_attribute             ( const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const override;
     virtual Variable    with_self                  ( Variable &orig, const Variable &new_self ) const override;
 };
 
