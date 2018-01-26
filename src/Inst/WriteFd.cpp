@@ -48,8 +48,8 @@ void make_WriteFd( const Variable &fd, const Vec<Variable> &args ) {
         res->init_attr( *res->args.push_back(), arg.to_Value() );
 
     // for each potentially modified/read ressource
-    vm->ressource_map.on_file_content( fd.cano_repr(), res->add_wr_cb() );
-    vm->ressource_map.on_file_cursor ( fd.cano_repr(), res->add_wr_cb() );
+    vm->ressource_map.on_file_content( fd.cano(), res->add_wr_cb() );
+    vm->ressource_map.on_file_cursor ( fd.cano(), res->add_wr_cb() );
 }
 
 void make_WriteFd( const Variable &fd, const Variable &ptr, const Variable &len ) {

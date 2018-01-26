@@ -10,13 +10,13 @@ TEST( Variable, init ) {
     // creation of a ressource
     Variable a = make_Cst( 17 );
     ASSERT_EQ  ( to_string( a             ), "17" );
-    ASSERT_EQ  ( to_string( a.cano_repr() ), "17" );
+    ASSERT_EQ  ( to_string( a.cano() ), "17" );
 
     // memcpy
     Variable b = make_Cst( 18 );
     make_Memcpy( a.ref.ptr(), b.ref.ptr(), 0, 0, 32 );
     ASSERT_EQ  ( to_string( a             ), "Memcpy[0](17,18)" );
-    ASSERT_EQ  ( to_string( a.cano_repr() ), "18" );
+    ASSERT_EQ  ( to_string( a.cano() ), "18" );
 }
 
 TEST( Variable, fd ) {

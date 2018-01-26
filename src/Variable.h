@@ -12,13 +12,13 @@ class Variable {
 public:
     enum class Flags: PI32 { NONE = 0, CONST = 1 };
 
-    Variable( const RcPtr<Ref> &ref_anc, const KuSI64 &offset, Type *type, Flags flags = Flags::NONE );
+    Variable( const RcPtr<Ref> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Flags flags = Flags::NONE );
     Variable( const RcPtr<Ref> &ref_anc, Flags flags = Flags::NONE );
-    Variable() : flags( Flags::NONE ), type( 0 ) {} // void Variable
+    Variable() : type( 0 ) {} // void Variable
 
     Variable          &operator=           ( const Variable &value );
 
-    CanoVal            cano_repr           () const;
+    CanoVal            cano                () const;
 
     bool               is_shared           () const;
     bool               is_false            () const;
@@ -38,13 +38,12 @@ public:
     Variable           equal               ( const Variable &that ) const;
     void               clear               () { ref = 0; type = 0; }
     Variable           apply               ( bool want_ret, const Vec<Variable> &args = {}, const Vec<RcString> &names = {}, ApplyFlags apply_flags = ApplyFlags::NONE, const Vec<size_t> &spreads = {} );
-    KuSI64             size                () const;
 
     String             as_String           () const;
     FP64               as_FP64             () const;
     SI32               as_SI32             () const;
 
-    Value              to_Value                 () const;
+    Value              to_Value            () const;
 
     void               set_bv              ( const Value &src_val, int cst = 0 );
     void               memcpy              ( const Value &src_val, int cst = 0 );
@@ -56,7 +55,8 @@ public:
 
     RcPtr<Ref>         ref;
     KuSI64             offset;
-    Flags              flags;
+    KuSI64             length;
     Type              *type;
+    Flags              flags;
 };
 ENUM_FLAGS( Variable::Flags )

@@ -53,7 +53,7 @@ public:
     virtual SI32            kv_size                    () const;
     virtual String          c_name                     () const;
     virtual bool            error                      () const;
-    virtual KuSI64          size                       ( const Variable &var, const KuSI64 &offset ) const;
+    virtual KuSI64          size                       ( const RcPtr<Ref> &ref, const KuSI64 &offset ) const;
 
 
     HostVal<TypeContent>    content;

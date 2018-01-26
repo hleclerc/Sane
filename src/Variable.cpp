@@ -4,22 +4,23 @@
 #include "Ref.h"
 #include "Vm.h"
 
-Variable::Variable( const RcPtr<Ref> &ref, const KuSI64 &offset, Type *type, Variable::Flags flags ) : ref( ref ), offset( offset ), flags( flags ), type( type ) {
+Variable::Variable( const RcPtr<Ref> &ref, const KuSI64 &offset, const KuSI64 &length, Type *type, Variable::Flags flags ) : ref( ref ), offset( offset ), length( length ), type( type ), flags( flags ) {
 }
 
-Variable::Variable( const RcPtr<Ref> &ref, Variable::Flags flags ) : Variable( ref, 0, ref->creator.type(), flags ) {
+Variable::Variable( const RcPtr<Ref> &ref, Variable::Flags flags ) : Variable( ref, 0, ref->creator.size(), ref->creator.type(), flags ) {
 }
 
-Variable &Variable::operator=( const Variable &value ) {
-    ref     = value.ref   ;
-    type    = value.type  ;
-    offset  = value.offset;
-    flags   = value.flags ;
+Variable &Variable::operator=( const Variable &that ) {
+    ref     = that.ref   ;
+    type    = that.type  ;
+    offset  = that.offset;
+    length  = that.length;
+    flags   = that.flags ;
     return *this;
 }
 
-CanoVal Variable::cano_repr() const{
-    return ref->current.cano_val( offset.cano(), size().cano(), type );
+CanoVal Variable::cano() const{
+    return ref->current.cano_val( offset.cano(), length.cano(), type );
 }
 
 bool Variable::error() const {
@@ -28,6 +29,18 @@ bool Variable::error() const {
 
 bool Variable::is_shared() const {
     return ref->is_shared();
+}
+
+bool Variable::is_false() const {
+    if ( type != vm->type_Bool )
+        return vm->scope->find_variable( "Bool" ).apply( true, *this ).is_false();
+    return always_false( cano() );
+}
+
+bool Variable::is_true() const {
+    if ( type != vm->type_Bool )
+        return vm->scope->find_variable( "Bool" ).apply( true, *this ).is_true();
+    return always_true( cano() );
 }
 
 Variable Variable::to_Bool() const {
@@ -43,29 +56,7 @@ Variable Variable::to_Bool() const {
 }
 
 Value Variable::to_Value() const {
-    return { ref->current, offset, type };
-}
-
-//Variable Variable::equal( const Variable &that ) const {
-//    return find_attribute( "operator ==" ).apply( true, that );
-//}
-
-bool Variable::is_false() const {
-    TODO;
-    return 0;
-    //    if ( type != vm->type_Bool )
-    //        return to_Bool().is_false();
-    //    Bool data;
-    //    return get_bytes( &data, 0, 0, 1 ) && data == false;
-}
-
-bool Variable::is_true() const {
-    TODO;
-    return 0;
-    //    if ( type != vm->type_Bool )
-    //        return to_Bool().is_false();
-    //    Bool data;
-    //    return get_bytes( &data, 0, 0, 1 ) && data == true;
+    return { ref->current, offset, length, type };
 }
 
 void Variable::write_to_stream( std::ostream &os ) const {
@@ -165,10 +156,6 @@ Variable Variable::apply( bool want_ret, const Vec<Variable> &args, const Vec<Rc
     }
 
     return type->apply( *this, want_ret, args, names, {}, apply_flags );
-}
-
-KuSI64 Variable::size() const {
-    return type->size( *this, offset );
 }
 
 String Variable::as_String() const {

@@ -75,7 +75,7 @@ public:
 
 Variable make_Cst( Type *type, int size, void *val, void *kno ) {
     Cst *res = new Cst( type, size, val, kno );
-    return { res->new_created_output(), 0, type };
+    return { res->new_created_output(), 0, size, type };
 }
 
 

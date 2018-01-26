@@ -329,7 +329,8 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
         // destruction of attributes
         for( TypeContent::Attribute *attr = with_self.type->content.data.last_attribute; attr; attr = attr->prev ) {
             ASSERT( attr->off % 8 == 0, "..." );
-            Variable v( with_self.ref, with_self.offset + attr->off, attr->type, with_self.flags );
+            KuSI64 off = with_self.offset + attr->off;
+            Variable v( with_self.ref, off, attr->type->size( with_self.ref, off ), attr->type, with_self.flags );
             v.type->destroy( v, false );
         }
     }

@@ -216,7 +216,7 @@ bool Type::error() const {
     return false;
 }
 
-KuSI64 Type::size( const Variable &var, const KuSI64 &offset ) const {
+KuSI64 Type::size( const RcPtr<Ref> &ref, const KuSI64 &offset ) const {
     return kv_size();
 }
 

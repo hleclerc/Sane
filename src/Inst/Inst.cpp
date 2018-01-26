@@ -81,6 +81,7 @@ void Inst::init_attr( IiKuSI64 &attr, const KuSI64 &val ) {
 void Inst::init_attr( IiValue &attr, const Value &val ) {
     init_attr( attr.ressource, val.ressource );
     init_attr( attr.offset   , val.offset    );
+    init_attr( attr.length   , val.length    );
 
     attr.type = val.type;
 }
@@ -96,7 +97,7 @@ KuSI64 Inst::to_KuSI64( const IiKuSI64 &attr ) const {
 }
 
 Value Inst::to_Value( const IiValue &attr ) const  {
-    return { to_Ressource( attr.ressource ), to_KuSI64( attr.offset ), attr.type };
+    return { to_Ressource( attr.ressource ), to_KuSI64( attr.offset ), to_KuSI64( attr.length ), attr.type };
 }
 
 Ref *Inst::new_created_output() {

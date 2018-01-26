@@ -8,10 +8,10 @@ class Type;
 */
 class Value {
 public:
-    Value( const Ressource &ressource, const KuSI64 &offset, Type *type ); ///< sub value of `ressource`
+    Value( const Ressource &ressource, const KuSI64 &offset, const KuSI64 &length, Type *type ); ///< sub value of `ressource`
     Value( const Ressource &ressource ); ///< entire `ressource` value
     Value( Inst *inst, int nout = 0 ); ///< entire Ressource{ inst, nout } value
-    Value( const Value &value ); //
+    Value( const Value &that ); //
     Value() {} // void value
 
     Value      &operator=         ( const Value &value );
@@ -27,6 +27,7 @@ public:
 
     Ressource   ressource;
     KuSI64      offset;
+    KuSI64      length;
     Type       *type;
 };
 
