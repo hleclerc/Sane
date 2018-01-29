@@ -61,6 +61,7 @@ public:
     int                     nb_parents_on_nout     ( int nout ) const;
     virtual Type           *created_out_type       ( int nout ) const;
     virtual KuSI64          created_out_size       ( int nout ) const;
+    virtual KuSI64          created_out_alig       ( int nout ) const;
     virtual RcPtr<CanoInst> make_cano_inst         ( int nout ) const; ///< called by cano_repr if not already filled
     virtual void            externalize            ( Inst *inst, size_t ninp );
     Type                   *out_type               ( int nout ) const;

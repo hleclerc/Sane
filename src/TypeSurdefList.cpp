@@ -42,10 +42,12 @@ RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Var
                 // check that args are the same
                 for( size_t i = 0; i < se_args.size(); ++i ) {
                     if ( se_args[ i ].type == vm->type_Wildcard ) {
-                        tci.proposals[ se_args[ i ].rcast<Wildcard>()->name ] = *tested_var.type->content.data.parameters[ i ];
+                        TODO;
+                        // tci.proposals[ se_args[ i ].rcast<Wildcard>()->name ] = *tested_var.type->content.data.parameters[ i ];
                         continue;
                     }
-                    bool equ = equal( *tested_var.type->content.data.parameters[ i ], se_args[ i ] );
+                    TODO;
+                    bool equ = 0; // equal( *tested_var.type->content.data.parameters[ i ], se_args[ i ] );
                     if ( ! equ )
                         return "has not equal template parameter";
                 }

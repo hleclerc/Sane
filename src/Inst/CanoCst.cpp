@@ -20,8 +20,8 @@ public:
             os << content;
     }
 
-    virtual bool known_value() const override {
-        return true;
+    virtual void *known_value() const override {
+        return content.data;
     }
 
     virtual KcSI64 length() const override {
@@ -49,6 +49,19 @@ public:
     virtual void attr_visitor( AttrVisitor &visitor ) const override {
     }
 
+    virtual RcPtr<CanoInst> sub_part( const KcSI64 &off, const KcSI64 &len ) {
+        if ( ::always_true( len == content.size ) )
+            return this;
+        if ( off.is_known() && len.is_known() ) {
+            BoolVec new_content( len.kv() );
+            memcpy_bit( new_content.data, 0, content.data, off.kv(), len.kv() );
+            return make_CanoCst( new_content.data, len.kv() );
+        }
+        P( content, content.size, off, len );
+        TODO;
+        return 0;
+    }
+
     BoolVec content;
 };
 
@@ -59,14 +72,23 @@ static std::vector<RcPtr<CanoCst>> map_8 ;
 static RcPtr<CanoCst> cst_false;
 static RcPtr<CanoCst> cst_true;
 
-RcPtr<CanoInst> make_gen_CanoCst( const void *content, int length ) {
-    TODO;
-    return 0;
+static std::map<BoolVec,RcPtr<CanoCst>> map_gen_cst;
+
+RcPtr<CanoInst> make_gen_CanoCst( const void *ptr, int len ) {
+    BoolVec bv( Reference(), const_cast<void *>( ptr ), len );
+    P( bv );
+
+    auto iter = map_gen_cst.find( bv );
+    if ( iter == map_gen_cst.end() )
+        iter = map_gen_cst.emplace_hint( iter, bv, new CanoCst( ptr, len ) );
+    return iter->second;
 }
 
 template<class T>
-RcPtr<CanoInst> make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length ) {
+RcPtr<CanoInst> make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T b_val, int length ) {
     constexpr int ws = 512;
+    constexpr int of = std::is_signed<T>::value ? 64 : 0;
+    T val = b_val + of;
 
     if ( val >= 0 && val < ws ) {
         if ( map.empty() ) {

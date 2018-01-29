@@ -1,18 +1,34 @@
 #pragma once
 
-#include "Inst/HostVal.h"
-#include "TypeContent.h"
-#include "Value.h"
 //#include "ApplyFlags.h"
-//#include "Variable.h"
-//class Class;
-//class TCI;
+#include "FunctionSignature.h"
+#include "System/LString.h"
+#include "Variable.h"
+#include "Value.h"
+#include <map>
+class Class;
+class TCI;
 
 /**
 */
 class Type {
 public:
-    struct CondVal { int kv; Value val; }; ///< val is defined only if kv == 0. if kv < 0 => cond is false. if kv > 0 => cond is true
+    struct CondVal {
+        int   kv;
+        Value val; ///< val is defined only if kv == 0. if kv < 0 => cond is false. if kv > 0 => cond is true
+    };
+    struct Attribute {
+        RcString         name;
+        Type            *type;
+        SI32             off;   ///< in bits
+        Variable::Flags  flags;
+        Attribute       *prev;
+        Attribute       *next;
+    };
+    using MA  = std::map<RcString,Attribute>;
+    using MSA = std::map<RcString,Variable *>;
+    using SFS = std::set<FunctionSignature>;
+
 
     Type( const LString &name );
 
@@ -51,12 +67,30 @@ public:
     virtual bool            is_a_TypeBT                () const;
     virtual int             is_signed                  () const;
     virtual SI32            kv_size                    () const;
+    virtual SI32            kv_alig                    () const;
     virtual String          c_name                     () const;
     virtual bool            error                      () const;
     virtual KuSI64          size                       ( const RcPtr<Ref> &ref, const KuSI64 &offset ) const;
 
+    // cst ops
+    #define BO( NAME ) virtual CanoVal make_Cano##NAME( const void *a, const void *b );
+    #include "decl_bin_op.h"
+    #undef BO
 
-    HostVal<TypeContent>    content;
+    LString         name;
+    SI32            alig;
+    MSA             methods;
+    SI32            _kv_size;
+    SI32            _kv_alig;
+    MA              attributes;
+    Class          *_orig_class;
+    Vec<CanoVal>    parameters;        ///< template arguments
+    Attribute      *last_attribute;
+    bool            has_new_vtable;
+    Attribute      *first_attribute;
+    SFS             abstract_methods;
+    MSA             static_attributes;
+    int             type_promote_score;
 };
 
 Type *type_promote_gen( Type *a, Type *b );

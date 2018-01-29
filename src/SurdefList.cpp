@@ -82,26 +82,27 @@ bool SurdefList::eq( Type *type ) {
             Class *cl = def.rcast<Class>();
             if ( type->orig_class() == cl ) {
                 // find specified arguments list
-                Vec<Variable> specified_args( Size(), cl->arg_names.size() );
-                if ( cl->arg_spreads.size() )
-                    TODO;
-                for( size_t i = 0; i < args.size() - names.size(); ++i )
-                    specified_args[ i ] = args[ i ];
-                for( size_t i = 0; i < names.size(); ++i ) {
-                    int ind = cl->arg_names.index_first( names[ i ] );
-                    if ( ind < 0 ) {
-                        vm->add_error( "name does not exist in args of {}", cl->name );
-                        return false;
-                    }
-                    specified_args[ ind ] = args[ args.size() - names.size() + i ];
-                }
-                // test specified arguments
-                auto ne = [&]( const Variable &a, const Variable &b ) {
-                    return ! equal( a, b );
-                };
-                for( size_t i = 0; i < specified_args.size(); ++i )
-                    if ( specified_args[ i ] && ne( *type->content.data.parameters[ i ], specified_args[ i ] ) )
-                        return false;
+                TODO;
+//                Vec<Variable> specified_args( Size(), cl->arg_names.size() );
+//                if ( cl->arg_spreads.size() )
+//                    TODO;
+//                for( size_t i = 0; i < args.size() - names.size(); ++i )
+//                    specified_args[ i ] = args[ i ];
+//                for( size_t i = 0; i < names.size(); ++i ) {
+//                    int ind = cl->arg_names.index_first( names[ i ] );
+//                    if ( ind < 0 ) {
+//                        vm->add_error( "name does not exist in args of {}", cl->name );
+//                        return false;
+//                    }
+//                    specified_args[ ind ] = args[ args.size() - names.size() + i ];
+//                }
+//                // test specified arguments
+//                auto ne = [&]( const Variable &a, const Variable &b ) {
+//                    return ! equal( a, b );
+//                };
+//                for( size_t i = 0; i < specified_args.size(); ++i )
+//                    if ( specified_args[ i ] && ne( *type->content.data.parameters[ i ], specified_args[ i ] ) )
+//                        return false;
                 return true;
             }
         }

@@ -1,35 +1,39 @@
 #include "../Codegen/Codegen.h"
 #include "../Type.h"
+#include "Clonable.h"
 #include "Conv.h"
 
-Conv::Conv( const Value &orig, Type *target_type ) : target_type( target_type ) {
-    TODO;
-    // add_child( orig );
-}
+/**
+*/
+class Conv : public Clonable<Conv> {
+public:
+    Conv( const Value &orig, Type *target_type ) : target_type( target_type ) {
+        init_attr( this->orig, orig );
+    }
 
-Conv::Conv( AttrClone, const Conv *orig ) : target_type( orig->target_type ) {
-}
+    Conv( AttrClone, const Conv *orig ) : orig( orig->orig ), target_type( orig->target_type ) {
+    }
 
-void Conv::write_dot( std::ostream &os ) const {
-    os << "Conv[" << *target_type << "]";
-}
+    virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
+        if ( flags & Codegen::WriteInlineCodeFlags::type_is_forced )
+            ss << cg.repr( this->children[ 0 ], ss.prio, flags );
+        else
+            ss( PRIO_Function_call ) << cg.repr( target_type ) << "(" << cg.repr( this->children[ 0 ], PRIO_Cast, Codegen::WriteInlineCodeFlags::type_is_forced ) << ")";
+    }
 
-//int Conv::created_outputs.size() const {
-//    return 1;
-//}
+    virtual Type *created_out_type( int nout ) const override {
+        return target_type;
+    }
 
-//Type *Conv::out_type( int nout ) const {
-//    return target_type;
-//}
+    virtual void write_dot( std::ostream &os ) const override {
+        os << "Conv[" << *target_type << "]";
+    }
 
-void Conv::write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) {
-    if ( flags & Codegen::WriteInlineCodeFlags::type_is_forced )
-        ss << cg.repr( this->children[ 0 ], ss.prio, flags );
-    else
-        ss( PRIO_Function_call ) << cg.repr( target_type ) << "(" << cg.repr( this->children[ 0 ], PRIO_Cast, Codegen::WriteInlineCodeFlags::type_is_forced ) << ")";
-}
+    IiValue orig;
+    Type   *target_type;
+};
 
-Value make_Conv( const Value &orig, Type *target_type ) {
-    TODO;
-    return {}; // { new Conv( orig, target_type ), 0, target_type };
+
+Variable make_Conv( const Value &orig, Type *target_type ) {
+    return { ( new Conv( orig, target_type ) )->new_created_output() };
 }

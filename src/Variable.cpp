@@ -1,4 +1,5 @@
 #include "System/BoolVec.h"
+#include "Inst/Memcpy.h"
 #include "Variable.h"
 #include "Type.h"
 #include "Ref.h"
@@ -205,14 +206,15 @@ void Variable::set_bv( const Value &src_val, int cst ) {
     //    ref->set( src_val, cst );
 }
 
-void Variable::memcpy( const Value &src_val, int cst ) {
-    TODO;
-    // set_bv( make_MemcpyKV( ref->get(), src_val, offset ), cst );
+void Variable::memcpy( const Variable &src, int cst ) {
+    if ( ( flags & Flags::CONST ) && cst >= 0 ) {
+        vm->add_error( "Const variable, should not be modified" );
+        return;
+    }
+    make_Memcpy( ref.ptr(), src.ref.ptr(), offset, src.offset, src.length );
 }
 
 Variable Variable::sub_part( Type *new_type, SI32 add_off ) const {
-    TODO;
-    return {};
-    // return { ref, new_type, offset + add_off, flags };
+    return { ref, offset + add_off, new_type->size( ref, offset + add_off ), new_type, flags };
 }
 

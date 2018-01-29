@@ -11,6 +11,7 @@
 //#include "System/Math.h"
 #include "System/Math.h"
 
+#include "Inst/UninitializedData.h"
 #include "Inst/ReadFdAt.h"
 #include "Inst/WriteFd.h"
 #include "Inst/ReadFd.h"
@@ -114,17 +115,17 @@ REG_PRIMITIVE_TYPE_BIN_OP( Sub         )
 REG_PRIMITIVE_TYPE_BIN_OP( Mul         )
 REG_PRIMITIVE_TYPE_BIN_OP( Mod         )
 REG_PRIMITIVE_TYPE_BIN_OP( Div         )
-REG_PRIMITIVE_TYPE_BIN_OP( Div_int     )
-REG_PRIMITIVE_TYPE_BIN_OP( Or_bitwise  )
-REG_PRIMITIVE_TYPE_BIN_OP( Xor_bitwise )
-REG_PRIMITIVE_TYPE_BIN_OP( And_bitwise )
-REG_PRIMITIVE_TYPE_BIN_OP( Shift_right )
-REG_PRIMITIVE_TYPE_BIN_OP( Shift_left  )
+REG_PRIMITIVE_TYPE_BIN_OP( DivInt     )
+REG_PRIMITIVE_TYPE_BIN_OP( OrBitwise  )
+REG_PRIMITIVE_TYPE_BIN_OP( XorBitwise )
+REG_PRIMITIVE_TYPE_BIN_OP( AndBitwise )
+REG_PRIMITIVE_TYPE_BIN_OP( ShiftRight )
+REG_PRIMITIVE_TYPE_BIN_OP( ShiftLeft  )
 REG_PRIMITIVE_TYPE_BIN_OP( Inf         )
 REG_PRIMITIVE_TYPE_BIN_OP( Sup         )
-REG_PRIMITIVE_TYPE_BIN_OP( Inf_equ     )
-REG_PRIMITIVE_TYPE_BIN_OP( Sup_equ     )
-REG_PRIMITIVE_TYPE_BIN_OP( Not_equ     )
+REG_PRIMITIVE_TYPE_BIN_OP( InfEqu     )
+REG_PRIMITIVE_TYPE_BIN_OP( SupEqu     )
+REG_PRIMITIVE_TYPE_BIN_OP( NotEqu     )
 REG_PRIMITIVE_TYPE_BIN_OP( Equ         )
 
 
@@ -167,7 +168,7 @@ REG_PRIMITIVE_TYPE( reassign ) {
     // primitive numbers
     if ( va.type->is_a_TypeBT() ) {
         if ( va.type == vb.type )
-            return va.memcpy( vb.to_Value() ), va;
+            return va.memcpy( vb ), va;
         if ( vb.type->is_a_TypeBT() )
             return va.memcpy( make_Conv( vb.to_Value(), va.type ) ), va;
         TODO;
@@ -176,7 +177,7 @@ REG_PRIMITIVE_TYPE( reassign ) {
     // AT
     if ( va.type == vm->type_AT || va.type == vm->type_NullableAT ) {
         if ( vb.type == vm->type_AT || vb.type == vm->type_NullableAT )
-            return va.memcpy( vb.to_Value() ), va;
+            return va.memcpy( vb ), va;
         if ( vb.type->is_a_TypeBT() )
             return va.memcpy( make_Conv( vb.to_Value(), vm->type_PT ) ), va;
         TODO;
@@ -480,13 +481,13 @@ REG_PRIMITIVE_TYPE( add_room_in_type ) {
     if ( args.size() != 2 )
         return vm->add_error( "__primitive_add_room_in_type expects exactly 2 arguments" );
     KcSI64 size = args[ 0 ].cano( true );
-    SI32 size = 0, alig = 0;
-//    if ( ! args[ 0 ].get_value( size ) || ! args[ 1 ].get_value( alig ) )
-//        return vm->add_error( "__primitive_add_room_in_type expexts arguments convertible to PT" );
+    KcSI64 alig = args[ 1 ].cano( true );
+    if ( size.is_known() == false || alig.is_known() == false )
+        return vm->add_error( "__primitive_add_room_in_type expexts arguments convertible to PT" );
 
     // add an AnonymousRoom variable in the scope
-    Variable ar_var( MAKE_KV( AnonymousRoom, size, alig ) );
-    vm->scope->reg_var( to_string( vm->scope->variables.size() ), ar_var );
+    Variable res = make_UninitializedData( vm->type_AnonymousRoom( size.kv(), alig.kv() ), size.kv(), alig.kv() );
+    vm->scope->reg_var( to_string( vm->scope->variables.size() ), res );
     return vm->ref_void;
 }
 
@@ -503,7 +504,7 @@ REG_PRIMITIVE_TYPE( _union ) {
     Type *res = vm->types.push_back_val( new TypeUnion( max_size, max_alig ) );
     for( size_t i = 0; i < args.size(); ++i )
         res->add_attribute( names[ i ], 0, types[ i ] );
-    return make_HostVal<Type *>( vm->type_Type, res );
+    return make_Cst_HostId( vm->type_Type, res );
 }
 
 //REG_PRIMITIVE_TYPE( load ) {

@@ -15,19 +15,20 @@
 #include "Vm.h"
 #include <cmath>
 
-bool same_args( const Vec<Variable *> &a, const Vec<Variable> &b ) {
+bool same_args( const Vec<CanoVal> &a, const Vec<CanoVal> &b ) {
     if ( a.size() != b.size() )
         return false;
     for( size_t i = 0; i < a.size(); ++i )
-        if ( ! equal( *a[ i ], b[ i ] ) )
+        if ( ! always_true( a[ i ] == b[ i ] ) )
             return false;
     return true;
 }
 
 Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &args ) {
     // existing type ?
+    Vec<CanoVal> cano_args = args.map( []( const Variable &v ) { return v.cano( true ); } );
     for( Type *type : def->instances )
-        if ( same_args( type->content.data.parameters, args ) )
+        if ( same_args( type->content.data.parameters, cano_args ) )
             return type;
 
     // else, make a new one
@@ -140,12 +141,12 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
         }
 
         // anonymous attribute (room reservation)
-        if ( m.var.type == vm->type_AnonymousRoom && kv_size >= 0 && kv_alig >= 0 ) {
-            AnonymousRoom *ar = m.var.rcast<AnonymousRoom>();
-            kv_size = ceil( kv_size, ar->alig ) + ar->size;
-            kv_alig = lcm ( kv_alig, ar->alig );
-            continue;
-        }
+        //        if ( m.var.type == vm->type_AnonymousRoom && kv_size >= 0 && kv_alig >= 0 ) {
+        //            AnonymousRoom *ar = m.var.rcast<AnonymousRoom>();
+        //            kv_size = ceil( kv_size, ar->alig ) + ar->size;
+        //            kv_alig = lcm ( kv_alig, ar->alig );
+        //            continue;
+        //        }
 
         // else, look if we have fixed size information from the types
         int attr_kv_size = m.var.type->content.data.kv_size;

@@ -13,7 +13,7 @@ public:
         this->init_attr( this->a, a );
     }
 
-    UnaOp( AttrClone, const UnaOp *orig ) {
+    UnaOp( AttrClone, const UnaOp *orig ) : a( orig->a ) {
     }
 
     virtual void write_dot( std::ostream &os ) const override {

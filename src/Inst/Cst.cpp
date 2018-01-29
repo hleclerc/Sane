@@ -79,6 +79,17 @@ Variable make_Cst( Type *type, int size, void *val, void *kno ) {
 }
 
 
+Variable make_Cst_HostId( Type *type, const void *ptr ) {
+    union U {
+        PI64  v;
+        void *p;
+    };
+    U u;
+    u.v = 0;
+    u.p = ptr;
+    return make_Cst( type, 64, &u );
+}
+
 Variable make_Cst_PI64( PI64 val ) { if ( vm->reverse_endianness ) val = byte_swaped( val ); return make_Cst( vm->type_PI64, 64, &val ); }
 Variable make_Cst_SI64( SI64 val ) { if ( vm->reverse_endianness ) val = byte_swaped( val ); return make_Cst( vm->type_SI64, 64, &val ); }
 Variable make_Cst_PI32( PI32 val ) { if ( vm->reverse_endianness ) val = byte_swaped( val ); return make_Cst( vm->type_PI32, 32, &val ); }
@@ -99,3 +110,4 @@ Variable make_Cst( SI16 val ) { return make_Cst_SI16( val ); }
 Variable make_Cst( PI8  val ) { return make_Cst_PI8 ( val ); }
 Variable make_Cst( SI8  val ) { return make_Cst_SI8 ( val ); }
 Variable make_Cst( Bool val ) { return make_Cst_Bool( val ); }
+

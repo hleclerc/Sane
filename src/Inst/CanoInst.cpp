@@ -12,6 +12,7 @@ CanoInst::CanoInst() : fully_solved_buf( 0 ), child_for_fact( 0 ), op_id( 0 ) {
 CanoInst::~CanoInst() {
     if ( child_for_fact )
         child_for_fact->parents.remove_first( this );
+
     if ( fully_solved_buf != this )
         reinterpret_cast<RcPtr<CanoInst> &>( fully_solved_buf ).~RcPtr();
 }
@@ -135,13 +136,14 @@ CanoInst *CanoInst::fully_solved() {
     return fully_solved_buf;
 }
 
-bool CanoInst::known_value() const {
-    return false;
+void *CanoInst::known_value() const {
+    return 0;
 }
 
 RcPtr<CanoInst> CanoInst::sub_part( const KcSI64 &wanted_off, const KcSI64 &wanted_len ) {
     if ( ::always_true( wanted_len == length() ) )
         return this;
+    P( *this );
     TODO;
     return 0;
 }

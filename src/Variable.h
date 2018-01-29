@@ -46,7 +46,7 @@ public:
     Value              to_Value            () const;
 
     void               set_bv              ( const Value &src_val, int cst = 0 );
-    void               memcpy              ( const Value &src_val, int cst = 0 );
+    void               memcpy              ( const Variable &src, int cst = 0 );
 
     Variable           sub_part            ( Type *new_type, SI32 add_off ) const;
 

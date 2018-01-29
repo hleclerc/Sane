@@ -34,95 +34,95 @@ Variable make_Add( const Value &a, const Value &b, int flags ) {
 Variable make_Sub( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va - vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<Sub>( a, b ) )->new_created_output() };
 }
 
 Variable make_Mul( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va * vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<Mul>( a, b ) )->new_created_output() };
 }
 
 Variable make_Mod( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va % vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<Mod>( a, b ) )->new_created_output() };
 }
 
 Variable make_Div( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va / vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<Div>( a, b ) )->new_created_output() };
 }
 
-Variable make_Div_int( const Value &a, const Value &b, int flags ) {
+Variable make_DivInt( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va / vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<DivInt>( a, b ) )->new_created_output() };
 }
 
-Variable make_Or_bitwise( const Value &a, const Value &b, int flags ) {
+Variable make_OrBitwise( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va | vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<OrBitwise>( a, b ) )->new_created_output() };
 }
 
-Variable make_Xor_bitwise( const Value &a, const Value &b, int flags ) {
+Variable make_XorBitwise( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va ^ vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<XorBitwise>( a, b ) )->new_created_output() };
 }
 
-Variable make_And_bitwise( const Value &a, const Value &b, int flags ) {
+Variable make_AndBitwise( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va & vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<AndBitwise>( a, b ) )->new_created_output() };
 }
 
-Variable make_Shift_right( const Value &a, const Value &b, int flags ) {
+Variable make_ShiftRight( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va >> vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<ShiftRight>( a, b ) )->new_created_output() };
 }
 
-Variable make_Shift_left( const Value &a, const Value &b, int flags ) {
+Variable make_ShiftLeft( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( va << vb ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<ShiftLeft>( a, b ) )->new_created_output() };
 }
 
 Variable make_Inf( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( Cmp<Signed<decltype(va)>::val,Signed<decltype(vb)>::val>::my_inf( va, vb ) ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<Inf>( a, b ) )->new_created_output() };
 }
 
 Variable make_Sup( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( Cmp<Signed<decltype(va)>::val,Signed<decltype(vb)>::val>::my_sup( va, vb ) ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<Sup>( a, b ) )->new_created_output() };
 }
 
-Variable make_Inf_equ( const Value &a, const Value &b, int flags ) {
+Variable make_InfEqu( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( Cmp<Signed<decltype(va)>::val,Signed<decltype(vb)>::val>::my_inf_equ( va, vb ) ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<InfEqu>( a, b ) )->new_created_output() };
 }
 
-Variable make_Sup_equ( const Value &a, const Value &b, int flags ) {
+Variable make_SupEqu( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( Cmp<Signed<decltype(va)>::val,Signed<decltype(vb)>::val>::my_sup_equ( va, vb ) ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<SupEqu>( a, b ) )->new_created_output() };
 }
 
-Variable make_Not_equ( const Value &a, const Value &b, int flags ) {
+Variable make_NotEqu( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( Cmp<Signed<decltype(va)>::val,Signed<decltype(vb)>::val>::my_not_equ( va, vb ) ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<NotEqu>( a, b ) )->new_created_output() };
 }
 
 Variable make_Equ( const Value &a, const Value &b, int flags ) {
 //    if ( Value r = test_known( a, b, []( auto va, auto vb ) { return make_Cst( Cmp<Signed<decltype(va)>::val,Signed<decltype(vb)>::val>::my_equ( va, vb ) ); }, Value{} ) )
 //        return r;
-    TODO; return {};
+    return { ( new BinOp<Equ>( a, b ) )->new_created_output() };
 }

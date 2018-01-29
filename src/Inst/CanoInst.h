@@ -36,7 +36,7 @@ public:
     CanoInst               *fully_solved     ();                                       ///< return the fully solved version of this
     virtual bool            always_false     ( Type *type ) const;
     virtual bool            always_true      ( Type *type ) const;
-    virtual bool            known_value      () const;                                 ///<
+    virtual void           *known_value      () const;                                 ///<
     virtual RcPtr<CanoInst> sub_part         ( const KcSI64 &off, const KcSI64 &len ); ///<
     virtual KcSI64          length           () const = 0;                             ///< size in memory (in bits)
 

@@ -1,25 +1,32 @@
+#include "Inst/CanoCst.h"
 #include "KuSI64.h"
 #include "Class.h"
 #include "Type.h"
 #include "Vm.h"
 
-Type::Type( const LString &name ) : content( vm ? vm->type_Type : 0 ) {
-    content.data.name = name;
+Type::Type( const LString &name ) : name( name ) {
+    last_attribute     = 0;
+    first_attribute    = 0;
+    _orig_class        = 0;
+    _kv_size           = 0;
+    _kv_alig           = 1;
+    type_promote_score = -1;
+    has_new_vtable     = false;
 }
 
 void Type::write_to_stream(std::ostream &os) const {
-    os << content.data.name;
+    os << name;
 }
 
 bool Type::has_vtable_at_the_beginning() const {
-    if ( content.data.has_new_vtable )
+    if ( has_new_vtable )
         return true;
     if ( Class *cl = orig_class() ) {
         for( const RcString &name : cl->inheritance_names ) {
-            Type *inh_type = content.data.attributes.find( name )->second.type;
+            Type *inh_type = attributes.find( name )->second.type;
             if ( inh_type->has_vtable_at_the_beginning() )
                 return true;
-            if ( inh_type->content.data.kv_size )
+            if ( inh_type->kv_size() )
                 break;
         }
     }
@@ -28,13 +35,13 @@ bool Type::has_vtable_at_the_beginning() const {
 
 RcString Type::checks_type_constraint( const Variable &self, const Variable &tested_var, TCI &tci ) const {
     vm->add_error( "checks_type_constraint for type {}", *this );
-    PE( content.data.name );
+    PE( name );
     TODO;
     return "not equal nor inherited";
 }
 
 unsigned Type::get_nb_conversions( const Variable &self ) const {
-    PE( content.data.name );
+    PE( name );
     TODO;
     return 0;
 }
@@ -47,8 +54,8 @@ bool Type::has_a_constructor() const {
 //void Type::write_cst( std::ostream &os, const PI8 *data, int offset_mod_8, bool always_add_braces ) const {
 //    // os << content << "(" << "..." << ")";
 //    os << "{";
-//    for( TypeContent::Attribute *attr = content.data.first_attribute; attr; attr = attr->next ) {
-//        if ( attr != content.data.first_attribute )
+//    for( TypeContent::Attribute *attr = first_attribute; attr; attr = attr->next ) {
+//        if ( attr != first_attribute )
 //            os << ",";
 //        attr->type->write_cst( os, data + ( offset_mod_8 + attr->off ) / 8, ( offset_mod_8 + attr->off ) % 8 );
 //    }
@@ -60,7 +67,7 @@ void Type::destroy( const Variable &self, bool use_virtual ) {
 
 
 void Type::spread_in( const Variable &self, Vec<Variable> &res, Vec<RcString> &names ) {
-    PE( content.data.name );
+    PE( name );
     TODO;
 }
 
@@ -76,19 +83,19 @@ void Type::construct( const Variable &self, const Vec<Variable> &args, const Vec
 }
 
 double Type::get_pertinence( const Variable &self ) const {
-    PE( content.data.name );
+    PE( name );
     TODO;
     return 0;
 }
 
 Type::CondVal Type::get_condition( const Variable &self ) const {
-    PE( content.data.name );
+    PE( name );
     TODO;
     return Type::CondVal{ 0, {} };
 }
 
 void Type::get_fail_info( const Variable &self, size_t &offset, RcString &source, RcString &msg ) const {
-    PE( content.data.name );
+    PE( name );
     TODO;
 }
 
@@ -97,25 +104,25 @@ bool Type::destroy_attrs() const {
 }
 
 void Type::add_attribute( const RcString &name, SI32 off, Type *type, Variable::Flags flags ) {
-    TypeContent::Attribute *attr = &content.data.attributes.emplace( name, TypeContent::Attribute{ name, type, off, flags, content.data.last_attribute, 0 } ).first->second;
-    ( content.data.last_attribute ? content.data.last_attribute->next : content.data.first_attribute ) = attr;
-    content.data.last_attribute = attr;
+    Type::Attribute *attr = &attributes.emplace( name, Type::Attribute{ name, type, off, flags, last_attribute, 0 } ).first->second;
+    ( last_attribute ? last_attribute->next : first_attribute ) = attr;
+    last_attribute = attr;
 }
 
 Variable Type::make_sl_trial( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) const {
-    PE( content.data.name );
+    PE( name );
     TODO;
     return {};
 }
 
 Variable Type::use_sl_trial( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags, const Variable &trial ) const {
-    PE( content.data.name );
+    PE( name );
     TODO;
     return {};
 }
 
 Variable Type::apply( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) {
-    PE( content.data.name );
+    PE( name );
     TODO; return {};
 }
 
@@ -135,34 +142,33 @@ Variable Type::select( Variable &self, bool want_ret, const Vec<Variable> &args,
 
 Variable Type::find_attribute( const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const {
     // instance attributes
-    auto iter_attr = content.data.attributes.find( name );
-    if ( iter_attr != content.data.attributes.end() ) {
-        TODO;
-        return {}; // { self.ref, iter_attr->second.type, off + iter_attr->second.off, flags };
+    auto iter_attr = attributes.find( name );
+    if ( iter_attr != attributes.end() ) {
+        return { self.ref, off + iter_attr->second.off, iter_attr->second.type->size( self.ref, off + iter_attr->second.off ), iter_attr->second.type, flags };
     }
 
     // methods
-    auto iter_sattr = content.data.methods.find( name );
-    if ( iter_sattr != content.data.methods.end() )
+    auto iter_sattr = methods.find( name );
+    if ( iter_sattr != methods.end() )
         return self ? iter_sattr->second->type->with_self( *iter_sattr->second, self ) : *iter_sattr->second;
 
     // static attributes
-    iter_sattr = content.data.static_attributes.find( name );
-    if ( iter_sattr != content.data.static_attributes.end() )
+    iter_sattr = static_attributes.find( name );
+    if ( iter_sattr != static_attributes.end() )
         return *iter_sattr->second;
 
     // template arguments
     if ( Class *cl = orig_class() )
         for( size_t i = 0; i < cl->arg_names.size(); ++i )
             if ( cl->arg_names[ i ] == name )
-                return *content.data.parameters[ i ];
+                TODO; // return *parameters[ i ];
 
     // try in inheritance (if not looking for a destructor)
     if ( Class *cl = orig_class() ) {
         if ( name != "destroy" ) {
             for( const RcString &inh_name : cl->inheritance_names ) {
-                auto iter_attr = content.data.attributes.find( inh_name );
-                ASSERT( iter_attr != content.data.attributes.end(), "" );
+                auto iter_attr = attributes.find( inh_name );
+                ASSERT( iter_attr != attributes.end(), "" );
                 if ( Variable res = iter_attr->second.type->find_attribute( name, self, flags | iter_attr->second.flags, off + iter_attr->second.off ) )
                     return res;
             }
@@ -173,19 +179,19 @@ Variable Type::find_attribute( const RcString &name, const Variable &self, Varia
 }
 
 Variable Type::with_self( Variable &orig, const Variable &new_self ) const {
-    PE( content.data.name );
+    PE( name );
     TODO;
     return {};
 }
 
 Class *Type::orig_class() const {
-    return content.data.orig_class;
+    return _orig_class;
 }
 
 void Type::write_cst( std::ostream &os, const PI8 *data, int offset_mod_8, bool always_add_braces ) const {
     os << "{";
-    for( TypeContent::Attribute *attr = content.data.first_attribute; attr; attr = attr->next ) {
-        if ( attr != content.data.first_attribute )
+    for( Type::Attribute *attr = first_attribute; attr; attr = attr->next ) {
+        if ( attr != first_attribute )
             os << ",";
         attr->type->write_cst( os, data + ( offset_mod_8 + attr->off ) / 8, ( offset_mod_8 + attr->off ) % 8 );
     }
@@ -201,7 +207,11 @@ int Type::is_signed() const {
 }
 
 SI32 Type::kv_size() const {
-    return content.data.kv_size;
+    return _kv_size;
+}
+
+SI32 Type::kv_alig() const {
+    return _kv_alig;
 }
 
 int Type::mantissa_len() const {
@@ -234,12 +244,15 @@ SI64 Type::convert_cst_to_SI64( const void *content ) const {
 }
 
 String Type::c_name() const {
-    String res = content.data.name;
-    for( Variable *var : content.data.parameters ) {
-        res += to_string( *var );
-    }
+    String res = name;
+    for( const CanoVal &var : parameters )
+        res += to_string( var );
     return res;
 }
+
+#define BO( NAME ) CanoVal Type::make_Cano##NAME( const void *a, const void *b ) { TODO; return {}; }
+#include "decl_bin_op.h"
+#undef BO
 
 Type *type_promote_gen( Type *a, Type *b ) {
     if ( a == vm->type_AT )

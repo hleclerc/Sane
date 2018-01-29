@@ -10,3 +10,7 @@ template<class T> inline T byte_swaped( const T &val, N<8> ) { return bswap_64( 
 
 template<class T> inline T byte_swaped( const T &val ) { return byte_swaped( val, N<sizeof(val)>() ); }
 
+template<class T> inline T byte_swaped_if( const T &val, N<0> ) { return val; }
+template<class T> inline T byte_swaped_if( const T &val, N<1> ) { return byte_swaped( val ); }
+
+

@@ -100,7 +100,7 @@ void Codegen_C::write_repr( std::ostream &os, Type *type ) {
 
         // struct declaration
         declarations << "struct " << name << " {\n";
-        for( TypeContent::Attribute *attr = type->content.data.first_attribute; attr; attr = attr->next ) {
+        for( Type::Attribute *attr = type->first_attribute; attr; attr = attr->next ) {
             // TODO: offsets != than those of C++
             declarations << "    " << repr( attr->type ) << " " << attr->name << ";\n";
         }
@@ -246,7 +246,7 @@ bool Codegen_C::write_repr_rec( StreamPrio &ss, const std::function<void(StreamP
         return true;
     }
 
-    for( const TypeContent::Attribute *attr = reg_type->content.data.first_attribute; attr; attr = attr->next ) {
+    for( const Type::Attribute *attr = reg_type->first_attribute; attr; attr = attr->next ) {
         if ( tgt_offset < attr->off )
             return false;
         if ( write_repr_rec( ss, [attr,&reg_writer](StreamPrio &ss){ ss( PRIO_Member_selection ) << reg_writer << "." << attr->name; }, attr->type, tgt_type, tgt_offset - attr->off ) )

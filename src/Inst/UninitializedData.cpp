@@ -12,8 +12,9 @@
 */
 class UninitializedData : public Clonable<UninitializedData,Inst> {
 public:
-    UninitializedData( Type *type, const KuSI64 &size ) : type( type ) {
+    UninitializedData( Type *type, const KuSI64 &size, const KuSI64 &alig ) : type( type ) {
         init_attr( this->size, size );
+        init_attr( this->alig, alig );
     }
 
     UninitializedData( AttrClone, const UninitializedData *UninitializedData ) {
@@ -25,6 +26,10 @@ public:
 
     virtual KuSI64 created_out_size( int nout ) const override {
         return to_KuSI64( size );
+    }
+
+    virtual KuSI64 created_out_alig( int nout ) const override {
+        return to_KuSI64( alig );
     }
 
     virtual void write_inline_code( StreamPrio &ss, Codegen &cg, int nout, int flags ) override {
@@ -41,9 +46,10 @@ public:
 
     Type    *type;
     IiKuSI64 size;
+    IiKuSI64 alig;
 };
 
-Variable make_UninitializedData( Type *type, const KuSI64 &size ) {
-    UninitializedData *res = new UninitializedData( type, size );
+Variable make_UninitializedData( Type *type, const KuSI64 &size, const KuSI64 &alig ) {
+    UninitializedData *res = new UninitializedData( type, size, alig );
     return { res->new_created_output() };
 }

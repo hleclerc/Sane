@@ -14,7 +14,6 @@
 
 #include "Inst/UninitializedData.h"
 #include "Inst/Gatherer.h"
-#include "Inst/HostVal.h"
 #include "Inst/Void.h"
 #include "Inst/Cst.h"
 #include "Inst/If.h"
@@ -51,7 +50,7 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     #undef BT
 
     // arythmetic types
-    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T ); type_##T->content.data.kv_size = 8 * sizeof( T );
+    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T ); type_##T->_kv_size = 8 * sizeof( T );
     BT( Bool )
     BT( SI64 )
     BT( PI64 )
@@ -63,7 +62,7 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     BT( PI8  )
     #undef BT
 
-    type_Bool->content.data.kv_size = 1;
+    type_Bool->_kv_size = 1;
 
     type_CallableWithSelf = new TypeCallableWithSelf;
     type_SlTrialClass     = new TypeSlTrialClass;
@@ -87,9 +86,9 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     #undef BT
 
     // correction of type of type_...->content (HostVal)
-    #define BT( T ) type_##T->content.type = type_Type;
-    #include "BaseTypes.h"
-    #undef BT
+    //    #define BT( T ) type_##T->content.type = type_Type;
+    //    #include "BaseTypes.h"
+    //    #undef BT
 
     for( Primitive_decl *pd = last_Primitive_decl; pd; pd = pd->prev )
         predefs[ RcString( "__primitive_" ) + pd->name ] = make_Void( types.push_back_val( pd->func() ) );
@@ -109,8 +108,8 @@ Variable Vm::import( const String &filename, const String &import_dir, bool disp
         return iter->second;
 
     // prepare a result variable
-    Variable res = make_HostVal<Import>( type_Import );
-    Import *import = res.rcast<Import>();
+    Import *import = new Import;
+    Variable res = make_Cst_HostId( type_Import, import );
 
     imported.insert( iter, std::make_pair( abso, res ) );
 
@@ -225,6 +224,16 @@ Variable Vm::visit( const AstCrepr &ac, bool want_ret ) {
     return visit( ac.names, ac.code, want_ret );
 }
 
+Type *Vm::type_AnonymousRoom( int size, int alig ) {
+    auto iter = ano_room_type_map.find( std::make_pair( size, alig ) );
+    if ( iter == ano_room_type_map.end() ) {
+        Type *res = new Type( "AnonymousRoom_" + to_string( size ) + "_" + to_string( alig ) );
+        iter = ano_room_type_map.emplace_hint( iter, std::make_pair( size, alig ), res );
+        types << res;
+    }
+    return iter->second;
+}
+
 Variable Vm::new_Type( Type *type ) {
     TODO;
     return {};
@@ -232,9 +241,9 @@ Variable Vm::new_Type( Type *type ) {
 
 Variable Vm::make_inst( Type *type, const Vec<Variable> &ctor_args, const Vec<RcString> &ctor_names, ApplyFlags apply_flags ) {
     // check that all abstract surdefs are defined
-    if ( ! ( apply_flags & ApplyFlags::DONT_CALL_CTOR ) && type->content.data.abstract_methods.size() ) {
+    if ( ! ( apply_flags & ApplyFlags::DONT_CALL_CTOR ) && type->abstract_methods.size() ) {
         std::string am;
-        for( const FunctionSignature &fs : type->content.data.abstract_methods )
+        for( const FunctionSignature &fs : type->abstract_methods )
             am += std::string( am.empty() ? "" : ", " ) + fs.name;
         add_error( "{} contains abstract methods ({}) and should not be instantiated", *type, am );
     }
@@ -242,7 +251,9 @@ Variable Vm::make_inst( Type *type, const Vec<Variable> &ctor_args, const Vec<Rc
     // make an instance
     if ( type->kv_size() < 0 )
         TODO;
-    Variable res = make_UninitializedData( type, type->kv_size() );
+    if ( type->kv_alig() < 0 )
+        TODO;
+    Variable res = make_UninitializedData( type, type->kv_size(), type->kv_alig() );
 
     // call constructor if necessary
     if ( apply_flags & ApplyFlags::DONT_CALL_CTOR )
@@ -265,7 +276,7 @@ Type *Vm::type_ptr_for( const RcString &name, const Vec<Variable> &args ) {
     }
     Type *res = types.push_back_val( new Type( name ) );
     for( const Variable &arg : args )
-        res->content.data.parameters << main_scope.add_static_variable( init_mode ? arg : arg.find_attribute( "operator :=" ).apply( true ).constify( true ) );
+        res->parameters << arg.cano( true );
     return res;
 }
 

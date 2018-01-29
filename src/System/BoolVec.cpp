@@ -4,6 +4,10 @@
 BoolVec::BoolVec( Reference, void *data, size_t size ) : data( (PI8 *)data ), size( size ), rese( 0 ) {
 }
 
+BoolVec::BoolVec( void *data, size_t size ) : BoolVec( size ) {
+    memcpy_bit( this->data, data, size );
+}
+
 BoolVec::BoolVec( size_t size, bool val ) : size( size ), rese( size ) {
     size_t bs = ( size + 7 ) / 8;
     if( size )
@@ -17,6 +21,9 @@ BoolVec::BoolVec( size_t size, bool val ) : size( size ), rese( size ) {
             data[ i ] = 0;
 }
 
+BoolVec::BoolVec( const BoolVec &bv ) : BoolVec( bv.data, bv.size ) {
+}
+
 BoolVec::BoolVec( size_t size ) : size( size ), rese( size ) {
     size_t bs = ( size + 7 ) / 8;
     if ( size )
@@ -26,6 +33,11 @@ BoolVec::BoolVec( size_t size ) : size( size ), rese( size ) {
 BoolVec::~BoolVec() {
     if ( rese )
         free( data );
+}
+
+BoolVec &BoolVec::operator=( const BoolVec &that ) {
+    TODO;
+    return *this;
 }
 
 void BoolVec::write_to_stream( std::ostream &os ) const {
@@ -39,6 +51,11 @@ bool BoolVec::operator==( const BoolVec &that ) const {
 
 bool BoolVec::operator!=( const BoolVec &that ) const {
     return ! operator ==( that );
+}
+
+bool BoolVec::operator<( const BoolVec &that ) const {
+    return size != that.size ? size < that.size : memcmp_bit( data, 0, that.data, 0, size ) < 0;
+
 }
 
 bool BoolVec::all_true() const {

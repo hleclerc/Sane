@@ -979,7 +979,7 @@ Variable AstVisitorVm::xxxxof( RcString value, int w, bool in_bytes ) {
 
     // typeof
     if ( w == 0 )
-        return make_HostVal<Type *>( vm->type_Type, type );
+        return make_Cst_HostId( vm->type_Type, type );
 
     // sizeof of aligof
     SI32 vres = w == 1 ? type->content.data.kv_size : type->content.data.alig;

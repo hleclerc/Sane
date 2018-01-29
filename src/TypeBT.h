@@ -50,6 +50,18 @@ public:
         return -1;
     }
 
+    virtual SI32 kv_size() const override {
+        if ( std::is_same<T,Bool>::value )
+            return 1;
+        return 8 * sizeof( T );
+    }
+
+    virtual SI32 kv_alig() const override {
+        if ( std::is_same<T,Bool>::value )
+            return 1;
+        return 8 * sizeof( T );
+    }
+
     virtual RcPtr<CanoInst> convert_cano_cst( const void *content, Type *target ) override {
         T value = *reinterpret_cast<const T *>( content );
         if ( reverse_endianness )
@@ -77,4 +89,19 @@ public:
         T value = *reinterpret_cast<const T *>( content );
         return reverse_endianness ? byte_swaped( value ) : value;
     }
+
+    virtual CanoVal make_CanoAdd   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) +  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoSub   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) -  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoMul   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) *  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoDiv   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) /  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoDivInt( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) /  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoMod   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) %  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoInf   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) <  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoSup   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) >  byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoInfEqu( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) <= byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoSupEqu( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) >= byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoEqu   ( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) == byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoNotEqu( const void *a, const void *b ) override { T content = byte_swaped_if( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ) != byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoMin   ( const void *a, const void *b ) override { T content = byte_swaped_if( std::min( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ), byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ) ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
+    virtual CanoVal make_CanoMax   ( const void *a, const void *b ) override { T content = byte_swaped_if( std::max( byte_swaped_if( *reinterpret_cast<const T *>( a ), N<reverse_endianness>() ), byte_swaped_if( *reinterpret_cast<const T *>( b ), N<reverse_endianness>() ) ), N<reverse_endianness>() ); return { make_CanoCst( &content, kv_size() ), this }; }
 };

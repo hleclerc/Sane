@@ -17,6 +17,7 @@ class Type;
 class Vm {
 public:
     using Error = ErrorList::Error;
+    using MPIT  = std::map<std::pair<int,int>,Type *>;
     using MSV   = std::map<String,Variable>;
     using SFM   = std::map<RcString,std::function<Variable()>>;
     using SVM   = std::map<RcString,Variable>;
@@ -44,6 +45,7 @@ public:
 
     inline  bool  want_exec                     () const { return true; }
 
+    Type         *type_AnonymousRoom            ( int size, int alig );
     Type         *type_ptr_for                  ( const RcString &name, const Vec<Variable> &args );
     Variable      make_inst                     ( Type *type, const Vec<Variable> &ctor_args, const Vec<RcString> &ctor_names, ApplyFlags apply_flags );
     Variable      new_Type                      ( Type *type );
@@ -81,6 +83,7 @@ public:
     Interceptor  *interceptor;
     std::ostream *error_stream;
     RessourceMap  ressource_map;  ///< modified file descriptors (fd -> last changes)
+    MPIT          ano_room_type_map;
     bool          reverse_endianness;
 };
 

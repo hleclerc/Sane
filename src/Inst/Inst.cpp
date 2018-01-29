@@ -175,6 +175,10 @@ KuSI64 Inst::created_out_size( int nout ) const {
     return out_type( nout )->kv_size();
 }
 
+KuSI64 Inst::created_out_alig( int nout ) const {
+    return out_type( nout )->kv_alig();
+}
+
 int Inst::nb_parents_on_nout( int nout ) const {
     size_t res = 0;
     for( const Parent &p : parents )
