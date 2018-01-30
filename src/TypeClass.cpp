@@ -4,6 +4,7 @@
 #include "AnonymousRoom.h"
 #include "SlTrialClass.h"
 #include "System/Math.h"
+#include "Inst/HostId.h"
 #include "SurdefList.h"
 #include "TypeClass.h"
 #include "Wildcard.h"
@@ -28,14 +29,14 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
     // existing type ?
     Vec<CanoVal> cano_args = args.map( []( const Variable &v ) { return v.cano( true ); } );
     for( Type *type : def->instances )
-        if ( same_args( type->content.data.parameters, cano_args ) )
+        if ( same_args( type->parameters, cano_args ) )
             return type;
 
     // else, make a new one
     Type *res = vm->type_ptr_for( def->name, args );
     Scope new_scope( Scope::ScopeType::TYPE_CTOR );
-    PI32 old_size = res->content.data.kv_size;
-    res->content.data.orig_class = def;
+    PI32 old_size = res->kv_size();
+    res->_orig_class = def;
     def->instances << res;
 
     // template_parameters in scope
@@ -57,8 +58,8 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
         new_scope.reg_var( def->inheritance_names[ n ], inh_ref, Scope::VariableFlags::SUPER );
 
         // abstract methods
-        for( const FunctionSignature &fs : inh_ref.type->content.data.abstract_methods )
-            res->content.data.abstract_methods.insert( fs );
+        for( const FunctionSignature &fs : inh_ref.type->abstract_methods )
+            res->abstract_methods.insert( fs );
     }
 
     // block exec
@@ -80,7 +81,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
             Type *inh_type = new_scope.find_variable( name ).type;
             if ( inh_type->has_vtable_at_the_beginning() )
                 return false;
-            if ( inh_type->content.data.kv_size )
+            if ( inh_type->kv_size() )
                 break;
         }
         for( Scope::NV *m : variables ) {
@@ -99,7 +100,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
     };
     // we already have this room ??
     if ( needs_new_vtable() ) {
-        res->content.data.has_new_vtable = true;
+        res->has_new_vtable = true;
         kv_size = 8 * sizeof( void * );
         kv_alig = 8 * sizeof( void * );
     }
@@ -123,20 +124,20 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
                         Def *def = v.rcast<Def>();
                         has_defs = true;
                         if ( def->abstract_flag )
-                            res->content.data.abstract_methods.insert( def );
+                            res->abstract_methods.insert( def );
                     }
                 }
 
                 //
                 if ( has_defs ) {
-                    res->content.data.methods[ m.name ] = vm->main_scope.add_static_variable( m.var );
+                    res->methods[ m.name ] = vm->main_scope.add_static_variable( m.var );
                     continue;
                 }
             } else
                 TODO;
         }
         if ( m.flags & Scope::VariableFlags::STATIC ) {
-            res->content.data.static_attributes[ m.name ] = vm->main_scope.add_static_variable( m.var );
+            res->static_attributes[ m.name ] = vm->main_scope.add_static_variable( m.var );
             continue;
         }
 
@@ -149,8 +150,8 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
         //        }
 
         // else, look if we have fixed size information from the types
-        int attr_kv_size = m.var.type->content.data.kv_size;
-        int attr_kv_alig = m.var.type->content.data.alig;
+        int attr_kv_size = m.var.type->kv_size();
+        int attr_kv_alig = m.var.type->kv_alig();
         if ( kv_size >= 0 && kv_alig >= 0 && attr_kv_size >= 0 && attr_kv_alig >= 0 ) {
             kv_alig = lcm ( kv_alig, attr_kv_alig );
             kv_size = ceil( kv_size, attr_kv_alig );
@@ -172,8 +173,8 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
 
     // if size has not been specified before, we store the result of the computation
     if ( old_size == 0 ) {
-        res->content.data.kv_size = kv_size;
-        res->content.data.alig = kv_alig;
+        res->_kv_size = kv_size;
+        res->_kv_alig = kv_alig;
     }
 
     // preparation of vtables
@@ -201,8 +202,8 @@ Variable TypeClass::make_sl_trial( bool want_ret, const Variable &func, const Va
     BoolVec defined_args( def->arg_names.size(), false );
 
     // make a Sl_trial_Def
-    Variable tr_var( MAKE_KV( SlTrialClass ) );
-    SlTrialClass *tr = tr_var.rcast<SlTrialClass>();
+    SlTrialClass *tr = new SlTrialClass;
+    Variable tr_var = make_HostId( vm->type_SlTrialClass, tr );
     tr->args.resize( def->arg_names.size() );
     tr->def = func;
 
@@ -212,21 +213,19 @@ Variable TypeClass::make_sl_trial( bool want_ret, const Variable &func, const Va
     // catched variables for defaults, condition, ...
     for( size_t i = 0, s = def->catched_variables_prep.size(); i < s; ++i )
         new_scope.reg_var( def->catched_variables_prep[ i ].name, def->catched_variables_prep[ i ].val, Scope::VariableFlags::CATCHED );
-    for( const RcString &name : def->with_names ) {
-        Variable wc( MAKE_KV( Wildcard ) );
-        wc.rcast<Wildcard>()->name = name;
-        new_scope.reg_var( name, wc, Scope::VariableFlags::TEMPLATE );
-    }
+    for( const RcString &name : def->with_names )
+        new_scope.reg_var( name, make_HostId( vm->type_Wildcard, new Wildcard( name ) ), Scope::VariableFlags::TEMPLATE );
     // new_scope.valid_scope_ptr = def->valid_scope_ptr.get_scope();
 
     // init varargs
     Vec<Varargs *> vpv;
     for( size_t i : def->arg_spreads ) {
-        Variable vav( MAKE_KV( Varargs ) );
+        Varargs *va = new Varargs;
+        Variable vav = make_HostId( vm->type_Varargs, va );
         new_scope.reg_var( def->arg_names[ i ], vav );
         defined_args.set( i, true );
-        vpv << vav.rcast<Varargs>();
         tr->args[ i ] = vav;
+        vpv << va;
     }
 
     // function to be called if fail

@@ -912,8 +912,9 @@ Variable Ast_visitor_Vm::xxxxof( Rc_string value, int w, bool in_bytes ) {
         type = reinterpret_cast<GetSetter *>( res.ptr() )->get_type( scope );
 
     // typeof
-    if ( w == 0 )
+    if ( w == 0 ) {
         return { vm, vm->type_Type, &type };
+    }
 
     // sizeof of aligof with a type
     if ( type == vm->type_SurdefList || type == vm->type_Type )

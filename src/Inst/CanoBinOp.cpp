@@ -48,7 +48,7 @@ CanoVal make_CanoAdd( const CanoVal &a, const CanoVal &b ) {
         return make_CanoConv( a, tp ) + make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
-        TODO;
+        return a.type->make_CanoAdd( a.inst->known_value(), b.inst->known_value() );
 
     return make_CanoBinOp<Add>( a.type, a, b );
 }

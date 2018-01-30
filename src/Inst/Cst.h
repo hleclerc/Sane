@@ -7,9 +7,6 @@ class Type;
 /// generic cst
 Variable make_Cst( Type *type, int size, void *val = 0, void *kno = 0 );
 
-/// host pointeur stored as a PI64
-Variable make_Cst_HostId( Type *type, const void *ptr );
-
 Variable make_Cst_PI64( PI64 val );
 Variable make_Cst_SI64( SI64 val );
 Variable make_Cst_PI32( PI32 val );

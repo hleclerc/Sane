@@ -1,9 +1,9 @@
 #pragma once
 
-//#include "ApplyFlags.h"
 #include "FunctionSignature.h"
 #include "System/LString.h"
 #include "Variable.h"
+#include "CanoType.h"
 #include "Value.h"
 #include <map>
 class Class;
@@ -76,6 +76,8 @@ public:
     #define BO( NAME ) virtual CanoVal make_Cano##NAME( const void *a, const void *b );
     #include "decl_bin_op.h"
     #undef BO
+
+    RcPtr<CanoInst> cano_inst;         ///<
 
     LString         name;
     SI32            alig;

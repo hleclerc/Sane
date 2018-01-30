@@ -14,3 +14,18 @@ struct SlTrialDef {
     TCI           tci;
     Type::CondVal condition;
 };
+
+/**
+*/
+struct CanoSlTrialDef {
+    CanoSlTrialDef( const SlTrialDef *orig ) {
+        TODO;
+    }
+};
+
+template<>
+struct CanoType<SlTrialDef> {
+    enum { unique_ptr = 0 };
+    using CT = CanoSlTrialDef;
+};
+

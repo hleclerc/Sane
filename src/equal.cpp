@@ -19,12 +19,12 @@ bool equal( const Variable &a, const Variable &b ) {
 
     //    //
     //    if ( a.type == gvm->type_Type ) {
-    //        Type *va = *a.rcast<Type *>();
+    //        Type *va = *a.rcast<Type>();
     //        if ( b.type == gvm->type_SurdefList ) {
     //            SurdefList *vb = b.rcast<SurdefList>();
     //            return vb->eq( va );
     //        } else if ( b.type == gvm->type_Type ) {
-    //            Type *vb = *b.rcast<Type *>( );
+    //            Type *vb = *b.rcast<Type>( );
     //            return va == vb;
     //        } else {
     //            gvm->add_error( "" );
@@ -40,7 +40,7 @@ bool equal( const Variable &a, const Variable &b ) {
     //            SurdefList *vb = b.rcast<SurdefList>();
     //            return va->eq( vb );
     //        } else if ( b.type == gvm->type_Type ) {
-    //            Type *vb = *b.rcast<Type *>();
+    //            Type *vb = *b.rcast<Type>();
     //            return va->eq( vb );
     //        } else {
     //            P( *b.type );

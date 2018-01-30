@@ -55,4 +55,6 @@ public:
     Bool                      inline_flag;
     Bool                      virtual_flag;
     Bool                      named_converter_flag;
+
+    RcPtr<CanoInst>           cano_inst;
 };

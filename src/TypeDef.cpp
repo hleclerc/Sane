@@ -1,5 +1,7 @@
 #include "System/RaiiSave.h"
 #include "System/BoolVec.h"
+#include "Inst/HostId.h"
+#include "Inst/Cst.h"
 #include "SlTrialDef.h"
 #include "SurdefList.h"
 #include "Wildcard.h"
@@ -49,8 +51,8 @@ Variable TypeDef::make_sl_trial( bool want_ret, const Variable &func, const Vari
     BoolVec defined_args( def->arg_names.size(), false );
 
     // make a Sl_trial_Def
-    Variable tr_var( MAKE_KV( SlTrialDef ) );
-    SlTrialDef *tr = tr_var.rcast<SlTrialDef>();
+    SlTrialDef *tr = new SlTrialDef;
+    Variable tr_var = make_HostId( vm->type_SlTrialDef, tr );
     tr->args.resize( def->arg_names.size() );
     tr->def = func;
 
@@ -62,21 +64,19 @@ Variable TypeDef::make_sl_trial( bool want_ret, const Variable &func, const Vari
     // catched variables for defaults, condition, ...
     for( size_t i = 0, s = def->catched_variables_prep.size(); i < s; ++i )
         new_scope.reg_var( def->catched_variables_prep[ i ].name, def->catched_variables_prep[ i ].val, Scope::VariableFlags::CATCHED );
-    for( const RcString &name : def->with_names ) {
-        Variable wc( MAKE_KV( Wildcard ) );
-        wc.rcast<Wildcard>()->name = name;
-        new_scope.reg_var( name, wc, Scope::VariableFlags::TEMPLATE );
-    }
+    for( const RcString &name : def->with_names )
+        new_scope.reg_var( name, make_HostId( vm->type_Wildcard, new Wildcard( name ) ), Scope::VariableFlags::TEMPLATE );
     // new_scope.valid_scope_ptr = def->valid_scope_ptr.get_scope();
 
     // init varargs
     Vec<Varargs *> vpv;
     for( size_t i : def->arg_spreads ) {
-        Variable vav( MAKE_KV( Varargs ) );
+        Varargs *va = new Varargs;
+        Variable vav = make_HostId( vm->type_Varargs, va );
         new_scope.reg_var( def->arg_names[ i ], vav );
         defined_args.set( i, true );
-        vpv << vav.rcast<Varargs>();
         tr->args[ i ] = vav;
+        vpv << va;
     }
 
     // function to be called if fail
@@ -290,7 +290,7 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
         }
 
         // put again the static variables
-        for( auto p : with_self.type->content.data.static_attributes )
+        for( auto p : with_self.type->static_attributes )
             new_scope.reg_var( p.first, *p.second, Scope::VariableFlags::STATIC | Scope::VariableFlags::CATCHED );
 
         // set vtable pointers
@@ -327,7 +327,7 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
         with_self.ref->cpt_use = 654;
 
         // destruction of attributes
-        for( TypeContent::Attribute *attr = with_self.type->content.data.last_attribute; attr; attr = attr->prev ) {
+        for( Type::Attribute *attr = with_self.type->last_attribute; attr; attr = attr->prev ) {
             ASSERT( attr->off % 8 == 0, "..." );
             KuSI64 off = with_self.offset + attr->off;
             Variable v( with_self.ref, off, attr->type->size( with_self.ref, off ), attr->type, with_self.flags );

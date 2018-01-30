@@ -76,7 +76,6 @@ static std::map<BoolVec,RcPtr<CanoCst>> map_gen_cst;
 
 RcPtr<CanoInst> make_gen_CanoCst( const void *ptr, int len ) {
     BoolVec bv( Reference(), const_cast<void *>( ptr ), len );
-    P( bv );
 
     auto iter = map_gen_cst.find( bv );
     if ( iter == map_gen_cst.end() )
@@ -95,12 +94,13 @@ RcPtr<CanoInst> make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T b_val, int 
             map.resize( ws );
             if ( sizeof( T ) > 1 && vm->reverse_endianness ) {
                 for( T i = 0; i < ws; ++i ) {
-                    T c = byte_swaped( i );
+                    T c = byte_swaped( i ) - of;
                     map[ i ] = new CanoCst( &c, length );
                 }
             } else {
                 for( T i = 0; i < ws; ++i ) {
-                    map[ i ] =  new CanoCst( &i, length );
+                    T c = i - of;
+                    map[ i ] =  new CanoCst( &c, length );
                 }
             }
         }

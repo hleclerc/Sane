@@ -14,9 +14,10 @@ struct Import {
         Variable var;
     };
 
-    void         write_to_stream( std::ostream &os ) const { os << exports; }
+    void            write_to_stream( std::ostream &os ) const { os << exports; }
 
-    LString      filename;
-    LVec<Export> exports;
-    bool         finished; ///< useful for recursive imports
+    LString         filename;
+    LVec<Export>    exports;
+    bool            finished; ///< useful for recursive imports
+    RcPtr<CanoInst> cano_inst;
 };

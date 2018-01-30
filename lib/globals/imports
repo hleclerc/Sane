@@ -31,29 +31,29 @@ Array.met
 Vec.met
 Cpu.met
 StringAncestor.met
-String.met
-Def.met
-Range.met
-ReversedRange.met
-FdReader.met
-Type.met
-Class.met
-math.met
-Varargs.met
-Lambda.met
-SurdefList.met
-ListOfTypesOrSurdefLists.met
-RangeFrom.met
-RangeUpTo.met
-FunctionPtr.met
-Import.met
-Stream.met
-Codegen.met
-CtVec.met
-CtMap.met
-InterpScope.met
-ScopeRef.met
-RefUntypedConcatenation.met
-RefSubArray.met
-Enum.met
-Function.met
+# String.met
+# Def.met
+# Range.met
+# ReversedRange.met
+# FdReader.met
+# Type.met
+# Class.met
+# math.met
+# Varargs.met
+# Lambda.met
+# SurdefList.met
+# ListOfTypesOrSurdefLists.met
+# RangeFrom.met
+# RangeUpTo.met
+# FunctionPtr.met
+# Import.met
+# Stream.met
+# Codegen.met
+# CtVec.met
+# CtMap.met
+# InterpScope.met
+# ScopeRef.met
+# RefUntypedConcatenation.met
+# RefSubArray.met
+# Enum.met
+# Function.met

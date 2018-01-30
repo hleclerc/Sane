@@ -1,6 +1,7 @@
-#include "CallableWithSelf.h"
+#include "CallableWithSelfOrArgs.h"
 #include "System/BoolVec.h"
 #include "System/rcast.h"
+#include "Inst/HostId.h"
 #include "TypeLambda.h"
 #include "Varargs.h"
 #include "Lambda.h"
@@ -42,10 +43,11 @@ Variable TypeLambda::apply( Variable &self, bool want_ret, const Vec<Variable> &
 
     //    vm->add_error( "pouet" );
     for( size_t i : def->arg_spreads ) {
-        Variable vav( MAKE_KV( Varargs ) );
+        Varargs *va = new Varargs;
+        Variable vav = make_HostId( vm->type_Varargs, va );
         new_scope.reg_var( def->arg_names[ i ], vav );
         defined_args.set( i, true );
-        vpv << vav.rcast<Varargs>();
+        vpv << va;
         // tr_args[ i ] = vav;
     }
 
@@ -158,11 +160,10 @@ Variable TypeLambda::with_self( Variable &orig, const Variable &new_self ) const
     if ( l->arg_names.empty() || l->arg_names[ 0 ] != "self" )
         return orig;
 
-    Variable res( MAKE_KV( CallableWithSelf ) );
-    CallableWithSelf *c = res.rcast<CallableWithSelf>();
+    CallableWithSelfOrArgs *c = new CallableWithSelfOrArgs;
     c->callable = orig;
     c->self = new_self;
-    return res;
+    return make_HostId( vm->type_CallableWithSelf, c );
 }
 
 

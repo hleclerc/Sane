@@ -4,13 +4,13 @@ class NullableAT
     __primitive_add_room_in_type __primitive_sizeof_ptr_in_bits(), __primitive_aligof_ptr_in_bits()
 
     def construct val: PrimitiveNumber
-        __primitive_reassign self, val
+        __primitive_init self, val
 
     def construct val: NullableAT
-        __primitive_reassign self, val
+        __primitive_init self, val
 
     def construct val: AT
-        __primitive_reassign self, val
+        __primitive_init self, val
 
     def construct
         pass
@@ -29,9 +29,6 @@ class NullableAT
         
     def operator= val: AT
         __primitive_reassign self, val
-
-    def operator:=
-        __primitive_copy self
 
     def operator== b: AT
         __primitive_gen_equ self, b

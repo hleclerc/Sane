@@ -45,4 +45,6 @@ public:
 
     Bool                      export_flag;
     Bool                      global_flag;
+
+    RcPtr<CanoInst>           cano_inst;
 };

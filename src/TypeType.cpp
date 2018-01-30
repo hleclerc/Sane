@@ -12,13 +12,13 @@ bool TypeType::destroy_attrs() const {
 }
 
 Variable TypeType::apply( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) {
-    Type *type = *self.rcast<Type *>();
+    Type *type = self.rcast<Type>();
     return vm->make_inst( type, args, names, apply_flags );
 }
 
 RcString TypeType::checks_type_constraint( const Variable &self, const Variable &tested_var, TCI &tci ) const {
     // types are equal ?
-    Type *nt = *self.rcast<Type *>();
+    Type *nt = self.rcast<Type>();
     if ( nt == tested_var.type )
         return {};
 

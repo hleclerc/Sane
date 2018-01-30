@@ -2,3 +2,7 @@ ext
 tmp
 Sane.*
 .res*
+err
+res
+sane
+res.cpp

@@ -1,6 +1,7 @@
 #include "AstVisitorCatchedVariables.h"
 #include "AstVisitorVm.h"
 #include "Interceptor.h"
+#include "Inst/HostId.h"
 #include "Inst/While.h"
 #include "Inst/Cst.h"
 //#include "System/rcast.h"
@@ -340,13 +341,7 @@ Variable AstVisitorVm::on_def( RcString name, RcString cname, PI8 nb_scopes_rec,
     Scope *l_scope = flags & CALLABLE_FLAG_global ? &vm->main_scope : store;
     auto iter_scope = l_scope->variables.find( name );
     Variable sl_var;
-    if ( iter_scope != l_scope->variables.end() ) {
-        sl_var = iter_scope->second.var;
-        if ( sl_var.type != vm->type_SurdefList )
-            return vm->add_error( "Variable '{}' already exists and it's not a surdef (=> impossible to register a class with this name)", name );
-        if ( flags & CALLABLE_FLAG_export )
-            iter_scope->second.flags |= Scope::VariableFlags::SELF_AS_ARG;
-    } else {
+    if ( iter_scope == l_scope->variables.end() ) {
         Scope::VariableFlags vf = Scope::VariableFlags::CALLABLE;
         if ( flags & CALLABLE_FLAG_self_as_arg ) vf |= Scope::VariableFlags::SELF_AS_ARG;
         if ( flags & CALLABLE_FLAG_global      ) vf |= Scope::VariableFlags::GLOBAL;
@@ -354,16 +349,23 @@ Variable AstVisitorVm::on_def( RcString name, RcString cname, PI8 nb_scopes_rec,
         if ( flags & CALLABLE_FLAG_static      ) vf |= Scope::VariableFlags::STATIC;
 
         //
-        sl_var = Variable( MAKE_KV( SurdefList ) );
+        SurdefList *sl = new SurdefList;
+        sl_var = make_HostId( vm->type_SurdefList, sl );
         l_scope->reg_var( name, sl_var, vf );
+    } else {
+        sl_var = iter_scope->second.var;
+        if ( sl_var.type != vm->type_SurdefList )
+            return vm->add_error( "Variable '{}' already exists and it's not a surdef (=> impossible to register a class with this name)", name );
+        if ( flags & CALLABLE_FLAG_export )
+            iter_scope->second.flags |= Scope::VariableFlags::SELF_AS_ARG;
     }
     SurdefList *sl = sl_var.rcast<SurdefList>();
 
     // store a new Reference in the surdef list
-    Variable var_def( MAKE_KV( Def ) );
+    Def *def = new Def;
+    Variable var_def = make_HostId( vm->type_Def, def );
     sl->lst << var_def;
 
-    Def *def = var_def.rcast<Def>();
     def->name                 = name;
     def->arg_names            = arg_names;
     def->arg_constraints      = arg_constraints.map( ms );
@@ -464,17 +466,18 @@ Variable AstVisitorVm::on_class( RcString name, RcString cname, PI8 nb_scopes_re
         if ( flags & CALLABLE_FLAG_export      ) vf |= Scope::VariableFlags::EXPORT;
 
         //
-        sl_var = Variable( MAKE_KV( SurdefList ) );
+        sl_var = make_HostId( vm->type_SurdefList, new SurdefList );
         l_scope->reg_var( name, sl_var, vf );
     }
     SurdefList *sl = sl_var.rcast<SurdefList>();
 
     // store a new Reference in the surdef list
-    Variable var_def( MAKE_KV( Class ) );
+    Class *def = new Class;
+    Variable var_def = make_HostId( vm->type_Class, def );
+
     vm->main_scope.add_static_variable( var_def );
     sl->lst << var_def;
 
-    Class *def = var_def.rcast<Class>();
     def->name              = name;
     def->arg_names         = arg_names;
     def->arg_constraints   = arg_constraints.map( ms );
@@ -936,7 +939,7 @@ void AstVisitorVm::init_of( RcString name, const Vec<Variable> &args, const Vec<
                 self.find_attribute( "construct" ).apply( false, args, names, ApplyFlags::DONT_CALL_CTOR, spreads );
 
                 // say that we have initialized everything
-                for( auto p : self.type->content.data.attributes  )
+                for( auto p : self.type->attributes  )
                     s->wpc->insert( p.second.name );
 
                 return;
@@ -950,8 +953,8 @@ void AstVisitorVm::init_of( RcString name, const Vec<Variable> &args, const Vec<
             s->wpc->insert( name );
 
             // instance attribute
-            auto iter_attr = self.type->content.data.attributes.find( name );
-            if ( iter_attr == self.type->content.data.attributes.end() ) {
+            auto iter_attr = self.type->attributes.find( name );
+            if ( iter_attr == self.type->attributes.end() ) {
                 vm->add_error( "there's no attribute '{}' in a {}", name, *self.type );
                 return;
             }
@@ -979,10 +982,10 @@ Variable AstVisitorVm::xxxxof( RcString value, int w, bool in_bytes ) {
 
     // typeof
     if ( w == 0 )
-        return make_Cst_HostId( vm->type_Type, type );
+        return make_HostId( vm->type_Type, type );
 
     // sizeof of aligof
-    SI32 vres = w == 1 ? type->content.data.kv_size : type->content.data.alig;
+    SI32 vres = w == 1 ? type->kv_size() : type->kv_alig();
     return make_Cst_SI32( in_bytes ? ( vres + 7 ) / 8 : vres );
 }
 
@@ -995,8 +998,8 @@ Variable AstVisitorVm::assign( Scope *scope, RcString name, std::function<Variab
             return vm->ref_void;
 
         // find attribute references
-        auto iter_attr = scope->ctor_self.type->content.data.attributes.find( name );
-        if ( iter_attr == scope->ctor_self.type->content.data.attributes.end() )
+        auto iter_attr = scope->ctor_self.type->attributes.find( name );
+        if ( iter_attr == scope->ctor_self.type->attributes.end() )
             return vm->add_error( "Attribute '{}' not registered in type", name );
 
         // call ctor recursively

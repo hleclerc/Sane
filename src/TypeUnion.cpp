@@ -3,8 +3,8 @@
 #include "Vm.h"
 
 TypeUnion::TypeUnion( SI32 size, SI32 alig ) : Type( "union" ) {
-    content.data.kv_size = size;
-    content.data.alig = alig;
+    _kv_size = size;
+    _kv_alig = alig;
 }
 
 void TypeUnion::construct( const Variable &self, const Vec<Variable> &args, const Vec<RcString> &names ) {

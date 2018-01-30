@@ -3,7 +3,7 @@
 //#include "System/File_reader.h"
 //#include "System/Bool_vec.h"
 //#include "System/BoolRef.h"
-//#include "Ast_visitor_Vm.h"
+#include "AstVisitorVm.h"
 //#include "AnonymousRoom.h"
 //#include "System/Memcpy.h"
 //#include "Ast/Ast_maker.h"
@@ -14,6 +14,7 @@
 #include "Inst/UninitializedData.h"
 #include "Inst/ReadFdAt.h"
 #include "Inst/WriteFd.h"
+#include "Inst/HostId.h"
 #include "Inst/ReadFd.h"
 #include "Inst/BinOp.h"
 #include "Inst/UnaOp.h"
@@ -26,7 +27,7 @@
 #include "Variable.h"
 //#include "SurdefList.h"
 #include "TypeUnion.h"
-//#include "Varargs.h"
+#include "Varargs.h"
 //#include "Import.h"
 //#include "String.h"
 //#include "Lambda.h"
@@ -89,7 +90,7 @@ Primitive_func::Primitive_func( const char *name, std::function<Variable()> func
 
 REG_PRIMITIVE_TYPE( ct_info ) {
     for( const Variable &arg: args )
-        std::cout << *arg.type << "(" << arg << ") ";
+        std::cout << *arg.type << "(" << arg << ",cano=" << arg.cano() << ") ";
     std::cout << std::endl;
     return vm->ref_void;
 }
@@ -161,6 +162,25 @@ REG_PRIMITIVE_TYPE_BIN_OP( Equ         )
 //    return scope->vm->new_PT( a->ptr->content->data + a->ptr->offset_in_bytes - ( b->ptr->content->data + b->ptr->offset_in_bytes ) );
 //}
 
+REG_PRIMITIVE_TYPE( init ) {
+    Variable va = args[ 0 ];
+    Variable vb = args[ 1 ];
+
+    // AT
+    if ( va.type == vm->type_AT || va.type == vm->type_NullableAT ) {
+        if ( vb.type == vm->type_AT || vb.type == vm->type_NullableAT )
+            return va.memcpy( vb ), va;
+        if ( vb.type->is_a_TypeBT() )
+            return va.memcpy( make_Conv( vb.to_Value(), vm->type_PT ) ), va;
+        TODO;
+        return args[ 0 ];
+    }
+
+    if ( va.error() == false && vb.error() == false )
+        vm->add_error( "don't known how to init a '{}' with a '{}'", *va.type, *vb.type );
+    return args[ 0 ];
+}
+
 REG_PRIMITIVE_TYPE( reassign ) {
     Variable va = args[ 0 ];
     Variable vb = args[ 1 ];
@@ -204,12 +224,14 @@ REG_PRIMITIVE_TYPE( reassign ) {
     // type
     if ( va.type == vm->type_Type ) {
         if ( vb.type == vm->type_Type ) {
-            *va.rcast<Type *>() = *vb.rcast<Type *>();
+            //*va.rcast<Type>() = vb.rcast<Type>();
+            TODO;
             return args[ 0 ];
         }
         if ( vb.type == vm->type_SurdefList ) {
-            Type *type = vb.apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
-            *va.rcast<Type *>() = type;
+            // Type *type = vb.apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
+            // va.rcast<Type>() = type;
+            TODO;
             return args[ 0 ];
         }
     }
@@ -498,13 +520,13 @@ REG_PRIMITIVE_TYPE( _union ) {
     SI32 max_size = 0, max_alig = 1;
     for( size_t i = 0; i < args.size(); ++i ) {
         types << const_cast<Variable &>( args[ i ] ).apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
-        max_size = std::max( max_size, types.back()->content.data.kv_size );
-        max_alig = lcm( max_alig, types.back()->content.data.alig );
+        max_size = std::max( max_size, types.back()->kv_size() );
+        max_alig = lcm( max_alig, types.back()->kv_alig() );
     }
     Type *res = vm->types.push_back_val( new TypeUnion( max_size, max_alig ) );
     for( size_t i = 0; i < args.size(); ++i )
         res->add_attribute( names[ i ], 0, types[ i ] );
-    return make_Cst_HostId( vm->type_Type, res );
+    return make_HostId( vm->type_Type, res );
 }
 
 //REG_PRIMITIVE_TYPE( load ) {
@@ -914,64 +936,64 @@ REG_PRIMITIVE_TYPE( _union ) {
 //    return scope->vm->new_Bool( true );
 //}
 
-//REG_PRIMITIVE_TYPE( default_construct ) {
-//    // copy or convert
-//    Type *a_type = args[ 0 ].ugs_type( scope );
-//    if ( args.size() == 2 && names.empty() ) {
-//        // if same type => copy attributes
-//        Type *b_type = args[ 1 ].ugs_type( scope );
-//        if ( a_type == b_type ) {
-//            for( Type::Attribute *attr = a_type->first_attribute; attr; attr = attr->next )
-//                Ast_visitor_Vm::init_of( scope, attr->name, args[ 1 ].find_attribute( scope, attr->name ), names );
-//            return scope->vm->ref_void;
-//        }
+REG_PRIMITIVE_TYPE( default_construct ) {
+    // copy or convert
+    Type *a_type = args[ 0 ].type;
+    if ( args.size() == 2 && names.empty() ) {
+        // if same type => copy attributes
+        Type *b_type = args[ 1 ].type;
+        if ( a_type == b_type ) {
+            for( Type::Attribute *attr = a_type->first_attribute; attr; attr = attr->next )
+                AstVisitorVm::init_of( attr->name, args[ 1 ].find_attribute( attr->name ), names );
+            return vm->ref_void;
+        }
 
-//        // try with a converter
-//        if ( Variable cnv = args[ 1 ].find_attribute( scope, "convert", false ) ) {
-//            // if the converter returns something, it's the argument for a constructor
-//            if ( Variable res = cnv.apply( scope, true, args[ 0 ] ).ugs( scope ) ) {
-//                Vec<String> n_names;
-//                Vec<Variable> n_args;
-//                if ( res.type == scope->vm->type_Varargs ) {
-//                    Varargs *va = rcast( res.ptr() );
-//                    n_names = va->names;
-//                    n_args = va->values;
-//                } else
-//                    n_args << res;
-//                // call init_of self with args from the converter
-//                Ast_visitor_Vm::init_of( scope, "self", n_args, n_names );
-//                return scope->vm->ref_void;
-//            }
-//            // else, we assume that the constructor has already been called
-//            TODO;
-//            return scope->vm->ref_void;
-//        }
-//    }
+        // try with a converter
+        if ( Variable cnv = args[ 1 ].find_attribute( "convert", false ) ) {
+            // if the converter returns something, it's the argument for a constructor
+            if ( Variable res = cnv.apply( true, args[ 0 ] ) ) {
+                Vec<String> n_names;
+                Vec<Variable> n_args;
+                if ( res.type == vm->type_Varargs ) {
+                    Varargs *va = res.rcast<Varargs>();
+                    n_names = va->names;
+                    n_args = va->values;
+                } else
+                    n_args << res;
+                // call init_of self with args from the converter
+                AstVisitorVm::init_of( "self", n_args, n_names );
+                return vm->ref_void;
+            }
+            // else, we assume that the constructor has already been called
+            TODO;
+            return vm->ref_void;
+        }
+    }
 
-//    // given attribute values ?
-//    if ( names.size() && args.size() == names.size() + 1 && names.size() == a_type->attributes.size() ) {
-//        //        Bool_vec bv( names.size(), false );
-//        //        for( Type::Attribute *attr = a_type->first_attribute; attr; attr = attr->next ) {
-//        //            int ind = names.find( attr->name );
-//        //            if ( ind < 0 )
-//        //                return scope->add_error( "There's no attribute {} in {}, so the constructor by attribute cannot be called", attr->name, *a_type ), scope->vm->ref_void;
-//        //            bv.set( ind, true );
-//        //        }
-//        //        if ( ! bv.all_true() )
-//        //            return scope->add_error( "Some attributes of {} are not specified, so the constructor by attribute cannot be called", *a_type ), scope->vm->ref_void;
+    // given attribute values ?
+    if ( names.size() && args.size() == names.size() + 1 && names.size() == a_type->attributes.size() ) {
+        //        Bool_vec bv( names.size(), false );
+        //        for( Type::Attribute *attr = a_type->first_attribute; attr; attr = attr->next ) {
+        //            int ind = names.find( attr->name );
+        //            if ( ind < 0 )
+        //                return scope->add_error( "There's no attribute {} in {}, so the constructor by attribute cannot be called", attr->name, *a_type ), scope->vm->ref_void;
+        //            bv.set( ind, true );
+        //        }
+        //        if ( ! bv.all_true() )
+        //            return scope->add_error( "Some attributes of {} are not specified, so the constructor by attribute cannot be called", *a_type ), scope->vm->ref_void;
 
-//        // assign values
-//        for( size_t i = 0; i < names.size(); ++i ) {
-//            if ( a_type->attributes.count( names[ i ] ) == 0 )
-//                return scope->add_error( "There's no attribute {} in {} (during construction by attribute)", names[ i ], *a_type ), scope->vm->ref_void;
-//            Ast_visitor_Vm::init_of( scope, names[ i ], args[ 1 + i ] );
-//        }
-//        return scope->vm->ref_void;
-//    }
+        // assign values
+        for( size_t i = 0; i < names.size(); ++i ) {
+            if ( a_type->attributes.count( names[ i ] ) == 0 )
+                return vm->add_error( "There's no attribute '{}' in '{}' (during construction by attribute)", names[ i ], *a_type ), vm->ref_void;
+            AstVisitorVm::init_of( names[ i ], args[ 1 + i ] );
+        }
+        return vm->ref_void;
+    }
 
-//    scope->add_error( "There's no specific construct method for '{}' with args=[{}] and names=[{}]", *a_type, args, names );
-//    return scope->vm->ref_void;
-//}
+    vm->add_error( "There's no specific construct method for '{}' with args=[{}] and names=[{}]", *a_type, args, names );
+    return vm->ref_void;
+}
 
 //REG_PRIMITIVE_TYPE( get_attributes ) {
 //    Type *type = args[ 0 ].ugs( scope ).apply( scope, true, {}, {}, false ).type;

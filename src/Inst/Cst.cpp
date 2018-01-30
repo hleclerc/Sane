@@ -13,6 +13,11 @@
 #include "CanoCst.h"
 #include "Cst.h"
 
+union U {
+    PI64        v;
+    const void *p;
+};
+
 /**
 */
 class Cst : public Clonable<Cst,Inst> {
@@ -68,6 +73,7 @@ public:
         return make_CanoCst( val.data, val.size );
     }
 
+
     Type   *type;
     BoolVec val;
     BoolVec kno;
@@ -79,11 +85,7 @@ Variable make_Cst( Type *type, int size, void *val, void *kno ) {
 }
 
 
-Variable make_Cst_HostId( Type *type, const void *ptr ) {
-    union U {
-        PI64  v;
-        void *p;
-    };
+Variable make_HostId( Type *type, const void *ptr ) {
     U u;
     u.v = 0;
     u.p = ptr;

@@ -1,5 +1,6 @@
-#include "CallableWithSelf.h"
+#include "CallableWithSelfOrArgs.h"
 #include "TypeSurdefList.h"
+#include "Inst/HostId.h"
 #include "SurdefList.h"
 #include "Wildcard.h"
 #include "Varargs.h"
@@ -18,7 +19,7 @@ RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Var
     auto stst = [&]() -> RcString {
         if ( ! tested_var.type->orig_class() ) {
             if ( ! tested_var.error() )
-                vm->add_error( "no orig_class for type {}", tested_var.type->content.data.name );
+                vm->add_error( "no orig_class for type {}", *tested_var.type );
             return false;
         }
 
@@ -33,7 +34,7 @@ RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Var
                     return {};
 
                 // get a linear list for the arguments
-                if ( se->args.size() != tested_var.type->content.data.parameters.size() )
+                if ( se->args.size() != tested_var.type->parameters.size() )
                     return vm->add_error( "not the same number of parameters" ), "error";
                 if ( se->names.size() )
                     TODO;
@@ -81,12 +82,10 @@ RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Var
 }
 
 Variable TypeSurdefList::with_self( Variable &orig, const Variable &new_self ) const {
-    Variable res( MAKE_KV( CallableWithSelf ) );
-    CallableWithSelf *cs = res.rcast<CallableWithSelf>();
+    CallableWithSelfOrArgs *cs = new CallableWithSelfOrArgs;
     cs->callable = orig;
     cs->self = new_self;
-
-    return res;
+    return make_HostId( vm->type_CallableWithSelf, cs );
 }
 
 Variable TypeSurdefList::select( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names ) {
@@ -94,8 +93,7 @@ Variable TypeSurdefList::select( Variable &self, bool want_ret, const Vec<Variab
         return {};
     SurdefList *se = self.rcast<SurdefList>();
 
-    Variable sl_var( MAKE_KV( SurdefList ) );
-    SurdefList *sl = sl_var.rcast<SurdefList>();
+    SurdefList *sl = new SurdefList;
     sl->lst  = se->lst;
 
     for( size_t i = 0; i < se->args.size() - se->names.size(); ++i )
@@ -111,7 +109,7 @@ Variable TypeSurdefList::select( Variable &self, bool want_ret, const Vec<Variab
         sl->names << names[ i ];
     }
 
-    return sl_var;
+    return make_HostId( vm->type_SurdefList, sl );
 }
 
 Variable TypeSurdefList::apply( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) {

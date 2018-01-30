@@ -14,6 +14,7 @@
 
 #include "Inst/UninitializedData.h"
 #include "Inst/Gatherer.h"
+#include "Inst/HostId.h"
 #include "Inst/Void.h"
 #include "Inst/Cst.h"
 #include "Inst/If.h"
@@ -109,7 +110,7 @@ Variable Vm::import( const String &filename, const String &import_dir, bool disp
 
     // prepare a result variable
     Import *import = new Import;
-    Variable res = make_Cst_HostId( type_Import, import );
+    Variable res = make_HostId( type_Import, import );
 
     imported.insert( iter, std::make_pair( abso, res ) );
 
@@ -299,6 +300,7 @@ void Vm::codegen( Codegen &cg ) {
 }
 
 void Vm::if_else( const Variable &cond_var, const std::function<void ()> &ok, const std::function<void ()> &ko ) {
+    add_error("pouet");
     TODO;
 //    // conversion to bool
 //    if ( cond_var.type != type_Bool ) {
