@@ -1,7 +1,7 @@
 #include "System/BoolVec.h"
 #include "Inst/Memcpy.h"
+#include "TypeInSane.h"
 #include "Variable.h"
-#include "Type.h"
 #include "Ref.h"
 #include "Vm.h"
 

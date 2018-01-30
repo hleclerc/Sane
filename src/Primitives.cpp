@@ -943,7 +943,7 @@ REG_PRIMITIVE_TYPE( default_construct ) {
         // if same type => copy attributes
         Type *b_type = args[ 1 ].type;
         if ( a_type == b_type ) {
-            for( Type::Attribute *attr = a_type->first_attribute; attr; attr = attr->next )
+            for( TypeInSane::Attribute *attr = a_type->first_attribute; attr; attr = attr->next )
                 AstVisitorVm::init_of( attr->name, args[ 1 ].find_attribute( attr->name ), names );
             return vm->ref_void;
         }
@@ -973,7 +973,7 @@ REG_PRIMITIVE_TYPE( default_construct ) {
     // given attribute values ?
     if ( names.size() && args.size() == names.size() + 1 && names.size() == a_type->attributes.size() ) {
         //        Bool_vec bv( names.size(), false );
-        //        for( Type::Attribute *attr = a_type->first_attribute; attr; attr = attr->next ) {
+        //        for( TypeInSane::Attribute *attr = a_type->first_attribute; attr; attr = attr->next ) {
         //            int ind = names.find( attr->name );
         //            if ( ind < 0 )
         //                return scope->add_error( "There's no attribute {} in {}, so the constructor by attribute cannot be called", attr->name, *a_type ), scope->vm->ref_void;
@@ -1005,7 +1005,7 @@ REG_PRIMITIVE_TYPE( default_construct ) {
 //    LVec<InterpTypeAttribute> &vec = *reinterpret_cast<LVec<InterpTypeAttribute> *>( res.ptr() );
 //    vec.resize( type->attributes.size() );
 //    size_t i = 0;
-//    for( Type::Attribute *attr = type->first_attribute; attr; attr = attr->next, ++i ) {
+//    for( TypeInSane::Attribute *attr = type->first_attribute; attr; attr = attr->next, ++i ) {
 //        vec[ i ].name   = attr->name;
 //        vec[ i ].offset = attr->off_in_bits;
 //        vec[ i ].type   = attr->type;

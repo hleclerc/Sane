@@ -1,11 +1,8 @@
 #pragma once
 
-#include "FunctionSignature.h"
-#include "System/LString.h"
 #include "Variable.h"
 #include "CanoType.h"
 #include "Value.h"
-#include <map>
 class Class;
 class TCI;
 
@@ -17,20 +14,8 @@ public:
         int   kv;
         Value val; ///< val is defined only if kv == 0. if kv < 0 => cond is false. if kv > 0 => cond is true
     };
-    struct Attribute {
-        RcString         name;
-        Type            *type;
-        SI32             off;   ///< in bits
-        Variable::Flags  flags;
-        Attribute       *prev;
-        Attribute       *next;
-    };
-    using MA  = std::map<RcString,Attribute>;
-    using MSA = std::map<RcString,Variable *>;
-    using SFS = std::set<FunctionSignature>;
 
-
-    Type( const LString &name );
+    Type();
 
     virtual bool            has_vtable_at_the_beginning() const;
     virtual RcString        checks_type_constraint     ( const Variable &self, const Variable &tested_var, TCI &tci ) const;
@@ -78,21 +63,6 @@ public:
     #undef BO
 
     RcPtr<CanoInst> cano_inst;         ///<
-
-    LString         name;
-    SI32            alig;
-    MSA             methods;
-    SI32            _kv_size;
-    SI32            _kv_alig;
-    MA              attributes;
-    Class          *_orig_class;
-    Vec<CanoVal>    parameters;        ///< template arguments
-    Attribute      *last_attribute;
-    bool            has_new_vtable;
-    Attribute      *first_attribute;
-    SFS             abstract_methods;
-    MSA             static_attributes;
-    int             type_promote_score;
 };
 
 Type *type_promote_gen( Type *a, Type *b );

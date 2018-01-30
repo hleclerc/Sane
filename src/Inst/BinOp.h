@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../Codegen/Codegen.h"
+#include "../TypeInSane.h"
+#include "../Vm.h"
 #include "CanoBinOp.h"
 #include "Clonable.h"
-#include "../Type.h"
-#include "../Vm.h"
 
 /**
 */

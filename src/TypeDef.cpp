@@ -327,7 +327,7 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
         with_self.ref->cpt_use = 654;
 
         // destruction of attributes
-        for( Type::Attribute *attr = with_self.type->last_attribute; attr; attr = attr->prev ) {
+        for( TypeInSane::Attribute *attr = with_self.type->last_attribute; attr; attr = attr->prev ) {
             ASSERT( attr->off % 8 == 0, "..." );
             KuSI64 off = with_self.offset + attr->off;
             Variable v( with_self.ref, off, attr->type->size( with_self.ref, off ), attr->type, with_self.flags );

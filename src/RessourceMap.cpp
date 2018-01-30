@@ -1,6 +1,7 @@
 #include "Inst/RessourceInst.h"
 #include "Inst/CanoConv.h"
 #include "RessourceMap.h"
+#include "TypeInSane.h"
 #include "Variable.h"
 #include "Ref.h"
 #include "Vm.h"

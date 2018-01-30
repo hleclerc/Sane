@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Inst/CanoCst.h"
-#include "Type.h"
+#include "TypeInSane.h"
 #include "Vm.h"
 
 /**
 */
 template<class T,bool reverse_endianness>
-class TypeBT : Type {
+class TypeBT : TypeInSane {
 public:
     TypeBT( const LString &name ) : Type( name ) {
     }

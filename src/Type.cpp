@@ -4,13 +4,7 @@
 #include "Type.h"
 #include "Vm.h"
 
-Type::Type( const LString &name ) : name( name ) {
-    last_attribute     = 0;
-    first_attribute    = 0;
-    _orig_class        = 0;
-    _kv_size           = 0;
-    _kv_alig           = 1;
-    type_promote_score = -1;
+Type::Type() {
     has_new_vtable     = false;
 }
 
@@ -104,7 +98,7 @@ bool Type::destroy_attrs() const {
 }
 
 void Type::add_attribute( const RcString &name, SI32 off, Type *type, Variable::Flags flags ) {
-    Type::Attribute *attr = &attributes.emplace( name, Type::Attribute{ name, type, off, flags, last_attribute, 0 } ).first->second;
+    TypeInSane::Attribute *attr = &attributes.emplace( name, TypeInSane::Attribute{ name, type, off, flags, last_attribute, 0 } ).first->second;
     ( last_attribute ? last_attribute->next : first_attribute ) = attr;
     last_attribute = attr;
 }
@@ -190,7 +184,7 @@ Class *Type::orig_class() const {
 
 void Type::write_cst( std::ostream &os, const PI8 *data, int offset_mod_8, bool always_add_braces ) const {
     os << "{";
-    for( Type::Attribute *attr = first_attribute; attr; attr = attr->next ) {
+    for( TypeInSane::Attribute *attr = first_attribute; attr; attr = attr->next ) {
         if ( attr != first_attribute )
             os << ",";
         attr->type->write_cst( os, data + ( offset_mod_8 + attr->off ) / 8, ( offset_mod_8 + attr->off ) % 8 );

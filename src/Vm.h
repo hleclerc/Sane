@@ -9,6 +9,7 @@
 #include "Scope.h"
 #include <map>
 class Interceptor;
+class TypeInSane;
 class Codegen;
 class Type;
 
@@ -57,7 +58,7 @@ public:
 
     void          if_else                       ( const Variable &cond_var, const std::function<void(void)> &ok, const std::function<void(void)> &ko );
 
-    #define BT( T ) Type *type_##T;
+    #define BT( T ) TypeInSane *type_##T;
     #include "BaseTypes.h"
     #undef BT
 

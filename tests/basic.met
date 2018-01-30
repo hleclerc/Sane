@@ -7,6 +7,12 @@
 #     stdout.read a, 12
 
 # stdout << 10
-a := Vec[ Char, 2 ]()
+class Pouet 
+    a := 40
+
+# i := Pouet()
+# p := make_proxy SI32, i
+p := Pouet()
+ct_info p.a
 
 # __primitive_ct_display_graph()
