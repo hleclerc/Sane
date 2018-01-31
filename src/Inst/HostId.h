@@ -15,7 +15,7 @@ public:
         PI64 v;
     };
 
-    HostId( Type *type, T *val ) : type( type ) {
+    HostId( TypeInSane *type, T *val ) : type( type ) {
         u.v = 0;
         u.p = val;
     }
@@ -25,7 +25,7 @@ public:
         u.p = orig->u.p;
     }
 
-    virtual Type *created_out_type( int nout ) const override {
+    virtual TypeInSane *created_out_type( int nout ) const override {
         return type;
     }
 
@@ -63,14 +63,14 @@ public:
     }
 
 
-    Type *type;
-    U     u;
+    TypeInSane *type;
+    U           u;
 };
 
 
 /// host pointer stored as a PI64
 template<class T>
-Variable make_HostId( Type *type, T *ptr ) {
+Variable make_HostId( TypeInSane *type, T *ptr ) {
     HostId<T> *res = new HostId<T>( type, ptr );
     return { res->new_created_output(), 0, 64, type };
 }

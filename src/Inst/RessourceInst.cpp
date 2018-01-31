@@ -1,5 +1,6 @@
 #include "RessourceInst.h"
 #include "Clonable.h"
+#include "../TypeInSane.h"
 #include "../Vm.h"
 
 /**

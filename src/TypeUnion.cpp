@@ -2,7 +2,7 @@
 #include "Scope.h"
 #include "Vm.h"
 
-TypeUnion::TypeUnion( SI32 size, SI32 alig ) : Type( "union" ) {
+TypeUnion::TypeUnion( SI32 size, SI32 alig ) : TypeInSane( "union" ) {
     _kv_size = size;
     _kv_alig = alig;
 }

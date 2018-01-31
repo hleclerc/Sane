@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Type.h"
+#include "TypeInSane.h"
 
 /**
 */
-class TypeCallableWithSelf : public Type {
+class TypeCallableWithSelf : public TypeInSane {
 public:
     TypeCallableWithSelf();
 

@@ -3,6 +3,7 @@
 #include "System/RcString.h"
 #include "ApplyFlags.h"
 #include "Ref.h"
+class Type;
 class Ref;
 class TCI;
 

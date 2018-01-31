@@ -11,12 +11,12 @@
 #include <set>
 
 class StreamPrio;
+class TypeInSane;
 class Ressource;
 class StreamSep;
 class Codegen;
 class BoolVec;
 class KcSI64;
-class Type;
 class Ref;
 
 /**
@@ -59,12 +59,12 @@ public:
 
     bool                    all_children_with_op_id( size_t oi ) const;
     int                     nb_parents_on_nout     ( int nout ) const;
-    virtual Type           *created_out_type       ( int nout ) const;
+    virtual TypeInSane     *created_out_type       ( int nout ) const;
     virtual KuSI64          created_out_size       ( int nout ) const;
     virtual KuSI64          created_out_alig       ( int nout ) const;
     virtual RcPtr<CanoInst> make_cano_inst         ( int nout ) const; ///< called by cano_repr if not already filled
     virtual void            externalize            ( Inst *inst, size_t ninp );
-    Type                   *out_type               ( int nout ) const;
+    TypeInSane             *out_type               ( int nout ) const;
     KuSI64                  out_size               ( int nout ) const;
     virtual int             inp_corr               ( int nout ) const;
     virtual Inst           *clone                  () const;
@@ -76,17 +76,14 @@ public:
     RcPtr<CanoInst>         cano_inst              ( int nout, const KcSI64 &offset, const KcSI64 &length ) const; ///< canonical representation. Enables faster comparisons
     RcPtr<CanoInst>         cano_inst              ( int nout ) const; ///< canonical representation. Enables faster comparisons
 
-    CanoVal                 cano_val               ( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, Type *type ) const;
+    CanoVal                 cano_val               ( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, TypeInSane *type ) const;
     CanoVal                 cano_val               ( const IiRessource &ressource ) const;
-    CanoVal                 cano_val               ( int nout, const KcSI64 &offset, const KcSI64 &length, Type *type ) const; ///< canonical representation. Enables faster comparisons
+    CanoVal                 cano_val               ( int nout, const KcSI64 &offset, const KcSI64 &length, TypeInSane *type ) const; ///< canonical representation. Enables faster comparisons
     CanoVal                 cano_val               ( int nout ) const; ///< canonical representation. Enables faster comparisons
     CanoVal                 cano_val               ( const IiValue &value ) const; ///< canonical representation. Enables faster comparisons
 
 
-    virtual bool            is_non_null            ( int nout, const KuSI64 &offset, const KuSI64 &length, Type *type ) const;
-    virtual bool            is_null                ( int nout, const KuSI64 &offset, const KuSI64 &length, Type *type ) const;
-
-    virtual void            write_to_stream        ( std::ostream &os, SI32 nout = -1, Type *type = 0, int offset = -1 ) const;
+    virtual void            write_to_stream        ( std::ostream &os, SI32 nout = -1, TypeInSane *type = 0, int offset = -1 ) const;
     virtual bool            write_graph_rec        ( std::ostream &ss, std::set<const Inst *> &seen_insts, const std::function<void(std::ostream&, const Inst *)> &f, bool disp_parents ) const;
     virtual AssFunc         get_assign_func        ( int nout, int off, int len );
     virtual void            write_dot              ( std::ostream &os ) const = 0;

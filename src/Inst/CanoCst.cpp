@@ -1,9 +1,9 @@
 #include "../System/byte_swaped.h"
 #include "../System/BoolVec.h"
 #include "../System/Memcpy.h"
-#include "CanoCst.h"
-#include "../Type.h"
+#include "../TypeInSane.h"
 #include "../Vm.h"
+#include "CanoCst.h"
 
 /**
 */
@@ -13,7 +13,7 @@ public:
         memcpy_bit( content.data, ptr, len );
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const override {
+    virtual void write_dot( std::ostream &os, TypeInSane *type ) const override {
         if ( type )
             type->write_cst( os, content.data );
         else
@@ -28,19 +28,19 @@ public:
         return content.size;
     }
 
-    virtual bool always_false( Type *type ) const override {
+    virtual bool always_false( TypeInSane *type ) const override {
         return content.all_false();
     }
 
-    virtual bool always_true( Type *type ) const override {
+    virtual bool always_true( TypeInSane *type ) const override {
         return ! content.all_false();
     }
 
-    virtual SI64 get_SI64_value( Type *orig ) const override {
+    virtual SI64 get_SI64_value( TypeInSane *orig ) const override {
         return orig->convert_cst_to_SI64( content.data );
     }
 
-    virtual RcPtr<CanoInst> simp_CanoConv( Type *orig, Type *target ) override {
+    virtual RcPtr<CanoInst> simp_CanoConv( TypeInSane *orig, TypeInSane *target ) override {
         if ( RcPtr<CanoInst> res = orig->convert_cano_cst( content.data, target ) )
             return res;
         return 0;

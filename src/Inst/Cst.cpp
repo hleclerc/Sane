@@ -4,8 +4,8 @@
 
 #include "../Codegen/Codegen.h"
 
+#include "../TypeInSane.h"
 #include "../KuSI64.h"
-#include "../Type.h"
 #include "../Ref.h"
 #include "../Vm.h"
 
@@ -22,7 +22,7 @@ union U {
 */
 class Cst : public Clonable<Cst,Inst> {
 public:
-    Cst( Type *type, int size, void *val = 0, void *kno = 0 ) : type( type ), val( size ), kno( size ) {
+    Cst( TypeInSane *type, int size, void *val = 0, void *kno = 0 ) : type( type ), val( size ), kno( size ) {
         if ( val )
             memcpy( this->val.data, val, ( size + 7 ) / 8 );
         else
@@ -36,7 +36,7 @@ public:
     Cst( AttrClone, const Cst *orig ) : type( orig->type ), val( orig->val ), kno( orig->kno ) {
     }
 
-    virtual Type *created_out_type( int nout ) const override {
+    virtual TypeInSane *created_out_type( int nout ) const override {
         return type;
     }
 
@@ -74,23 +74,16 @@ public:
     }
 
 
-    Type   *type;
-    BoolVec val;
-    BoolVec kno;
+    TypeInSane *type;
+    BoolVec     val;
+    BoolVec     kno;
 };
 
-Variable make_Cst( Type *type, int size, void *val, void *kno ) {
+Variable make_Cst( TypeInSane *type, int size, void *val, void *kno ) {
     Cst *res = new Cst( type, size, val, kno );
     return { res->new_created_output(), 0, size, type };
 }
 
-
-Variable make_HostId( Type *type, const void *ptr ) {
-    U u;
-    u.v = 0;
-    u.p = ptr;
-    return make_Cst( type, 64, &u );
-}
 
 Variable make_Cst_PI64( PI64 val ) { if ( vm->reverse_endianness ) val = byte_swaped( val ); return make_Cst( vm->type_PI64, 64, &val ); }
 Variable make_Cst_SI64( SI64 val ) { if ( vm->reverse_endianness ) val = byte_swaped( val ); return make_Cst( vm->type_SI64, 64, &val ); }

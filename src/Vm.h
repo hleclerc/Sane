@@ -18,11 +18,11 @@ class Type;
 class Vm {
 public:
     using Error = ErrorList::Error;
-    using MPIT  = std::map<std::pair<int,int>,Type *>;
+    using MPIT  = std::map<std::pair<int,int>,TypeInSane *>;
     using MSV   = std::map<String,Variable>;
     using SFM   = std::map<RcString,std::function<Variable()>>;
     using SVM   = std::map<RcString,Variable>;
-    using SVT   = std::map<RcString,Type *>;
+    using SVT   = std::map<RcString,TypeInSane *>;
 
     Vm( SI32 sizeof_ptr = 8 * sizeof( void * ), bool reverse_endianness = false );
 
@@ -46,9 +46,9 @@ public:
 
     inline  bool  want_exec                     () const { return true; }
 
-    Type         *type_AnonymousRoom            ( int size, int alig );
-    Type         *type_ptr_for                  ( const RcString &name, const Vec<Variable> &args );
-    Variable      make_inst                     ( Type *type, const Vec<Variable> &ctor_args, const Vec<RcString> &ctor_names, ApplyFlags apply_flags );
+    TypeInSane   *type_AnonymousRoom            ( int size, int alig );
+    TypeInSane   *type_ptr_for                  ( const RcString &name, const Vec<Variable> &args );
+    Variable      make_inst                     (TypeInSane *type, const Vec<Variable> &ctor_args, const Vec<RcString> &ctor_names, ApplyFlags apply_flags );
     Variable      new_Type                      ( Type *type );
 
     bool          little_endian                 () const;

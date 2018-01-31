@@ -1,7 +1,7 @@
 #include "TypeVarargs.h"
 #include "Varargs.h"
 
-TypeVarargs::TypeVarargs() : Type( "Varargs" ) {
+TypeVarargs::TypeVarargs() : TypeInSane( "Varargs" ) {
 }
 
 void TypeVarargs::spread_in( const Variable &self, Vec<Variable> &values, Vec<RcString> &names ) {

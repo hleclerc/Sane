@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Type.h"
+#include "TypeInSane.h"
 
 /**
 */
-class TypeUnion : public Type {
+class TypeUnion : public TypeInSane {
 public:
     TypeUnion( SI32 size, SI32 alig );
 

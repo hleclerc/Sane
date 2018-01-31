@@ -20,9 +20,8 @@ Variable &Variable::operator=( const Variable &that ) {
     return *this;
 }
 
-CanoVal Variable::cano( bool fully_solved ) const{
-    RcPtr<CanoInst> res = ref->current.cano_inst()->sub_part( offset.cano(), length.cano() );
-    return { fully_solved ? res->fully_solved() : res, type };
+CanoVal Variable::cano( bool fully_solved ) const {
+    return to_Value().cano_val( fully_solved );
 }
 
 bool Variable::error() const {
@@ -58,7 +57,7 @@ Variable Variable::to_Bool() const {
 }
 
 Value Variable::to_Value() const {
-    return { ref->current, offset, length, type };
+    return type->to_Value( *this );
 }
 
 void Variable::write_to_stream( std::ostream &os ) const {

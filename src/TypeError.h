@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Type.h"
+#include "TypeInSane.h"
 class Variable;
 
 /**
 */
-class TypeError : public Type {
+class TypeError : public TypeInSane {
 public:
     TypeError();
 

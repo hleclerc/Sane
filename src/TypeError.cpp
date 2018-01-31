@@ -1,7 +1,7 @@
 #include "TypeError.h"
 #include "Vm.h"
 
-TypeError::TypeError() : Type( "Error" ) {
+TypeError::TypeError() : TypeInSane( "Error" ) {
 }
 
 void TypeError::destroy( const Variable &self, bool use_virtual ) {

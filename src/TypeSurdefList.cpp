@@ -11,7 +11,7 @@
 
 #include <algorithm>
 
-TypeSurdefList::TypeSurdefList() : Type( "SurdefList" ){
+TypeSurdefList::TypeSurdefList() : TypeInSane( "SurdefList" ){
 }
 
 RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Variable &tested_var, TCI &tci ) const {
@@ -34,7 +34,7 @@ RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Var
                     return {};
 
                 // get a linear list for the arguments
-                if ( se->args.size() != tested_var.type->parameters.size() )
+                if ( se->args.size() != tested_var.type->type_in_sane()->parameters.size() )
                     return vm->add_error( "not the same number of parameters" ), "error";
                 if ( se->names.size() )
                     TODO;
@@ -160,7 +160,7 @@ Variable TypeSurdefList::apply( Variable &self, bool want_ret, const Vec<Variabl
             if ( Variable cnv = args[ 0 ].find_attribute( "convert", false ) ) {
                 // if the converter returns something, it's the argument for a constructor
                 if ( Variable res = cnv.apply( true, with_self ) ) {
-                    Vec<LString> n_names;
+                    Vec<RcString> n_names;
                     Vec<Variable> n_args;
                     if ( res.type == vm->type_Varargs ) {
                         Varargs *va = res.rcast<Varargs>();

@@ -25,7 +25,7 @@ public:
         return true;
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const override {
+    virtual void write_dot( std::ostream &os, TypeInSane *type ) const override {
         os << "memcpy";
     }
 

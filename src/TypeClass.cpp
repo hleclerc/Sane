@@ -25,15 +25,15 @@ bool same_args( const Vec<CanoVal> &a, const Vec<CanoVal> &b ) {
     return true;
 }
 
-Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &args ) {
+TypeInSane *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &args ) {
     // existing type ?
     Vec<CanoVal> cano_args = args.map( []( const Variable &v ) { return v.cano( true ); } );
-    for( Type *type : def->instances )
+    for( TypeInSane *type : def->instances )
         if ( same_args( type->parameters, cano_args ) )
             return type;
 
     // else, make a new one
-    Type *res = vm->type_ptr_for( def->name, args );
+    TypeInSane *res = vm->type_ptr_for( def->name, args );
     Scope new_scope( Scope::ScopeType::TYPE_CTOR );
     PI32 old_size = res->kv_size();
     res->_orig_class = def;
@@ -58,7 +58,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
         new_scope.reg_var( def->inheritance_names[ n ], inh_ref, Scope::VariableFlags::SUPER );
 
         // abstract methods
-        for( const FunctionSignature &fs : inh_ref.type->abstract_methods )
+        for( const FunctionSignature &fs : inh_ref.type->type_in_sane()->abstract_methods )
             res->abstract_methods.insert( fs );
     }
 
@@ -156,16 +156,16 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
             kv_alig = lcm ( kv_alig, attr_kv_alig );
             kv_size = ceil( kv_size, attr_kv_alig );
 
-            res->add_attribute( m.name, kv_size, m.var.type );
+            res->add_attribute( m.name, kv_size, m.var.type->type_in_sane() );
 
             kv_size += attr_kv_size;
         } else if ( kv_alig >= 0 && attr_kv_alig >= 0 ) {
             kv_alig = lcm( kv_alig, attr_kv_alig );
             kv_size = -1;
 
-            res->add_attribute( m.name, -1, m.var.type );
+            res->add_attribute( m.name, -1, m.var.type->type_in_sane() );
         } else {
-            res->add_attribute( m.name, -1, m.var.type );
+            res->add_attribute( m.name, -1, m.var.type->type_in_sane() );
             kv_size = -1;
             kv_alig = -1;
         }
@@ -187,7 +187,7 @@ Type *type_for_args( Class *def, const Variable &def_var, const Vec<Variable> &a
     return res;
 }
 
-TypeClass::TypeClass() : Type( "Def" ) {
+TypeClass::TypeClass() : TypeInSane( "Def" ) {
 }
 
 double TypeClass::get_pertinence( const Variable &self ) const {

@@ -63,7 +63,7 @@ Primitive_func *last_Primitive_func = 0;
 
 //}
 
-Primitive_decl::Primitive_decl( const char *name, std::function<Type *()> func ) : name( name ), func( func ) {
+Primitive_decl::Primitive_decl( const char *name, std::function<TypeInSane *()> func ) : name( name ), func( func ) {
     prev = last_Primitive_decl;
     last_Primitive_decl = this;
 }
@@ -74,9 +74,9 @@ Primitive_func::Primitive_func( const char *name, std::function<Variable()> func
 }
 
 #define REG_PRIMITIVE_TYPE( NAME ) \
-    class Type_primitive_##NAME : public Type { \
+    class Type_primitive_##NAME : public TypeInSane { \
     public: \
-        Type_primitive_##NAME() : Type( #NAME ) {} \
+        Type_primitive_##NAME() : TypeInSane( #NAME ) {} \
         virtual void      destroy( const Variable &self, bool use_virtual ) override {} \
         virtual Variable  apply  ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags = ApplyFlags::NONE ) override; \
     }; \
@@ -190,7 +190,7 @@ REG_PRIMITIVE_TYPE( reassign ) {
         if ( va.type == vb.type )
             return va.memcpy( vb ), va;
         if ( vb.type->is_a_TypeBT() )
-            return va.memcpy( make_Conv( vb.to_Value(), va.type ) ), va;
+            return va.memcpy( make_Conv( vb.to_Value(), va.type->type_in_sane() ) ), va;
         TODO;
     }
 
@@ -516,14 +516,15 @@ REG_PRIMITIVE_TYPE( add_room_in_type ) {
 REG_PRIMITIVE_TYPE( _union ) {
     if ( args.size() != names.size() )
         return vm->add_error( "union expects only named arguments" );
-    Vec<Type *> types;
+    Vec<TypeInSane *> types;
     SI32 max_size = 0, max_alig = 1;
     for( size_t i = 0; i < args.size(); ++i ) {
-        types << const_cast<Variable &>( args[ i ] ).apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
+        types << const_cast<Variable &>( args[ i ] ).apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type->type_in_sane();
         max_size = std::max( max_size, types.back()->kv_size() );
         max_alig = lcm( max_alig, types.back()->kv_alig() );
     }
-    Type *res = vm->types.push_back_val( new TypeUnion( max_size, max_alig ) );
+    TypeInSane *res = new TypeUnion( max_size, max_alig );
+    vm->types.push_back_val( res );
     for( size_t i = 0; i < args.size(); ++i )
         res->add_attribute( names[ i ], 0, types[ i ] );
     return make_HostId( vm->type_Type, res );
@@ -943,7 +944,7 @@ REG_PRIMITIVE_TYPE( default_construct ) {
         // if same type => copy attributes
         Type *b_type = args[ 1 ].type;
         if ( a_type == b_type ) {
-            for( TypeInSane::Attribute *attr = a_type->first_attribute; attr; attr = attr->next )
+            for( TypeInSane::Attribute *attr = a_type->type_in_sane()->first_attribute; attr; attr = attr->next )
                 AstVisitorVm::init_of( attr->name, args[ 1 ].find_attribute( attr->name ), names );
             return vm->ref_void;
         }
@@ -971,7 +972,7 @@ REG_PRIMITIVE_TYPE( default_construct ) {
     }
 
     // given attribute values ?
-    if ( names.size() && args.size() == names.size() + 1 && names.size() == a_type->attributes.size() ) {
+    if ( names.size() && args.size() == names.size() + 1 && names.size() == a_type->type_in_sane()->attributes.size() ) {
         //        Bool_vec bv( names.size(), false );
         //        for( TypeInSane::Attribute *attr = a_type->first_attribute; attr; attr = attr->next ) {
         //            int ind = names.find( attr->name );
@@ -984,7 +985,7 @@ REG_PRIMITIVE_TYPE( default_construct ) {
 
         // assign values
         for( size_t i = 0; i < names.size(); ++i ) {
-            if ( a_type->attributes.count( names[ i ] ) == 0 )
+            if ( a_type->type_in_sane()->attributes.count( names[ i ] ) == 0 )
                 return vm->add_error( "There's no attribute '{}' in '{}' (during construction by attribute)", names[ i ], *a_type ), vm->ref_void;
             AstVisitorVm::init_of( names[ i ], args[ 1 + i ] );
         }

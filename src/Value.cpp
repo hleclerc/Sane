@@ -2,7 +2,7 @@
 #include "Value.h"
 #include "Type.h"
 
-Value::Value( const Ressource &ressource, const KuSI64 &offset, const KuSI64 &length, Type *type ) : ressource( ressource ), offset( offset ), length( length ), type( type ) {
+Value::Value( const Ressource &ressource, const KuSI64 &offset, const KuSI64 &length, TypeInSane *type ) : ressource( ressource ), offset( offset ), length( length ), type( type ) {
 }
 
 Value::Value( Inst *inst, int nout ) : Value( Ressource{ inst, nout }, 0, inst->out_size( nout ), inst->out_type( nout ) ) {
@@ -41,6 +41,7 @@ void Value::write_to_stream( std::ostream &os ) const {
         os << "NULL";
 }
 
-CanoVal Value::cano_val() const {
-    return ressource.cano_val( offset.cano(), length.cano(), type );
+CanoVal Value::cano_val( bool fully_solved ) const {
+    CanoVal res = ressource.cano_val( offset.cano(), length.cano(), type );
+    return fully_solved ? res.fully_solved() : res;
 }

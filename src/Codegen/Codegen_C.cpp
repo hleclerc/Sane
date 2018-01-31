@@ -76,7 +76,7 @@ String Codegen_C::code() {
     return res;
 }
 
-void Codegen_C::write_repr( std::ostream &os, Type *type ) {
+void Codegen_C::write_repr( std::ostream &os, TypeInSane *type ) {
     if ( parent )
         return parent->write_repr( os, type );
 
@@ -111,7 +111,7 @@ void Codegen_C::write_repr( std::ostream &os, Type *type ) {
 }
 
 void Codegen_C::write_repr( std::ostream &os, const Value &value, int prio, int flags ) {
-    Type *reg_type = 0;
+    TypeInSane *reg_type = 0;
     std::function<void(StreamPrio &)> reg_writer;
     if ( Reg *reg = value.ressource.inst->cd.out_regs.secure_get( value.ressource.nout, 0 ) ) {
         reg_type = reg->type;
@@ -133,7 +133,7 @@ void Codegen_C::write_repr( std::ostream &os, const Value &value, int prio, int 
     TODO;
 }
 
-Reg *Codegen_C::new_reg_for( Inst *inst, Type *type, int nout ) {
+Reg *Codegen_C::new_reg_for(Inst *inst, TypeInSane *type, int nout ) {
     Reg *&res = inst->cd.out_regs.secure_get( nout, 0 );
     if ( ! res )
         res = new Reg( type, nb_reg++ );
@@ -174,7 +174,7 @@ void Codegen_C::add_include( const String &include ) {
     includes.push_back_unique( include );
 }
 
-String Codegen_C::write_func_write_fd( Type *type ) {
+String Codegen_C::write_func_write_fd(TypeInSane *type ) {
     if ( parent )
         return parent->write_func_write_fd( type );
 
@@ -240,7 +240,7 @@ void Codegen_C::get_scheduling( Vec<Inst *> &sched, const Vec<Inst *> &out ) {
     }
 }
 
-bool Codegen_C::write_repr_rec( StreamPrio &ss, const std::function<void(StreamPrio&)> &reg_writer, Type *reg_type, Type *tgt_type, int tgt_offset ) {
+bool Codegen_C::write_repr_rec(StreamPrio &ss, const std::function<void(StreamPrio&)> &reg_writer, TypeInSane *reg_type, TypeInSane *tgt_type, int tgt_offset ) {
     if ( tgt_type == reg_type ) {
         reg_writer( ss );
         return true;

@@ -1,5 +1,5 @@
 #include "../Codegen/Codegen.h"
-#include "../Type.h"
+#include "../TypeInSane.h"
 #include "Clonable.h"
 #include "Conv.h"
 
@@ -7,7 +7,7 @@
 */
 class Conv : public Clonable<Conv> {
 public:
-    Conv( const Value &orig, Type *target_type ) : target_type( target_type ) {
+    Conv( const Value &orig, TypeInSane *target_type ) : target_type( target_type ) {
         init_attr( this->orig, orig );
     }
 
@@ -21,7 +21,7 @@ public:
             ss( PRIO_Function_call ) << cg.repr( target_type ) << "(" << cg.repr( this->children[ 0 ], PRIO_Cast, Codegen::WriteInlineCodeFlags::type_is_forced ) << ")";
     }
 
-    virtual Type *created_out_type( int nout ) const override {
+    virtual TypeInSane *created_out_type( int nout ) const override {
         return target_type;
     }
 
@@ -29,11 +29,11 @@ public:
         os << "Conv[" << *target_type << "]";
     }
 
-    IiValue orig;
-    Type   *target_type;
+    IiValue     orig;
+    TypeInSane *target_type;
 };
 
 
-Variable make_Conv( const Value &orig, Type *target_type ) {
+Variable make_Conv( const Value &orig, TypeInSane *target_type ) {
     return { ( new Conv( orig, target_type ) )->new_created_output() };
 }

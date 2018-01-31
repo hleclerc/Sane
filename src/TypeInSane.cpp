@@ -1,7 +1,7 @@
 #include "Inst/CanoCst.h"
+#include "TypeInSane.h"
 #include "KuSI64.h"
 #include "Class.h"
-#include "Type.h"
 #include "Vm.h"
 
 TypeInSane::TypeInSane( const RcString &name ) : name( name ) {
@@ -13,8 +13,18 @@ TypeInSane::TypeInSane( const RcString &name ) : name( name ) {
     has_new_vtable  = false;
 }
 
-void TypeInSane::write_to_stream(std::ostream &os) const {
+void TypeInSane::write_to_stream( std::ostream &os ) const {
     os << name;
+}
+
+void TypeInSane::write_cst( std::ostream &os, const PI8 *data, int offset_mod_8, bool always_add_braces ) const {
+    os << "{";
+    for( TypeInSane::Attribute *attr = first_attribute; attr; attr = attr->next ) {
+        if ( attr != first_attribute )
+            os << ",";
+        attr->type->write_cst( os, data + ( offset_mod_8 + attr->off ) / 8, ( offset_mod_8 + attr->off ) % 8 );
+    }
+    os << "}";
 }
 
 bool TypeInSane::has_vtable_at_the_beginning() const {
@@ -49,10 +59,14 @@ void TypeInSane::construct( const Variable &self, const Vec<Variable> &args, con
 
 }
 
-void TypeInSane::add_attribute( const RcString &name, SI32 off, Type *type, Variable::Flags flags ) {
+void TypeInSane::add_attribute( const RcString &name, SI32 off, TypeInSane *type, Variable::Flags flags ) {
     TypeInSane::Attribute *attr = &attributes.emplace( name, TypeInSane::Attribute{ name, type, off, flags, last_attribute, 0 } ).first->second;
     ( last_attribute ? last_attribute->next : first_attribute ) = attr;
     last_attribute = attr;
+}
+
+TypeInSane *TypeInSane::type_in_sane() {
+    return this;
 }
 
 Variable TypeInSane::find_attribute( const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const {
@@ -97,14 +111,11 @@ Class *TypeInSane::orig_class() const {
     return _orig_class;
 }
 
-void TypeInSane::write_cst( std::ostream &os, const PI8 *data, int offset_mod_8, bool always_add_braces ) const {
-    os << "{";
-    for( TypeInSane::Attribute *attr = first_attribute; attr; attr = attr->next ) {
-        if ( attr != first_attribute )
-            os << ",";
-        attr->type->write_cst( os, data + ( offset_mod_8 + attr->off ) / 8, ( offset_mod_8 + attr->off ) % 8 );
-    }
-    os << "}";
+Value TypeInSane::to_Value( const Variable &var ) {
+    return { var.ref->current, var.offset, var.length, this };
+}
+
+void TypeInSane::destroy( const Variable &self, bool use_virtual ) {
 }
 
 SI32 TypeInSane::kv_size() const {
@@ -115,7 +126,7 @@ SI32 TypeInSane::kv_alig() const {
     return _kv_alig;
 }
 
-String Type::c_name() const {
+String TypeInSane::c_name() const {
     String res = name;
     for( const CanoVal &var : parameters )
         res += to_string( var );
@@ -123,6 +134,33 @@ String Type::c_name() const {
 }
 
 Type *type_promote_gen( Type *a, Type *b ) {
+    if ( a == vm->type_AT )
+        return a;
+
+    if ( a->is_a_TypeBT() && b->is_a_TypeBT() ) {
+        if ( a->has_floating_point() || b->has_floating_point() ) {
+            TODO;
+        }
+
+        int m = std::max( a->mantissa_len(), b->mantissa_len() );
+        if ( a->is_signed() || b->is_signed() ) {
+            if ( m <=  8 ) return vm->type_SI8 ;
+            if ( m <= 16 ) return vm->type_SI16;
+            if ( m <= 32 ) return vm->type_SI32;
+            return                vm->type_SI64;
+        }
+
+        if ( m <=  8 ) return vm->type_PI8 ;
+        if ( m <= 16 ) return vm->type_PI16;
+        if ( m <= 32 ) return vm->type_PI32;
+        return                vm->type_PI64;
+    }
+
+    TODO;
+    return 0;
+}
+
+TypeInSane *type_promote_gen(TypeInSane *a, TypeInSane *b) {
     if ( a == vm->type_AT )
         return a;
 

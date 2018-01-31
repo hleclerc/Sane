@@ -1,6 +1,6 @@
 #include "CanoUninitializedData.h"
 #include "reuse_or_create.h"
-#include "../Type.h"
+#include "../TypeInSane.h"
 #include "../Vm.h"
 
 /**
@@ -14,7 +14,7 @@ public:
         return ::always_true( this->size == size );
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const override {
+    virtual void write_dot( std::ostream &os, TypeInSane *type ) const override {
         os << "UD";
     }
 

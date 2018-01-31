@@ -2,7 +2,7 @@
 #include "SlTrialDef.h"
 #include "Def.h"
 
-TypeSlTrialDef::TypeSlTrialDef() : Type( "SlTrialDef" ) {
+TypeSlTrialDef::TypeSlTrialDef() : TypeInSane( "SlTrialDef" ) {
 }
 
 Type::CondVal TypeSlTrialDef::get_condition( const Variable &self ) const {

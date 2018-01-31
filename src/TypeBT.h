@@ -9,7 +9,7 @@
 template<class T,bool reverse_endianness>
 class TypeBT : TypeInSane {
 public:
-    TypeBT( const LString &name ) : Type( name ) {
+    TypeBT( const RcString &name ) : TypeInSane( name ) {
     }
 
     virtual void write_cst( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const override {

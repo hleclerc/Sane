@@ -1,7 +1,7 @@
 #include "TypeCallableWithSelf.h"
 #include "CallableWithSelfOrArgs.h"
 
-TypeCallableWithSelf::TypeCallableWithSelf() : Type( "CallableWithSelf" ) {
+TypeCallableWithSelf::TypeCallableWithSelf() : TypeInSane( "CallableWithSelf" ) {
 }
 
 Variable TypeCallableWithSelf::apply( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) {

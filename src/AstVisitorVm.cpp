@@ -15,7 +15,7 @@
 #include "Def.h"
 //#include "AT.h"
 #include "SurdefList.h"
-#include "Type.h"
+#include "TypeInSane.h"
 #include "Vm.h"
 
 //#include <experimental/filesystem>
@@ -939,7 +939,7 @@ void AstVisitorVm::init_of( RcString name, const Vec<Variable> &args, const Vec<
                 self.find_attribute( "construct" ).apply( false, args, names, ApplyFlags::DONT_CALL_CTOR, spreads );
 
                 // say that we have initialized everything
-                for( auto p : self.type->attributes  )
+                for( auto p : self.type->type_in_sane()->attributes  )
                     s->wpc->insert( p.second.name );
 
                 return;
@@ -953,8 +953,8 @@ void AstVisitorVm::init_of( RcString name, const Vec<Variable> &args, const Vec<
             s->wpc->insert( name );
 
             // instance attribute
-            auto iter_attr = self.type->attributes.find( name );
-            if ( iter_attr == self.type->attributes.end() ) {
+            auto iter_attr = self.type->type_in_sane()->attributes.find( name );
+            if ( iter_attr == self.type->type_in_sane()->attributes.end() ) {
                 vm->add_error( "there's no attribute '{}' in a {}", name, *self.type );
                 return;
             }
@@ -998,8 +998,8 @@ Variable AstVisitorVm::assign( Scope *scope, RcString name, std::function<Variab
             return vm->ref_void;
 
         // find attribute references
-        auto iter_attr = scope->ctor_self.type->attributes.find( name );
-        if ( iter_attr == scope->ctor_self.type->attributes.end() )
+        auto iter_attr = scope->ctor_self.type->type_in_sane()->attributes.find( name );
+        if ( iter_attr == scope->ctor_self.type->type_in_sane()->attributes.end() )
             return vm->add_error( "Attribute '{}' not registered in type", name );
 
         // call ctor recursively

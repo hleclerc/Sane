@@ -9,7 +9,7 @@
 #include "TCI.h"
 #include "Vm.h"
 
-TypeLambda::TypeLambda() : Type( "Lambda" ) {
+TypeLambda::TypeLambda() : TypeInSane( "Lambda" ) {
 }
 
 bool TypeLambda::destroy_attrs() const {

@@ -1,7 +1,7 @@
 #pragma once
 
+class TypeInSane;
 class Variable;
 class Value;
-class Type;
 
-Variable make_Conv( const Value &orig, Type *target_type );
+Variable make_Conv( const Value &orig, TypeInSane *target_type );

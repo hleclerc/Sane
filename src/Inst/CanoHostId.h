@@ -23,14 +23,14 @@ public:
         return 0;
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const {
+    virtual void write_dot( std::ostream &os, TypeInSane *type ) const override {
         os << "HostId";
     }
 
-    virtual void attr_visitor( AttrVisitor &visitor ) const {
+    virtual void attr_visitor( AttrVisitor &visitor ) const override {
     }
 
-    virtual KcSI64 length() const {
+    virtual KcSI64 length() const override {
         return 64;
     }
 

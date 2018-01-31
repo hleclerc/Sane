@@ -2,7 +2,7 @@
 
 #include "IiRessource.h"
 #include "IiKuSI64.h"
-class Type;
+class TypeInSane;
 
 /**
   In inst Value (where ressources are replace by indices)
@@ -12,5 +12,5 @@ public:
     IiRessource ressource;
     IiKuSI64    offset;
     IiKuSI64    length;
-    Type       *type;
+    TypeInSane *type;
 };

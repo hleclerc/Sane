@@ -7,7 +7,7 @@ public:
     CanoSym( const String &name, const KcSI64 &size ) : name( name ), size( size ) {
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const override {
+    virtual void write_dot( std::ostream &os, TypeInSane *type ) const override {
         os << name;
     }
 

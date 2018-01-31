@@ -11,7 +11,7 @@ class TypeInSane : public Type {
 public:
     struct Attribute {
         RcString         name;
-        Type            *type;
+        TypeInSane      *type;
         SI32             off;   ///< in bits
         Variable::Flags  flags;
         Attribute       *prev;
@@ -24,22 +24,20 @@ public:
 
     TypeInSane( const RcString &name );
 
-    virtual bool            has_vtable_at_the_beginning() const;
-    virtual Variable        find_attribute             (const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const;
-    void                    add_attribute              ( const RcString &name, SI32 off, Type *type, Variable::Flags flags = Variable::Flags::NONE );
+    virtual bool            has_vtable_at_the_beginning() const override;
+    virtual Variable        find_attribute             (const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const override;
+    void                    add_attribute              ( const RcString &name, SI32 off, TypeInSane *type, Variable::Flags flags = Variable::Flags::NONE );
+    virtual TypeInSane     *type_in_sane               () override;
     Class                  *orig_class                 () const;
-    virtual void            spread_in                  ( const Variable &self, Vec<Variable> &res, Vec<RcString> &names );
-    virtual void            construct                  ( const Variable &self, const Vec<Variable> &args, const Vec<RcString> &names );
-    virtual void            destroy                    ( const Variable &self, bool use_virtual );
+    virtual void            spread_in                  ( const Variable &self, Vec<Variable> &res, Vec<RcString> &names ) override;
+    virtual void            construct                  ( const Variable &self, const Vec<Variable> &args, const Vec<RcString> &names ) override;
+    virtual Value           to_Value                   ( const Variable &var ) override;
+    virtual void            destroy                    ( const Variable &self, bool use_virtual ) override;
 
     virtual void            write_to_stream            ( std::ostream &os ) const;
     virtual void            write_cst                  ( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const;
 
-    // creation
-    virtual RcPtr<CanoInst> convert_cano_cst           ( const void *content, Type *target );
-
     // properties
-    virtual SI64            convert_cst_to_SI64        ( const void *content ) const;
     virtual SI32            kv_size                    () const;
     virtual SI32            kv_alig                    () const;
     virtual String          c_name                     () const;
@@ -59,3 +57,5 @@ public:
     MSA                     static_attributes;
     int                     type_promote_score;
 };
+
+TypeInSane *type_promote_gen( TypeInSane *a, TypeInSane *b );

@@ -1,16 +1,16 @@
 #pragma once
 
 #include "../System/Stream.h"
-class Type;
+class TypeInSane;
 
 /**
 */
 class Reg {
 public:
-    Reg( Type *type, int num );
+    Reg( TypeInSane *type, int num );
 
     virtual void write_to_stream( std::ostream &os ) const;
 
-    Type        *type;
+    TypeInSane  *type;
     int          num;
 };

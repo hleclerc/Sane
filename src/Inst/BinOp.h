@@ -23,7 +23,7 @@ public:
         os << op;
     }
 
-    virtual Type *created_out_type( int nout ) const override {
+    virtual TypeInSane *created_out_type( int nout ) const override {
         return Op::type( a.type, b.type );
     }
 
@@ -49,7 +49,7 @@ public:
         static const char *str () { return STR; } \
         static const char *name() { return #NAME; } \
         static Variable    make( const Value &a, const Value &b ) { return make_##NAME( a, b ); } \
-        static Type       *type( Type *a, Type *b ) { return TYPE; } \
+        static TypeInSane *type( TypeInSane *a, TypeInSane *b ) { return TYPE; } \
     }
 
 DECL_BIN_OP( Add       , PRIO_Addition             , "+"  , type_promote_gen( a, b ) );

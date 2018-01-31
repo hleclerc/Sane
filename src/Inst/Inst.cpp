@@ -1,8 +1,8 @@
 #include "../Codegen/Codegen.h"
 #include "../System/DotOut.h"
 #include "../System/Deque.h"
+#include "../TypeInSane.h"
 #include "../Ressource.h"
-#include "../Type.h"
 #include "../Ref.h"
 #include "../Vm.h"
 #include "CanoCst.h"
@@ -165,7 +165,7 @@ bool Inst::all_children_with_op_id( size_t oi ) const {
     return true;
 }
 
-Type *Inst::created_out_type( int nout ) const {
+TypeInSane *Inst::created_out_type( int nout ) const {
     write_dot( std::cerr << __FUNCTION__ << " " );
     TODO;
     return 0;
@@ -224,7 +224,7 @@ RcPtr<CanoInst> Inst::cano_inst( int nout ) const {
     return cano_inst_buf;
 }
 
-CanoVal Inst::cano_val( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, Type *type ) const {
+CanoVal Inst::cano_val( const IiRessource &ressource, const KcSI64 &offset, const KcSI64 &length, TypeInSane *type ) const {
     return { cano_inst( ressource, offset, length ), type };
 }
 
@@ -232,7 +232,7 @@ CanoVal Inst::cano_val( const IiRessource &ressource ) const {
     return children[ ressource.index ].cano_val();
 }
 
-CanoVal Inst::cano_val(int nout, const KcSI64 &offset, const KcSI64 &length, Type *type ) const {
+CanoVal Inst::cano_val(int nout, const KcSI64 &offset, const KcSI64 &length, TypeInSane *type ) const {
     return { cano_inst( nout, offset, length ), type };
 }
 
@@ -240,7 +240,7 @@ CanoVal Inst::cano_val( int nout ) const {
     return { cano_inst( nout ), out_type( nout ) };
 }
 
-Type *Inst::out_type( int nout ) const {
+TypeInSane *Inst::out_type( int nout ) const {
     if ( nout < (int)created_outputs.size() )
         return created_out_type( nout );
     return children[ iomap[ nout - created_outputs.size() ] ].type();
@@ -262,15 +262,7 @@ Inst *Inst::clone() const {
     return 0;
 }
 
-bool Inst::is_non_null( int nout, const KuSI64 &offset, const KuSI64 &length, Type *type ) const {
-    return false;
-}
-
-bool Inst::is_null( int nout, const KuSI64 &offset, const KuSI64 &length, Type *type ) const {
-    return false;
-}
-
-void Inst::write_to_stream( std::ostream &os, SI32 nout, Type *type, int offset ) const {
+void Inst::write_to_stream( std::ostream &os, SI32 nout, TypeInSane *type, int offset ) const {
     write_dot( os );
     if ( nout >= 0 )
         os << "[" << nout << "]";
@@ -343,7 +335,7 @@ void Inst::write_code( StreamSep &ss, Codegen &cg ) {
     if ( created_outputs.size() != 1 )
         TODO;
 
-    Type *type = out_type( 0 );
+    TypeInSane *type = out_type( 0 );
     ss.write_beg() << cg.repr( type ) << " " << *cg.new_reg_for( this, type, 0 ) << " = ";
     StreamPrio sp{ *ss, PRIO_Assignment };
     write_inline_code( sp, cg, 0, Codegen::WriteInlineCodeFlags::type_is_forced );

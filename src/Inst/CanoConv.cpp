@@ -1,20 +1,20 @@
 #include "reuse_or_create.h"
 #include "CanoConv.h"
 #include "CanoVal.h"
-#include "../Type.h"
+#include "../TypeInSane.h"
 #include "../Vm.h"
 
 /***/
 class CanoConv : public CanoInst {
 public:
-    CanoConv( const CanoVal &val, Type *type ) : val( val ), type( type ) {
+    CanoConv( const CanoVal &val, TypeInSane *type ) : val( val ), type( type ) {
     }
 
-    bool same( const CanoVal &val, Type *type ) const {
+    bool same( const CanoVal &val, TypeInSane *type ) const {
         return ::always_true( this->val == val ) && this->type == type;
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const override {
+    virtual void write_dot( std::ostream &os, TypeInSane *type ) const override {
         os << "conv";
     }
 
@@ -27,11 +27,11 @@ public:
         return type->kv_size();
     }
 
-    CanoVal val;
-    Type   *type;
+    CanoVal     val;
+    TypeInSane *type;
 };
 
-CanoVal make_CanoConv( const CanoVal &val, Type *type ) {
+CanoVal make_CanoConv( const CanoVal &val, TypeInSane *type ) {
     if ( val.type == type )
         return val;
 

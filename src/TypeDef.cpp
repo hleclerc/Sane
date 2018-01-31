@@ -13,7 +13,7 @@
 #include "Vm.h"
 #include <cmath>
 
-TypeDef::TypeDef() : Type( "Def" ) {
+TypeDef::TypeDef() : TypeInSane( "Def" ) {
 }
 
 Variable TypeDef::apply( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) {
@@ -290,7 +290,7 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
         }
 
         // put again the static variables
-        for( auto p : with_self.type->static_attributes )
+        for( auto p : with_self.type->type_in_sane()->static_attributes )
             new_scope.reg_var( p.first, *p.second, Scope::VariableFlags::STATIC | Scope::VariableFlags::CATCHED );
 
         // set vtable pointers
@@ -327,7 +327,7 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
         with_self.ref->cpt_use = 654;
 
         // destruction of attributes
-        for( TypeInSane::Attribute *attr = with_self.type->last_attribute; attr; attr = attr->prev ) {
+        for( TypeInSane::Attribute *attr = with_self.type->type_in_sane()->last_attribute; attr; attr = attr->prev ) {
             ASSERT( attr->off % 8 == 0, "..." );
             KuSI64 off = with_self.offset + attr->off;
             Variable v( with_self.ref, off, attr->type->size( with_self.ref, off ), attr->type, with_self.flags );

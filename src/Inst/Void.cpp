@@ -6,22 +6,22 @@
 */
 class Void : public Inst {
 public:
-    Void( Type *type ) : type( type ) {
+    Void( TypeInSane *type ) : type( type ) {
     }
 
     virtual void write_dot( std::ostream &os ) const override {
         os << "void";
     }
 
-    virtual Type *created_out_type( int nout ) const override {
+    virtual TypeInSane *created_out_type( int nout ) const override {
         return type;
     }
 
-    Type *type;
+    TypeInSane *type;
 };
 
 
-Variable make_Void( Type *type ) {
+Variable make_Void( TypeInSane *type ) {
     Void *res = new Void( type );
     return { res->new_created_output() };
 }

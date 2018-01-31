@@ -1,7 +1,7 @@
 #include "Codegen.h"
 #include "../Ressource.h"
 
-Codegen::ReprType Codegen::repr( Type *type ) {
+Codegen::ReprType Codegen::repr( TypeInSane *type ) {
     return { this, type };
 }
 

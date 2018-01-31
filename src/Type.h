@@ -17,20 +17,21 @@ public:
 
     Type();
 
-    virtual bool            has_vtable_at_the_beginning() const;
+    virtual bool            has_vtable_at_the_beginning() const = 0;
     virtual RcString        checks_type_constraint     ( const Variable &self, const Variable &tested_var, TCI &tci ) const;
     virtual unsigned        get_nb_conversions         ( const Variable &self ) const;
     virtual bool            has_a_constructor          () const; ///< false for types like Union, ...
     virtual double          get_pertinence             ( const Variable &self ) const;
-    virtual Variable        find_attribute             (const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const;
+    virtual Variable        find_attribute             (const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const = 0;
     virtual CondVal         get_condition              ( const Variable &self ) const;
     virtual void            get_fail_info              ( const Variable &self, size_t &offset, RcString &source, RcString &msg ) const;
     virtual bool            destroy_attrs              () const;
-    void                    add_attribute              ( const RcString &name, SI32 off, Type *type, Variable::Flags flags = Variable::Flags::NONE );
     virtual Variable        make_sl_trial              ( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) const;
     virtual Variable        use_sl_trial               ( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags, const Variable &trial ) const;
-    Class                  *orig_class                 () const;
+    virtual TypeInSane     *type_in_sane               () = 0;
+    virtual Class          *orig_class                 () const = 0;
     virtual void            spread_in                  ( const Variable &self, Vec<Variable> &res, Vec<RcString> &names );
+    virtual Value           to_Value                   ( const Variable &var ) = 0;
     virtual void            construct                  ( const Variable &self, const Vec<Variable> &args, const Vec<RcString> &names );
     virtual Variable        with_self                  ( Variable &orig, const Variable &new_self ) const;
     virtual void            destroy                    ( const Variable &self, bool use_virtual );
@@ -38,8 +39,8 @@ public:
     virtual Variable        select                     ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names );
     virtual Variable        apply                      ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags = ApplyFlags::NONE );
 
-    virtual void            write_to_stream            ( std::ostream &os ) const;
-    virtual void            write_cst                  ( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const;
+    virtual void            write_to_stream            ( std::ostream &os ) const = 0;
+    virtual void            write_cst                  ( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const = 0;
 
     // creation
     virtual RcPtr<CanoInst> convert_cano_cst           ( const void *content, Type *target );
@@ -53,7 +54,7 @@ public:
     virtual int             is_signed                  () const;
     virtual SI32            kv_size                    () const;
     virtual SI32            kv_alig                    () const;
-    virtual String          c_name                     () const;
+    virtual String          c_name                     () const = 0;
     virtual bool            error                      () const;
     virtual KuSI64          size                       ( const RcPtr<Ref> &ref, const KuSI64 &offset ) const;
 
@@ -65,4 +66,3 @@ public:
     RcPtr<CanoInst> cano_inst;         ///<
 };
 
-Type *type_promote_gen( Type *a, Type *b );

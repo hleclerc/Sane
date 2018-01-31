@@ -24,6 +24,7 @@
 #include "TypeSlTrialDef.h"
 #include "TypeSurdefList.h"
 #include "TypeVarargs.h"
+#include "TypeInSane.h"
 #include "TypeLambda.h"
 #include "TypeError.h"
 #include "TypeClass.h"
@@ -51,7 +52,7 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     #undef BT
 
     // arythmetic types
-    #define BT( T ) type_##T = reverse_endianness ? (Type *)new TypeBT<T,true>( #T ) : (Type *)new TypeBT<T,false>( #T ); type_##T->_kv_size = 8 * sizeof( T );
+    #define BT( T ) type_##T = reverse_endianness ? (TypeInSane *)new TypeBT<T,true>( #T ) : (TypeInSane *)new TypeBT<T,false>( #T ); type_##T->_kv_size = 8 * sizeof( T );
     BT( Bool )
     BT( SI64 )
     BT( PI64 )
@@ -77,7 +78,7 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     type_Def              = new TypeDef;
 
     // type_... not initialized so far
-    #define BT( T ) if ( ! type_##T ) type_##T = new Type( #T );
+    #define BT( T ) if ( ! type_##T ) type_##T = new TypeInSane( #T );
     #include "BaseTypes.h"
     #undef BT
 
@@ -91,8 +92,11 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     //    #include "BaseTypes.h"
     //    #undef BT
 
-    for( Primitive_decl *pd = last_Primitive_decl; pd; pd = pd->prev )
-        predefs[ RcString( "__primitive_" ) + pd->name ] = make_Void( types.push_back_val( pd->func() ) );
+    for( Primitive_decl *pd = last_Primitive_decl; pd; pd = pd->prev ) {
+        TypeInSane *res = pd->func();
+        types.push_back_val( res );
+        predefs[ RcString( "__primitive_" ) + pd->name ] = make_Void( res );
+    }
 
     for( Primitive_func *pd = last_Primitive_func; pd; pd = pd->prev )
         predeffs[ pd->name ] = pd->func;
@@ -225,10 +229,10 @@ Variable Vm::visit( const AstCrepr &ac, bool want_ret ) {
     return visit( ac.names, ac.code, want_ret );
 }
 
-Type *Vm::type_AnonymousRoom( int size, int alig ) {
+TypeInSane *Vm::type_AnonymousRoom( int size, int alig ) {
     auto iter = ano_room_type_map.find( std::make_pair( size, alig ) );
     if ( iter == ano_room_type_map.end() ) {
-        Type *res = new Type( "AnonymousRoom_" + to_string( size ) + "_" + to_string( alig ) );
+        TypeInSane *res = new TypeInSane( "AnonymousRoom_" + to_string( size ) + "_" + to_string( alig ) );
         iter = ano_room_type_map.emplace_hint( iter, std::make_pair( size, alig ), res );
         types << res;
     }
@@ -240,7 +244,7 @@ Variable Vm::new_Type( Type *type ) {
     return {};
 }
 
-Variable Vm::make_inst( Type *type, const Vec<Variable> &ctor_args, const Vec<RcString> &ctor_names, ApplyFlags apply_flags ) {
+Variable Vm::make_inst( TypeInSane *type, const Vec<Variable> &ctor_args, const Vec<RcString> &ctor_names, ApplyFlags apply_flags ) {
     // check that all abstract surdefs are defined
     if ( ! ( apply_flags & ApplyFlags::DONT_CALL_CTOR ) && type->abstract_methods.size() ) {
         std::string am;
@@ -269,13 +273,14 @@ bool Vm::little_endian() const {
     return ( __BYTE_ORDER ==__LITTLE_ENDIAN ) ^ reverse_endianness;
 }
 
-Type *Vm::type_ptr_for( const RcString &name, const Vec<Variable> &args ) {
+TypeInSane *Vm::type_ptr_for( const RcString &name, const Vec<Variable> &args ) {
     if ( init_mode ) {
         auto iter = base_types.find( name );
         if ( iter != base_types.end() )
             return iter->second;
     }
-    Type *res = types.push_back_val( new Type( name ) );
+    TypeInSane *res = new TypeInSane( name );
+    types.push_back_val( res );
     for( const Variable &arg : args )
         res->parameters << arg.cano( true );
     return res;

@@ -1,7 +1,7 @@
 #pragma once
 
+class TypeInSane;
 class CanoVal;
-class Type;
 
-CanoVal make_CanoConv( const CanoVal &val, Type *type );
+CanoVal make_CanoConv( const CanoVal &val, TypeInSane *type );
 

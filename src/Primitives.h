@@ -6,11 +6,11 @@ class Scope;
 class Type;
 
 struct Primitive_decl {
-    Primitive_decl( const char *name, std::function<Type*()> func );
+    Primitive_decl( const char *name, std::function<TypeInSane*()> func );
 
-    Primitive_decl        *prev;
-    const char            *name;
-    std::function<Type*()> func;
+    Primitive_decl              *prev;
+    const char                  *name;
+    std::function<TypeInSane*()> func;
 };
 
 struct Primitive_func {

@@ -2,7 +2,7 @@
 #include "SlTrialClass.h"
 #include "Class.h"
 
-TypeSlTrialClass::TypeSlTrialClass() : Type( "SlTrialClass" ) {
+TypeSlTrialClass::TypeSlTrialClass() : TypeInSane( "SlTrialClass" ) {
 }
 
 Type::CondVal TypeSlTrialClass::get_condition( const Variable &self ) const {

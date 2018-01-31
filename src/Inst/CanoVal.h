@@ -8,7 +8,7 @@
 */
 class CanoVal {
 public:
-    CanoVal( const RcPtr<CanoInst> &inst, Type *type );
+    CanoVal( const RcPtr<CanoInst> &inst, TypeInSane *type );
     CanoVal( const CanoVal &val );
     CanoVal( SI64 val );
     CanoVal( SI32 val );
@@ -16,10 +16,11 @@ public:
     CanoVal();
 
     void            write_to_stream ( std::ostream &os ) const;
+    CanoVal         fully_solved    ();
     KcSI64          length          () const { return inst->length(); }
 
     RcPtr<CanoInst> inst;
-    Type           *type;
+    TypeInSane     *type;
 };
 
 bool always_false( const CanoVal &val );

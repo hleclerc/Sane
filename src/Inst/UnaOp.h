@@ -20,7 +20,7 @@ public:
         os << Op::name();
     }
 
-    virtual Type *created_out_type( int nout ) const override {
+    virtual TypeInSane *created_out_type( int nout ) const override {
         return Op::type( a.type );
     }
 
@@ -38,7 +38,7 @@ public:
         static const char *str () { return STR; } \
         static const char *name() { return #NAME; } \
         static Variable    make( const Value &a ) { return make_##NAME( a ); } \
-        static Type       *type( Type *a ) { return TYPE; } \
+        static TypeInSane *type( TypeInSane *a ) { return TYPE; } \
     }
 
 DECL_UNA_OP( Neg        , PRIO_Unary_negation, "-", a );

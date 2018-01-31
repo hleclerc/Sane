@@ -41,7 +41,7 @@ public:
     Vec<RcString>             inheritance_names;
     Vec<Vec<CatchedVariable>> catched_variables_inh;
 
-    Deque<Type *>             instances;
+    Deque<TypeInSane *>       instances;
 
     Bool                      export_flag;
     Bool                      global_flag;

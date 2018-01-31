@@ -2,7 +2,7 @@
 #include "CanoConv.h"
 #include "CanoVal.h"
 #include "BinOp.h"
-#include "../Type.h"
+#include "../TypeInSane.h"
 #include "../Vm.h"
 
 /***/
@@ -16,7 +16,7 @@ public:
         return ::always_true( this->a == a ) && ::always_true( this->b == b );
     }
 
-    virtual void write_dot( std::ostream &os, Type *type ) const override {
+    virtual void write_dot( std::ostream &os, TypeInSane *type ) const override {
         os << op;
     }
 
@@ -38,13 +38,13 @@ public:
 
 
 template<class T>
-CanoVal make_CanoBinOp( Type *type, const CanoVal &a, const CanoVal &b ) {
+CanoVal make_CanoBinOp( TypeInSane *type, const CanoVal &a, const CanoVal &b ) {
     return { reuse_or_create<CanoBinOp<T>>( a, b ), type };
 }
 
 CanoVal make_CanoAdd( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) + make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -55,7 +55,7 @@ CanoVal make_CanoAdd( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoSub( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) - make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -66,7 +66,7 @@ CanoVal make_CanoSub( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoMul( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) * make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -77,7 +77,7 @@ CanoVal make_CanoMul( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoDiv( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) / make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -88,7 +88,7 @@ CanoVal make_CanoDiv( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoDivInt( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoDivInt( make_CanoConv( a, tp ), make_CanoConv( b, tp ) );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -99,7 +99,7 @@ CanoVal make_CanoDivInt( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoMod( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) % make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -110,7 +110,7 @@ CanoVal make_CanoMod( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoInf( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) < make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -121,7 +121,7 @@ CanoVal make_CanoInf( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoSup( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) > make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -132,7 +132,7 @@ CanoVal make_CanoSup( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoInfEqu( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) <= make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -143,7 +143,7 @@ CanoVal make_CanoInfEqu( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoSupEqu( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) >= make_CanoConv( b, tp );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -155,7 +155,7 @@ CanoVal make_CanoSupEqu( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoEqu( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) == make_CanoConv( b, tp );
     }
 
@@ -170,7 +170,7 @@ CanoVal make_CanoEqu( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoNotEqu( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return make_CanoConv( a, tp ) != make_CanoConv( b, tp );
     }
 
@@ -185,7 +185,7 @@ CanoVal make_CanoNotEqu( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoMin( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return min( make_CanoConv( a, tp ), make_CanoConv( b, tp ) );
     }
     if ( a.inst->known_value() && b.inst->known_value() )
@@ -196,7 +196,7 @@ CanoVal make_CanoMin( const CanoVal &a, const CanoVal &b ) {
 
 CanoVal make_CanoMax( const CanoVal &a, const CanoVal &b ) {
     if ( a.type != b.type ) {
-        Type *tp = type_promote_gen( a.type, b.type );
+        TypeInSane *tp = type_promote_gen( a.type, b.type );
         return max( make_CanoConv( a, tp ), make_CanoConv( b, tp ) );
     }
     if ( a.inst->known_value() && b.inst->known_value() )

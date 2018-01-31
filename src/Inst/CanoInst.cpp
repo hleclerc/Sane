@@ -1,5 +1,5 @@
 #include "../System/DotOut.h"
-#include "../Type.h"
+#include "../TypeInSane.h"
 #include "CanoVal.h"
 #include <fstream>
 
@@ -29,13 +29,13 @@ struct CanoInstWriteWisitor : CanoInst::AttrVisitor {
     virtual void on( const char *name, const RcPtr<CanoInst> &val ) { disp( name, val ); }
     virtual void on( const char *name, const CanoVal &val ) { disp( name, val ); }
     virtual void on( const char *name, const KcSI64 &val ) { disp( name, val ); }
-    virtual void on( const char *name, Type *val ) { if ( val ) disp( name, *val ); else disp( name, 0 ); }
+    virtual void on( const char *name, TypeInSane *val ) { if ( val ) disp( name, *val ); else disp( name, 0 ); }
 
     std::ostream *os;
     int cpt;
 };
 
-void CanoInst::write_to_stream( std::ostream &os, Type *type ) const {
+void CanoInst::write_to_stream( std::ostream &os, TypeInSane *type ) const {
     write_dot( os, type );
 
     CanoInstWriteWisitor cv;
@@ -110,7 +110,7 @@ void CanoInst::children_visitor( const std::function<void (const char *, CanoIns
     attr_visitor( cv );
 }
 
-SI64 CanoInst::get_SI64_value( Type *orig ) const {
+SI64 CanoInst::get_SI64_value( TypeInSane *orig ) const {
     ERROR( "not a known value" );
     return 0;
 }
@@ -118,15 +118,15 @@ SI64 CanoInst::get_SI64_value( Type *orig ) const {
 void CanoInst::get_out_insts( Deque<CanoInst *> &outs ) {
 }
 
-bool CanoInst::always_false( Type *type ) const {
+bool CanoInst::always_false( TypeInSane *type ) const {
     return false;
 }
 
-bool CanoInst::always_true( Type *type ) const {
+bool CanoInst::always_true( TypeInSane *type ) const {
     return false;
 }
 
-RcPtr<CanoInst> CanoInst::simp_CanoConv( Type *orig, Type *target ) {
+RcPtr<CanoInst> CanoInst::simp_CanoConv(TypeInSane *orig, TypeInSane *target ) {
     return 0;
 }
 

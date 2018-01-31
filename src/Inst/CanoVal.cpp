@@ -1,7 +1,7 @@
 #include "CanoCst.h"
 #include "../Vm.h"
 
-CanoVal::CanoVal( const RcPtr<CanoInst> &inst, Type *type ) : inst( inst ), type( type ) {
+CanoVal::CanoVal( const RcPtr<CanoInst> &inst, TypeInSane *type ) : inst( inst ), type( type ) {
 }
 
 CanoVal::CanoVal( const CanoVal &val ) : inst( val.inst ), type( val.type ) {
@@ -21,6 +21,10 @@ CanoVal::CanoVal( Bool val ) : CanoVal( make_cano_val( val ) ) {
 
 void CanoVal::write_to_stream( std::ostream &os ) const {
     inst->write_to_stream( os, type );
+}
+
+CanoVal CanoVal::fully_solved() {
+    return { inst->fully_solved(), type };
 }
 
 

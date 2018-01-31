@@ -1,7 +1,7 @@
 #include "SurdefList.h"
+#include "TypeInSane.h"
 #include "equal.h"
 #include "Class.h"
-#include "Type.h"
 #include "Def.h"
 #include "Vm.h"
 

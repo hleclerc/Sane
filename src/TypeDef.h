@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Type.h"
+#include "TypeInSane.h"
 
 /**
 */
-class TypeDef : public Type {
+class TypeDef : public TypeInSane {
 public:
     TypeDef();
 

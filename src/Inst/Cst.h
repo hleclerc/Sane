@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../System/TypeConfig.h"
+class TypeInSane;
 class Variable;
-class Type;
 
 /// generic cst
-Variable make_Cst( Type *type, int size, void *val = 0, void *kno = 0 );
+Variable make_Cst( TypeInSane *type, int size, void *val = 0, void *kno = 0 );
 
 Variable make_Cst_PI64( PI64 val );
 Variable make_Cst_SI64( SI64 val );
