@@ -17,7 +17,7 @@ public:
 
     Type();
 
-    virtual bool            has_vtable_at_the_beginning() const = 0;
+    virtual bool            has_vtable_at_the_beginning() const;
     virtual RcString        checks_type_constraint     ( const Variable &self, const Variable &tested_var, TCI &tci ) const;
     virtual unsigned        get_nb_conversions         ( const Variable &self ) const;
     virtual bool            has_a_constructor          () const; ///< false for types like Union, ...
@@ -28,6 +28,7 @@ public:
     virtual bool            destroy_attrs              () const;
     virtual Variable        make_sl_trial              ( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) const;
     virtual Variable        use_sl_trial               ( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags, const Variable &trial ) const;
+    Type                   *get_proxy_type             ();
     virtual TypeInSane     *type_in_sane               () = 0;
     virtual Class          *orig_class                 () const = 0;
     virtual void            spread_in                  ( const Variable &self, Vec<Variable> &res, Vec<RcString> &names );
@@ -63,6 +64,7 @@ public:
     #include "decl_bin_op.h"
     #undef BO
 
+    Type           *_proxy_type;
     RcPtr<CanoInst> cano_inst;         ///<
 };
 

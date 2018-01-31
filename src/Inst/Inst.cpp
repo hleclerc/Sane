@@ -264,7 +264,7 @@ Inst *Inst::clone() const {
 
 void Inst::write_to_stream( std::ostream &os, SI32 nout, TypeInSane *type, int offset ) const {
     write_dot( os );
-    if ( nout >= 0 )
+    if ( nout >= 0 && created_outputs.size() + iomap.size() > 1 )
         os << "[" << nout << "]";
     if ( offset >= 0 )
         os << "{" << offset << "}";

@@ -11,11 +11,14 @@ Variable::Variable( const RcPtr<Ref> &ref, const KuSI64 &offset, const KuSI64 &l
 Variable::Variable( const RcPtr<Ref> &ref, Variable::Flags flags ) : Variable( ref, 0, ref->creator.size(), ref->creator.type(), flags ) {
 }
 
+Variable::Variable( const Variable &that ) : ref( that.ref ), offset( that.offset ), length( that.length ), type( that.type ), flags( that.flags  ) {
+}
+
 Variable &Variable::operator=( const Variable &that ) {
     ref     = that.ref   ;
-    type    = that.type  ;
     offset  = that.offset;
     length  = that.length;
+    type    = that.type  ;
     flags   = that.flags ;
     return *this;
 }

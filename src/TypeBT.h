@@ -12,6 +12,9 @@ public:
     TypeBT( const RcString &name ) : TypeInSane( name ) {
     }
 
+    virtual void destroy( const Variable &self, bool use_virtual ) override {
+    }
+
     virtual void write_cst( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const override {
         if ( always_add_braces )
             os << "{";

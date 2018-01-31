@@ -14,6 +14,10 @@ void TypeVarargs::spread_in( const Variable &self, Vec<Variable> &values, Vec<Rc
     }
 }
 
+void TypeVarargs::destroy( const Variable &self, bool use_virtual ) {
+    delete self.rcast<Varargs>();
+}
+
 //void Type_Varargs::write_to_stream( std::ostream &os, const char *content ) const {
 //    int cpt = 0;
 //    const Varargs *va = rcast( content );

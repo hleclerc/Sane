@@ -13,8 +13,9 @@ class Variable {
 public:
     enum class Flags: PI32 { NONE = 0, CONST = 1 };
 
-    Variable( const RcPtr<Ref> &ref_anc, const KuSI64 &offset, const KuSI64 &length, Type *type, Flags flags = Flags::NONE );
-    Variable( const RcPtr<Ref> &ref_anc, Flags flags = Flags::NONE );
+    Variable( const RcPtr<Ref> &ref, const KuSI64 &offset, const KuSI64 &length, Type *type, Flags flags = Flags::NONE );
+    Variable( const RcPtr<Ref> &ref, Flags flags = Flags::NONE );
+    Variable( const Variable &that );
     Variable() : type( 0 ) {} // void Variable
 
     Variable          &operator=           ( const Variable &value );

@@ -357,3 +357,7 @@ Variable TypeClass::use_sl_trial( bool want_ret, const Variable &func, const Var
     return vm->make_inst( type_for_args( def, func, tr->args ), ctor_args, ctor_names, apply_flags );
 }
 
+void TypeClass::destroy( const Variable &self, bool use_virtual ) {
+    // classes are global and unique
+}
+

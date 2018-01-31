@@ -17,9 +17,13 @@ void TypeSlTrialClass::get_fail_info( const Variable &self, size_t &offset, RcSt
     msg = tr->msg;
 }
 
+void TypeSlTrialClass::destroy( const Variable &self, bool use_virtual ) {
+    delete self.rcast<SlTrialClass>();
+}
+
 unsigned TypeSlTrialClass::get_nb_conversions( const Variable &self ) const {
     TODO;
     return 0;
-//    SlTrialClass *tr = rcast( self.ptr() );
-//    return tr->tci.nb_conversions;
+    //    SlTrialClass *tr = rcast( self.ptr() );
+    //    return tr->tci.nb_conversions;
 }

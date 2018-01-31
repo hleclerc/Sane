@@ -17,6 +17,10 @@ void TypeSlTrialDef::get_fail_info( const Variable &self, size_t &offset, RcStri
     msg = tr->msg;
 }
 
+void TypeSlTrialDef::destroy( const Variable &self, bool use_virtual ) {
+    delete self.rcast<SlTrialDef>();
+}
+
 unsigned TypeSlTrialDef::get_nb_conversions( const Variable &self ) const {
     TODO;
     return 0;

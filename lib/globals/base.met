@@ -134,4 +134,7 @@ def conv OutType, value: OutType pertinence 2
 global
 def conv OutType, value
     OutType value
-    
+
+global    
+def make_proxy seen_type, variable
+    __primitive_make_proxy seen_type, variable

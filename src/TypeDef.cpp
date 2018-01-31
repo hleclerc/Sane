@@ -342,3 +342,7 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
     return ret;
 }
 
+void TypeDef::destroy( const Variable &self, bool use_virtual ) {
+    // defs are global and unique
+}
+

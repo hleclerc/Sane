@@ -1,10 +1,17 @@
 #include "Inst/CanoCst.h"
+#include "TypeProxy.h"
 #include "KuSI64.h"
 #include "Class.h"
 #include "Type.h"
 #include "Vm.h"
 
 Type::Type() {
+    _proxy_type = 0;
+}
+
+bool Type::has_vtable_at_the_beginning() const {
+    TODO;
+    return false;
 }
 
 RcString Type::checks_type_constraint( const Variable &self, const Variable &tested_var, TCI &tci ) const {
@@ -87,6 +94,12 @@ Variable Type::use_sl_trial( bool want_ret, const Variable &func, const Variable
     PE( *this );
     TODO;
     return {};
+}
+
+Type *Type::get_proxy_type() {
+    if ( _proxy_type == 0 )
+        _proxy_type = vm->types.push_back_val( new TypeProxy( this ) );
+    return _proxy_type;
 }
 
 Variable Type::apply( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) {

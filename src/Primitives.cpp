@@ -530,6 +530,15 @@ REG_PRIMITIVE_TYPE( _union ) {
     return make_HostId( vm->type_Type, res );
 }
 
+REG_PRIMITIVE_TYPE( make_proxy ) {
+    if ( args.size() != 2 )
+        return vm->add_error( "__primitive_make_proxy expects 2 arguments" );
+
+    Variable var_type = args[ 0 ];
+    Type *src_type = var_type.apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
+    return { args[ 1 ].ref, args[ 1 ].offset, args[ 1 ].length, src_type->get_proxy_type() };
+}
+
 //REG_PRIMITIVE_TYPE( load ) {
 //    if ( args.size() != 1 )
 //        return scope->add_error( "__primitive_load expects exactly 1 argument" ), scope->vm->ref_error;

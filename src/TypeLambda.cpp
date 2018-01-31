@@ -166,5 +166,9 @@ Variable TypeLambda::with_self( Variable &orig, const Variable &new_self ) const
     return make_HostId( vm->type_CallableWithSelf, c );
 }
 
+void TypeLambda::destroy( const Variable &self, bool use_virtual ) {
+    delete self.rcast<Lambda>();
+}
+
 
 

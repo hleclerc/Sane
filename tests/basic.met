@@ -8,11 +8,12 @@
 
 # stdout << 10
 class Pouet 
-    a := 40
+    def operator get 
+        40
 
 # i := Pouet()
 # p := make_proxy SI32, i
-p := Pouet()
-ct_info p.a
+p := make_proxy SI32, Pouet()
+#ct_info p.a
 
 # __primitive_ct_display_graph()

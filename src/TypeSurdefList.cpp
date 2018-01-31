@@ -88,6 +88,10 @@ Variable TypeSurdefList::with_self( Variable &orig, const Variable &new_self ) c
     return make_HostId( vm->type_CallableWithSelf, cs );
 }
 
+void TypeSurdefList::destroy( const Variable &self, bool use_virtual ) {
+    // surdef lists are global and unique
+}
+
 Variable TypeSurdefList::select( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names ) {
     if ( ! want_ret )
         return {};

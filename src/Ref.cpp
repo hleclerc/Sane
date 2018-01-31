@@ -1,3 +1,4 @@
+#include "TypeInSane.h"
 #include "Ref.h"
 #include "Vm.h"
 
@@ -5,6 +6,14 @@ Ref::Ref( const Ressource &creator, Ref::Flags flags ) : creation_inter_date( vm
 }
 
 Ref::~Ref() {
+    //
+    cpt_use = 654;
+    TypeInSane *type = creator.inst->created_out_type( creator.nout );
+    if ( type->kv_size() < 0 )
+        TODO;
+    type->destroy( Variable( this, 0, type->kv_size(), type ), true );
+
+    //
     creator.inst->created_outputs[ creator.nout ].ref = 0;
 }
 
