@@ -11,9 +11,15 @@ class Pouet
     def operator get 
         40
 
+def operator+ self: SI32, b: PrimitiveNumber
+    ct_info self
+    140
+
 # i := Pouet()
 # p := make_proxy SI32, i
 p := make_proxy SI32, Pouet()
-#ct_info p.a
+ct_info p
+# ct_info 12 + p
+p + 12
 
 # __primitive_ct_display_graph()

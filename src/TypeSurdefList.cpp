@@ -16,6 +16,8 @@ TypeSurdefList::TypeSurdefList() : TypeInSane( "SurdefList" ){
 
 RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Variable &tested_var, TCI &tci ) const {
     SurdefList *se = self.rcast<SurdefList>();
+    P( se->lst, tested_var, *tested_var.type );
+
     auto stst = [&]() -> RcString {
         if ( ! tested_var.type->orig_class() ) {
             if ( ! tested_var.error() )
@@ -84,6 +86,11 @@ RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Var
 Variable TypeSurdefList::with_self( Variable &orig, const Variable &new_self ) const {
     CallableWithSelfOrArgs *cs = new CallableWithSelfOrArgs;
     cs->callable = orig;
+    if ( to_string( *new_self.type ) == "Pouet" ) {
+        vm->add_error("dsv");
+        // abort();
+    }
+    P( new_self, *new_self.type );
     cs->self = new_self;
     return make_HostId( vm->type_CallableWithSelf, cs );
 }

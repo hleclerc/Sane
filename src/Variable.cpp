@@ -75,10 +75,6 @@ RcString Variable::valid_constraint_for( const Variable &tested_var, TCI &tci ) 
 }
 
 Variable Variable::find_attribute( const RcString &name, bool ret_err, bool msg_if_err ) const {
-    //    //
-    //    if ( Variable res = ref->intercept_find_attribute( name, type, bool( flags & Flags::CONST ), offset ) )
-    //        return res;
-
     // data from the type
     if ( Variable res = type->find_attribute( name, *this, flags, offset )  )
         return res;

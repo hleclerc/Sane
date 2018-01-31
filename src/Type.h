@@ -28,13 +28,13 @@ public:
     virtual bool            destroy_attrs              () const;
     virtual Variable        make_sl_trial              ( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) const;
     virtual Variable        use_sl_trial               ( bool want_ret, const Variable &func, const Variable &self, const Vec<Variable> &sl_args, const Vec<RcString> &sl_names, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags, const Variable &trial ) const;
-    Type                   *get_proxy_type             ();
     virtual TypeInSane     *type_in_sane               () = 0;
     virtual Class          *orig_class                 () const = 0;
     virtual void            spread_in                  ( const Variable &self, Vec<Variable> &res, Vec<RcString> &names );
     virtual Value           to_Value                   ( const Variable &var ) = 0;
     virtual void            construct                  ( const Variable &self, const Vec<Variable> &args, const Vec<RcString> &names );
     virtual Variable        with_self                  ( Variable &orig, const Variable &new_self ) const;
+    virtual bool            eq_type                    ( Type *that );
     virtual void            destroy                    ( const Variable &self, bool use_virtual );
     virtual Variable        chbeba                     ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names );
     virtual Variable        select                     ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names );
@@ -64,7 +64,6 @@ public:
     #include "decl_bin_op.h"
     #undef BO
 
-    Type           *_proxy_type;
     RcPtr<CanoInst> cano_inst;         ///<
 };
 

@@ -535,8 +535,8 @@ REG_PRIMITIVE_TYPE( make_proxy ) {
         return vm->add_error( "__primitive_make_proxy expects 2 arguments" );
 
     Variable var_type = args[ 0 ];
-    Type *src_type = var_type.apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
-    return { args[ 1 ].ref, args[ 1 ].offset, args[ 1 ].length, src_type->get_proxy_type() };
+    Type *ext_type = var_type.apply( true, {}, {}, ApplyFlags::DONT_CALL_CTOR ).type;
+    return { args[ 1 ].ref, args[ 1 ].offset, args[ 1 ].length, vm->get_proxy_type( ext_type, args[ 1 ].type ) };
 }
 
 //REG_PRIMITIVE_TYPE( load ) {

@@ -1,12 +1,10 @@
 #include "Inst/CanoCst.h"
-#include "TypeProxy.h"
 #include "KuSI64.h"
 #include "Class.h"
 #include "Type.h"
 #include "Vm.h"
 
 Type::Type() {
-    _proxy_type = 0;
 }
 
 bool Type::has_vtable_at_the_beginning() const {
@@ -96,12 +94,6 @@ Variable Type::use_sl_trial( bool want_ret, const Variable &func, const Variable
     return {};
 }
 
-Type *Type::get_proxy_type() {
-    if ( _proxy_type == 0 )
-        _proxy_type = vm->types.push_back_val( new TypeProxy( this ) );
-    return _proxy_type;
-}
-
 Variable Type::apply( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags ) {
     PE( *this );
     TODO; return {};
@@ -125,6 +117,10 @@ Variable Type::with_self( Variable &orig, const Variable &new_self ) const {
     PE( *this );
     TODO;
     return {};
+}
+
+bool Type::eq_type( Type *that ) {
+    return this == that;
 }
 
 bool Type::has_floating_point() const {

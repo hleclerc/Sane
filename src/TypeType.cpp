@@ -23,7 +23,7 @@ Variable TypeType::apply( Variable &self, bool want_ret, const Vec<Variable> &ar
 RcString TypeType::checks_type_constraint( const Variable &self, const Variable &tested_var, TCI &tci ) const {
     // types are equal ?
     TypeInSane *nt = self.rcast<TypeInSane>();
-    if ( nt == tested_var.type )
+    if ( tested_var.type->eq_type( nt ) )
         return {};
 
     // try recursively inheritance of tested_var
@@ -32,10 +32,10 @@ RcString TypeType::checks_type_constraint( const Variable &self, const Variable 
             if ( checks_type_constraint( self, tested_var.find_attribute( inh_name ), tci ).empty() )
                 return ++tci.nb_conversions, RcString{};
 
-    // try operator "is_also_a"
-    if ( Variable op = tested_var.find_attribute( "operator is_also_a", false, false ) )
-        if ( double score = op.apply( true, self ).as_FP64() )
-             return tci.nb_conversions += score, RcString{};
+    //    // try operator "is_also_a"
+    //    if ( Variable op = tested_var.find_attribute( "operator is_also_a", false, false ) )
+    //        if ( double score = op.apply( true, self ).as_FP64() )
+    //             return tci.nb_conversions += score, RcString{};
 
     // -> fail
     return "not equal nor inherited";

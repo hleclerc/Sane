@@ -28,6 +28,7 @@
 #include "TypeLambda.h"
 #include "TypeError.h"
 #include "TypeClass.h"
+#include "TypeProxy.h"
 #include "TypeType.h"
 #include "TypeDef.h"
 #include "TypeBT.h"
@@ -236,6 +237,13 @@ TypeInSane *Vm::type_AnonymousRoom( int size, int alig ) {
         iter = ano_room_type_map.emplace_hint( iter, std::make_pair( size, alig ), res );
         types << res;
     }
+    return iter->second;
+}
+
+Type *Vm::get_proxy_type( Type *ext_type, Type *int_type ) {
+    auto iter = map_proxy_type.find( std::make_pair( ext_type, int_type ) );
+    if ( iter == map_proxy_type.end() )
+        iter = map_proxy_type.emplace_hint( iter, std::make_pair( ext_type, int_type ), new TypeProxy( ext_type, int_type ) );
     return iter->second;
 }
 
