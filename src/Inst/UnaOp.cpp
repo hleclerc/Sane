@@ -14,19 +14,19 @@ namespace {
 }
 
 Variable make_Neg( const Value &a ) {
-//    if ( Value r = test_known( a, []( auto va ) { return make_Cst( - va ); }, Value{} ) )
-//        return r;
-    TODO; return {};
+    //    if ( Value r = test_known( a, []( auto va ) { return make_Cst( - va ); }, Value{} ) )
+    //        return r;
+    return { ( new UnaOp<Neg>( a ) )->new_created_output() };
 }
 
-Variable make_Not_logical( const Value &a ) {
-//    if ( Value r = test_known( a, []( auto va ) { return make_Cst( ! va ); }, Value{} ) )
-//        return r;
-    TODO; return {};
+Variable make_NotLogical( const Value &a ) {
+    //    if ( Value r = test_known( a, []( auto va ) { return make_Cst( ! va ); }, Value{} ) )
+    //        return r;
+    return { ( new UnaOp<NotLogical>( a ) )->new_created_output() };
 }
 
-Variable make_Not_bitwise( const Value &a ) {
-//    if ( Value r = test_known( a, []( auto va ) { return make_Cst( not_bitwise( va ) ); }, Value{} ) )
-//        return r;
-    TODO; return {};
+Variable make_NotBitwise( const Value &a ) {
+    //    if ( Value r = test_known( a, []( auto va ) { return make_Cst( not_bitwise( va ) ); }, Value{} ) )
+    //        return r;
+    return { ( new UnaOp<NotBitwise>( a ) )->new_created_output() };
 }

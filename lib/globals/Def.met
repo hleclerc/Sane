@@ -31,12 +31,12 @@ class Def
     # static_flag            ~= Bool                    # 
     # self_as_arg_flag       ~= Bool                    #
     # abstract_flag          ~= Bool                    #
-     
+
 global
 class SlTrialDef
     host_id ~= PI64
 
-    # args                   ~= Vec[ UntypedRef ]
-    # def_ref                ~= UntypedRef
-    # msg                    ~= String
-    # condition              ~= Bool
+    #     # args                   ~= Vec[ UntypedRef ]
+    #     # def_ref                ~= UntypedRef
+    #     # msg                    ~= String
+    #     # condition              ~= Bool

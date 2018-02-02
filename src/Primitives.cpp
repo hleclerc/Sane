@@ -102,8 +102,8 @@ REG_PRIMITIVE_TYPE( ct_info ) {
         return make_##NAME( args[ 0 ].to_Value() ); \
     }
 REG_PRIMITIVE_TYPE_UNA_OP( Neg         )
-REG_PRIMITIVE_TYPE_UNA_OP( Not_logical )
-REG_PRIMITIVE_TYPE_UNA_OP( Not_bitwise )
+REG_PRIMITIVE_TYPE_UNA_OP( NotLogical )
+REG_PRIMITIVE_TYPE_UNA_OP( NotBitwise )
 
 #define REG_PRIMITIVE_TYPE_BIN_OP( NAME ) \
     REG_PRIMITIVE_TYPE( NAME ) { \
@@ -463,10 +463,12 @@ REG_PRIMITIVE_TYPE( constified ) {
 //}
 
 REG_PRIMITIVE_TYPE( write_fd ) {
-    if ( args.size() < 2 )
-        return vm->add_error( "__primitive_write_fd expects at least 2 arguments" );
-    TODO;
-    // make_WriteFd( &vm->ressource_map, args.map( []( const Variable &v ) { return v.get(); } ) );
+    if ( args.size() == 2 )
+        make_WriteFd( args[ 0 ], args[ 1 ] );
+    else if ( args.size() == 3 )
+        make_WriteFd( args[ 0 ], args[ 1 ], args[ 2 ] );
+    else
+        vm->add_error( "__primitive_write_fd expects at 2 or 3 arguments" );
     return vm->ref_void;
 }
 

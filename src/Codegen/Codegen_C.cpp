@@ -129,8 +129,8 @@ void Codegen_C::write_repr( std::ostream &os, const Value &value, int prio, int 
         TODO;
     }
 
-    P( value );
-    TODO;
+    os << value;
+    // TODO;
 }
 
 Reg *Codegen_C::new_reg_for(Inst *inst, TypeInSane *type, int nout ) {

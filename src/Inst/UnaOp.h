@@ -41,6 +41,6 @@ public:
         static TypeInSane *type( TypeInSane *a ) { return TYPE; } \
     }
 
-DECL_UNA_OP( Neg        , PRIO_Unary_negation, "-", a );
-DECL_UNA_OP( Not_logical, PRIO_Logical_not   , "!", vm->type_Bool );
-DECL_UNA_OP( Not_bitwise, PRIO_Logical_not   , "~", a );
+DECL_UNA_OP( Neg       , PRIO_Unary_negation, "-", a );
+DECL_UNA_OP( NotLogical, PRIO_Logical_not   , "!", vm->type_Bool );
+DECL_UNA_OP( NotBitwise, PRIO_Logical_not   , "~", a );

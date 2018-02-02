@@ -31,7 +31,7 @@ public:
         //    }
 
         // if children[ 1 ] data is known and children[ 0 ] can be modified accordingly
-        TODO;
+        // TODO;
         //        int len = children[ 1 ].type->size();
         //        BoolVec dst( len );
         //        if ( children[ 1 ].get_bytes( dst.data, 0, 0, len ) ) {
@@ -50,12 +50,11 @@ public:
     }
 
     virtual void write_code( StreamSep &ss, Codegen &cg ) override {
-        TODO;
-        //        cd.out_regs = { children[ 0 ].inst->cd.out_regs[ children[ 0 ].nout ] };
+        cd.out_regs = { children[ 0 ].inst->cd.out_regs[ children[ 0 ].nout ] };
 
         //        if ( write_ssp_rec( ss, cg, dst.offset.kv, children[ 0 ].type, "" ) )
         //            return;
-        //        ss << "memcpy_bits(...);";
+        ss << "memcpy_bits(...);";
     }
 
     virtual void write_dot( std::ostream &os ) const override {

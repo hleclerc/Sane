@@ -13,8 +13,9 @@ PI32.met
 PI64.met
 FP32.met
 FP64.met
-# PT.met
-# ST.met
+Def.met
+Class.met
+SurdefList.met
 AT.met
 NullableAT.met
 ct.met
@@ -31,31 +32,26 @@ Array.met
 Vec.met
 Cpu.met
 StringAncestor.met
-SurdefList.met
-
-
-# String.met
-# Def.met
-# Range.met
-# ReversedRange.met
-# FdReader.met
-# Type.met
-# Class.met
-# math.met
-# Varargs.met
-# Lambda.met
-# ListOfTypesOrSurdefLists.met
-# RangeFrom.met
-# RangeUpTo.met
-# FunctionPtr.met
-# Import.met
-# Stream.met
-# Codegen.met
-# CtVec.met
-# CtMap.met
-# InterpScope.met
-# ScopeRef.met
-# RefUntypedConcatenation.met
-# RefSubArray.met
-# Enum.met
-# Function.met
+String.met
+Range.met
+ReversedRange.met
+FdReader.met
+Type.met
+math.met
+Varargs.met
+Lambda.met
+ListOfTypesOrSurdefLists.met
+RangeFrom.met
+RangeUpTo.met
+FunctionPtr.met
+Import.met
+Stream.met
+Codegen.met
+CtVec.met
+CtMap.met
+InterpScope.met
+ScopeRef.met
+RefUntypedConcatenation.met
+RefSubArray.met
+Enum.met
+Function.met

@@ -360,6 +360,7 @@ bool Inst::can_be_inlined() const {
 
 void *Inst::rcast( int nout, const KcSI64 &offset ) {
     write_dot( std::cerr );
+    vm->add_error("");
     TODO;
     return 0;
 }

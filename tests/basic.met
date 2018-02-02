@@ -29,5 +29,4 @@ class A[ d, e ]
 # a := Vec[ SI32 ]()
 # ct_info a.smurf
 # stdout << 10
-a := SI32
-ct_info a 10
+stdout << 10
