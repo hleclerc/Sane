@@ -1,7 +1,9 @@
 #include "Inst/CanoCst.h"
 #include "TypeInSane.h"
+#include "SurdefList.h"
 #include "KuSI64.h"
 #include "Class.h"
+#include "TCI.h"
 #include "Vm.h"
 
 TypeInSane::TypeInSane( const RcString &name ) : name( name ) {
@@ -116,6 +118,79 @@ Value TypeInSane::to_Value( const Variable &var ) {
 }
 
 void TypeInSane::destroy( const Variable &self, bool use_virtual ) {
+}
+
+RcString TypeInSane::isa( SurdefList *se, TCI &tci ) {
+    auto stst = [&]() -> RcString {
+        if ( ! orig_class() ) {
+            if ( ! error() )
+               vm->add_error( "no orig_class for type {}", *this );
+            return "no orig_class for type {}";
+        }
+
+        // look in surdefs for a class == type->orig_class
+        for( const Variable &vc : se->lst ) {
+            if ( vc.type != vm->type_Class )
+                return vm->add_error( "Surdef contains item(s) that are not Class(es)" ), "error";
+            Class *cl = vc.rcast<Class>();
+            if ( orig_class() == cl ) {
+                // if no argument, test only the class
+                if( se->args.empty() )
+                    return {};
+
+                // get a linear list for the arguments
+                if ( se->args.size() != parameters.size() )
+                    return vm->add_error( "not the same number of parameters" ), "error";
+                if ( se->names.size() )
+                    TODO;
+                Vec<Variable> se_args = se->args; // TODO: use named arguments and default values
+
+                // check that args are the same
+                for( size_t i = 0; i < se_args.size(); ++i ) {
+                    if ( se_args[ i ].type == vm->type_Wildcard ) {
+                        TODO;
+                        // tci.proposals[ se_args[ i ].rcast<Wildcard>()->name ] = *parameters[ i ];
+                        continue;
+                    }
+                    TODO;
+                    bool equ = 0; // equal( *parameters[ i ], se_args[ i ] );
+                    if ( ! equ )
+                        return "has not equal template parameter";
+                }
+
+                // seems to be fine :)
+                return {};
+            }
+        }
+
+        return "not equal nor inherited";
+    };
+
+    if ( RcString res = stst() ) {
+        // try recursively inheritance of tested_var
+        if ( Class *cl = orig_class() )
+            for( const RcString &inh_name : cl->inheritance_names )
+                if ( attributes[ inh_name ].type->isa( se, tci ).empty() )
+                    return ++tci.nb_conversions, RcString{};
+
+        // -> fail
+        return res;
+    }
+return {};
+}
+
+RcString TypeInSane::isa( TypeInSane *type, TCI &tci ) {
+    if ( this == type )
+        return {};
+
+    // try recursively inheritance of tested_var
+    if ( Class *cl = orig_class() )
+        for( const RcString &inh_name : cl->inheritance_names )
+            if ( attributes[ inh_name ].type->isa( type, tci ).empty() )
+                return ++tci.nb_conversions, RcString{};
+
+    // -> fail
+    return "not equal nor inherited";
 }
 
 SI32 TypeInSane::kv_size() const {

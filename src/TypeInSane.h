@@ -25,7 +25,7 @@ public:
     TypeInSane( const RcString &name );
 
     virtual bool            has_vtable_at_the_beginning() const override;
-    virtual Variable        find_attribute             (const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const override;
+    virtual Variable        find_attribute             ( const RcString &name, const Variable &self, Variable::Flags flags, const KuSI64 &off ) const override;
     void                    add_attribute              ( const RcString &name, SI32 off, TypeInSane *type, Variable::Flags flags = Variable::Flags::NONE );
     virtual TypeInSane     *type_in_sane               () override;
     Class                  *orig_class                 () const;
@@ -33,6 +33,8 @@ public:
     virtual void            construct                  ( const Variable &self, const Vec<Variable> &args, const Vec<RcString> &names ) override;
     virtual Value           to_Value                   ( const Variable &var ) override;
     virtual void            destroy                    ( const Variable &self, bool use_virtual ) override;
+    virtual RcString        isa                        ( TypeInSane *type, TCI &tci ) override;
+    virtual RcString        isa                        ( SurdefList *se, TCI &tci ) override;
 
     virtual void            write_to_stream            ( std::ostream &os ) const;
     virtual void            write_cst                  ( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const;

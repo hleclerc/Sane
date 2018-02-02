@@ -17,6 +17,8 @@ public:
     virtual bool        eq_type        ( Type *that );
     virtual void        destroy        ( const Variable &self, bool use_virtual ) override;
     virtual String      c_name         () const override;
+    virtual RcString    isa            ( TypeInSane *type, TCI &tci ) override;
+    virtual RcString    isa            ( SurdefList *se, TCI &tci ) override;
 
     Variable            to_IntVariable ( const Variable &var ) const;
 

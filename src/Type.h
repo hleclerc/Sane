@@ -3,6 +3,7 @@
 #include "Variable.h"
 #include "CanoType.h"
 #include "Value.h"
+class SurdefList;
 class Class;
 class TCI;
 
@@ -39,6 +40,8 @@ public:
     virtual Variable        chbeba                     ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names );
     virtual Variable        select                     ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names );
     virtual Variable        apply                      ( Variable &self, bool want_ret, const Vec<Variable> &args, const Vec<RcString> &names, const Variable &with_self, ApplyFlags apply_flags = ApplyFlags::NONE );
+    virtual RcString        isa                        ( SurdefList *se, TCI &tci ) = 0;
+    virtual RcString        isa                        ( TypeInSane *type, TCI &tci ) = 0;
 
     virtual void            write_to_stream            ( std::ostream &os ) const = 0;
     virtual void            write_cst                  ( std::ostream &os, const PI8 *data, int offset_mod_8 = 0, bool always_add_braces = false ) const = 0;

@@ -15,82 +15,12 @@ TypeSurdefList::TypeSurdefList() : TypeInSane( "SurdefList" ){
 }
 
 RcString TypeSurdefList::checks_type_constraint( const Variable &self, const Variable &tested_var, TCI &tci ) const {
-    SurdefList *se = self.rcast<SurdefList>();
-    P( se->lst, tested_var, *tested_var.type );
-
-    auto stst = [&]() -> RcString {
-        if ( ! tested_var.type->orig_class() ) {
-            if ( ! tested_var.error() )
-                vm->add_error( "no orig_class for type {}", *tested_var.type );
-            return false;
-        }
-
-        // look in surdefs for a class == type->orig_class
-        for( const Variable &vc : se->lst ) {
-            if ( vc.type != vm->type_Class )
-                return vm->add_error( "Surdef contains item(s) that are not Class(es)" ), "error";
-            Class *cl = vc.rcast<Class>();
-            if ( tested_var.type->orig_class() == cl ) {
-                // if no argument, test only the class
-                if( se->args.empty() )
-                    return {};
-
-                // get a linear list for the arguments
-                if ( se->args.size() != tested_var.type->type_in_sane()->parameters.size() )
-                    return vm->add_error( "not the same number of parameters" ), "error";
-                if ( se->names.size() )
-                    TODO;
-                Vec<Variable> se_args = se->args; // TODO: use named arguments and default values
-
-                // check that args are the same
-                for( size_t i = 0; i < se_args.size(); ++i ) {
-                    if ( se_args[ i ].type == vm->type_Wildcard ) {
-                        TODO;
-                        // tci.proposals[ se_args[ i ].rcast<Wildcard>()->name ] = *tested_var.type->content.data.parameters[ i ];
-                        continue;
-                    }
-                    TODO;
-                    bool equ = 0; // equal( *tested_var.type->content.data.parameters[ i ], se_args[ i ] );
-                    if ( ! equ )
-                        return "has not equal template parameter";
-                }
-
-                // seems to be fine :)
-                return {};
-            }
-        }
-
-        return "is not of the same type";
-    };
-
-    RcString res = stst();
-    if ( res ) {
-        // try recursively inheritance of tested_var
-        if ( Class *cl = tested_var.type->orig_class() )
-            for( const RcString &inh_name : cl->inheritance_names )
-                if ( checks_type_constraint( self, tested_var.find_attribute( inh_name ), tci ).empty() )
-                    return ++tci.nb_conversions, RcString{};
-
-        // try operator "is_also_a"
-        if ( ! se->has_wildcards() )
-            if ( Variable op = tested_var.find_attribute( "operator is_also_a", false, false ) )
-                if ( double score = op.apply( true, self ).as_FP64() )
-                    return tci.nb_conversions += score, RcString{};
-
-        // -> fail
-        return "not equal nor inherited";
-    }
-    return res;
+    return tested_var.type->isa( self.rcast<SurdefList>(), tci );
 }
 
 Variable TypeSurdefList::with_self( Variable &orig, const Variable &new_self ) const {
     CallableWithSelfOrArgs *cs = new CallableWithSelfOrArgs;
     cs->callable = orig;
-    if ( to_string( *new_self.type ) == "Pouet" ) {
-        vm->add_error("dsv");
-        // abort();
-    }
-    P( new_self, *new_self.type );
     cs->self = new_self;
     return make_HostId( vm->type_CallableWithSelf, cs );
 }
@@ -154,6 +84,7 @@ Variable TypeSurdefList::apply( Variable &self, bool want_ret, const Vec<Variabl
     for( size_t tr : possibilities ) {
         if ( pertinence[ tr ] < working_pertinence )
             break;
+
         Variable vr = sl->lst[ tr ].type->make_sl_trial( want_ret, sl->lst[ tr ], with_self, sl->args, sl->names, args, names, with_self, apply_flags );
         sl_trials[ tr ] = vr;
 

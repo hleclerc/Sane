@@ -108,5 +108,5 @@ def memequ dst, src, len: PrimitiveNumber
 
 
 
-global const
-null_ptr := NullableAT 0
+#global const
+#null_ptr := NullableAT 0
