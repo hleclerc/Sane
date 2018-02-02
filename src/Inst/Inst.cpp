@@ -358,7 +358,7 @@ bool Inst::can_be_inlined() const {
     return true;
 }
 
-void *Inst::rcast( int nout ) {
+void *Inst::rcast( int nout, const KcSI64 &offset ) {
     write_dot( std::cerr );
     TODO;
     return 0;

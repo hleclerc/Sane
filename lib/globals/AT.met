@@ -39,6 +39,11 @@ class AT
     def write_to_stream s
         s.write self
 
+# global
+# PT := __primitive_sizeof_ptr_in_bits() == 64 ? PI64 : PI32
+
+# global
+# ST := __primitive_sizeof_ptr_in_bits() == 64 ? SI64 : SI32
 
 # in bytes
 # len is modified to be the actual reserved size

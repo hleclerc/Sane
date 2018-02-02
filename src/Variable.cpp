@@ -35,15 +35,15 @@ bool Variable::is_shared() const {
     return ref->is_shared();
 }
 
-bool Variable::is_false() const {
+bool Variable::is_always_false() const {
     if ( type != vm->type_Bool )
-        return vm->scope->find_variable( "Bool" ).apply( true, *this ).is_false();
+        return vm->scope->find_variable( "Bool" ).apply( true, *this ).is_always_false();
     return always_false( cano() );
 }
 
-bool Variable::is_true() const {
+bool Variable::is_always_true() const {
     if ( type != vm->type_Bool )
-        return vm->scope->find_variable( "Bool" ).apply( true, *this ).is_true();
+        return vm->scope->find_variable( "Bool" ).apply( true, *this ).is_always_true();
     return always_true( cano() );
 }
 
@@ -206,7 +206,7 @@ void Variable::set_bv( const Value &src_val, int cst ) {
 
 void Variable::memcpy( const Variable &src, int cst ) {
     if ( ( flags & Flags::CONST ) && cst >= 0 ) {
-        vm->add_error( "Const variable, should not be modified" );
+        vm->add_error( "a const variable, should not be modified" );
         return;
     }
     make_Memcpy( ref.ptr(), src.ref.ptr(), offset, src.offset, src.length );

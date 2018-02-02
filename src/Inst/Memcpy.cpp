@@ -106,6 +106,16 @@ public:
 //        return false;
 //    }
 
+    virtual void *rcast( int nout, const KcSI64 &off ) override {
+        KcSI64 o64 = off + 64, dof = cano_kcSI64( dst.offset ), dle = dof + cano_kcSI64( len );
+        if ( always_true( o64 <= dof ) || always_true( off >= dle ) )
+            return children[ 0 ].rcast( off );
+        if ( always_true( off >= dof ) && always_true( o64 <= dle ) )
+            return children[ 1 ].rcast( off - dof + cano_kcSI64( src.offset ) );
+        TODO;
+        return 0;
+    }
+
     IiRessourceWithOffset dst;
     IiRessourceWithOffset src;
     IiKuSI64              len;

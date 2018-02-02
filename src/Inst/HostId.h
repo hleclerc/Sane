@@ -58,7 +58,7 @@ public:
         return u.p->cano_inst;
     }
 
-    virtual void *rcast( int nout ) override {
+    virtual void *rcast( int nout, const KcSI64 &offset ) override {
         return u.p;
     }
 

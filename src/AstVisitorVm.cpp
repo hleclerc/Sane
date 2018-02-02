@@ -555,15 +555,13 @@ Variable AstVisitorVm::on_if( RcString cond, const Vec<RcString> &ok ) {
 
 Variable AstVisitorVm::on_if_else( RcString cond, const Vec<RcString> &ok, const Vec<RcString> &ko ) {
     Scope _scope( Scope::ScopeType::BLOCK );
-    vm->if_else( vm->visit( names, cond, true ), [&]() {
+    return vm->if_else( vm->visit( names, cond, true ), [&]() {
         Scope _scope( Scope::ScopeType::IF_EXE );
-        vm->visit( names, ok, false );
+        return vm->visit( names, ok, want_ret );
     }, [&]() {
         Scope _scope( Scope::ScopeType::IF_EXE );
-        vm->visit( names, ko, false );
+        return vm->visit( names, ko, want_ret );
     } );
-
-    return vm->ref_void;
 }
 
 Variable AstVisitorVm::on_while( RcString cond, const Vec<RcString> &ok ) {

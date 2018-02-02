@@ -83,6 +83,9 @@ Vm::Vm( SI32 sizeof_ptr, bool reverse_endianness ) : main_scope( Scope::ScopeTyp
     #include "BaseTypes.h"
     #undef BT
 
+    type_PT = sizeof_ptr == 64 ? type_PI64 : type_PI32;
+    type_ST = sizeof_ptr == 64 ? type_SI64 : type_SI32;
+
     // base_types correspondance
     #define BT( T ) base_types[ #T ] = type_##T;
     #include "BaseTypes.h"
@@ -312,26 +315,26 @@ void Vm::codegen( Codegen &cg ) {
     cg.gen_code_for( targets );
 }
 
-void Vm::if_else( const Variable &cond_var, const std::function<void ()> &ok, const std::function<void ()> &ko ) {
-    add_error("pouet");
+Variable Vm::if_else( const Variable &cond_var, const std::function<Variable()> &ok, const std::function<Variable()> &ko ) {
+    // conversion to bool
+    if ( cond_var.type != type_Bool ) {
+        Variable n_cond_var = scope->find_variable( "Bool" ).apply( true, cond_var );
+        if ( n_cond_var.type != type_Bool ) {
+            if ( ! n_cond_var.error() )
+                add_error( "conv to Bool should give a Bool" );
+            return ref_error;
+        }
+        return if_else( n_cond_var, ok, ko );
+    }
+
+    // is value of cond is known
+    if ( cond_var.is_always_true() )
+        return ok();
+    if ( cond_var.is_always_false() )
+        return ko();
+
     TODO;
-//    // conversion to bool
-//    if ( cond_var.type != type_Bool ) {
-//        Variable n_cond_var = scope->find_variable( "Bool" ).apply( true, cond_var );
-//        if ( n_cond_var.type != type_Bool ) {
-//            if ( ! n_cond_var.error() )
-//                add_error( "conv to Bool should give a Bool" );
-//            return;
-//        }
-//        return if_else( n_cond_var, ok, ko );
-//    }
-
-//    // is value of cond is known
-//    if ( cond_var.is_true() )
-//        return ok();
-//    if ( cond_var.is_false() )
-//        return ko();
-
+    return {};
 //    // else, execute ok and ko codes in sandboxes
 //    Interceptor inter_ok;
 //    inter_ok.run( ok );

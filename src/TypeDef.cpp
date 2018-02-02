@@ -195,9 +195,9 @@ Variable TypeDef::make_sl_trial( bool want_ret, const Variable &func, const Vari
 
         // compute the condition
         Variable cond_ref = vm->visit( cond, true );
-        if ( cond_ref.is_false() )
+        if ( cond_ref.is_always_false() )
             return fail( "condition not met" );
-        if ( cond_ref.is_true() )
+        if ( cond_ref.is_always_true() )
             tr->condition.kv = 1;
         else {
             tr->condition.kv = 0;
@@ -286,7 +286,8 @@ Variable TypeDef::use_sl_trial( bool want_ret, const Variable &func, const Varia
             }
         } else {
             P( *new_scope.ctor_self.type );
-            ERROR( "f" );
+            vm->add_error( "no orig class" );
+            ERROR( "no orig class" );
         }
 
         // put again the static variables

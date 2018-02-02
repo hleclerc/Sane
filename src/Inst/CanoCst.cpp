@@ -84,12 +84,12 @@ RcPtr<CanoInst> make_gen_CanoCst( const void *ptr, int len ) {
 }
 
 template<class T>
-RcPtr<CanoInst> make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T b_val, int length ) {
+RcPtr<CanoInst> make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T val, int length ) {
     constexpr int ws = 512;
     constexpr int of = std::is_signed<T>::value ? 64 : 0;
-    T val = b_val + of;
+    T o_val = val + of;
 
-    if ( val >= 0 && val < ws ) {
+    if ( o_val >= 0 && o_val < ws ) {
         if ( map.empty() ) {
             map.resize( ws );
             if ( sizeof( T ) > 1 && vm->reverse_endianness ) {
@@ -104,7 +104,7 @@ RcPtr<CanoInst> make_CanoCst_kv( std::vector<RcPtr<CanoCst>> &map, T b_val, int 
                 }
             }
         }
-        return map[ val ];
+        return map[ o_val ];
     }
     return make_gen_CanoCst( &val, length );
 }

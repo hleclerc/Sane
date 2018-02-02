@@ -83,6 +83,11 @@ Variable TypeInSane::find_attribute( const RcString &name, const Variable &self,
     if ( iter_sattr != methods.end() )
         return self ? iter_sattr->second->type->with_self( *iter_sattr->second, self ) : *iter_sattr->second;
 
+    // getters
+    iter_sattr = getters.find( name );
+    if ( iter_sattr != getters.end() )
+        return self ? iter_sattr->second->type->with_self( *iter_sattr->second, self ).apply( true ) : iter_sattr->second->apply( true );
+
     // static attributes
     iter_sattr = static_attributes.find( name );
     if ( iter_sattr != static_attributes.end() )

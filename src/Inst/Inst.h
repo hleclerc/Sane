@@ -87,7 +87,7 @@ public:
     virtual bool            write_graph_rec        ( std::ostream &ss, std::set<const Inst *> &seen_insts, const std::function<void(std::ostream&, const Inst *)> &f, bool disp_parents ) const;
     virtual AssFunc         get_assign_func        ( int nout, int off, int len );
     virtual void            write_dot              ( std::ostream &os ) const = 0;
-    virtual void           *rcast                  ( int nout );
+    virtual void           *rcast                  ( int nout, const KcSI64 &offset );
 
     virtual void            write_inline_code      ( StreamPrio &ss, Codegen &cg, int nout, int flags ); ///< helper for case nb_created_outputs == 1
     virtual bool            expects_a_reg_at       ( int ninp ) const;

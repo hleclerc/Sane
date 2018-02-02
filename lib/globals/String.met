@@ -87,7 +87,7 @@ class String extends StringAncestor
             callback data + start, length
 
     def get_begin
-        data
+        constified data
 
     def get_end
         data + size
@@ -103,7 +103,7 @@ class String extends StringAncestor
             _long.size = 2 * val
 
     def get_rese
-        _using_short ? max_in_short : _long.rese
+        constified _using_short ? max_in_short : _long.rese
 
     def set_rese val: Number
         if _using_short
@@ -129,7 +129,7 @@ class String extends StringAncestor
                 _long.size = new_size
 
     def get_data
-        _using_short ? _short.data.ptr : _long.data
+        constified _using_short ? _short.data.ptr : _long.data
 
     def operator[] index: Number
         data[ index ]

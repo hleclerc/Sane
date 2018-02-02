@@ -35,6 +35,12 @@ void RcString::read_some( void *data, ST size ) {
     _begin += size;
 }
 
+RcString RcString::substring( ST beg ) const {
+    RcString res = *this;
+    res.skip_some( beg );
+    return res;
+}
+
 char *RcString::reserve( size_t rese ) {
     _content = new ( malloc( sizeof( Content ) - PRC + 1 + rese ) ) Content( rese );
     return _content->data;

@@ -35,6 +35,7 @@ public:
     void              read_some      ( void *data, ST size );
     void              skip_some      ( ST size ) { _begin += size; ASSERT_IF_DEBUG( _begin <= _end ); }
     PI8               read_byte      () { return *( _begin++ ); }
+    RcString          substring      ( ST beg ) const;
     void              clear          () { _content.clear(); _begin = 0; _end = 0; }
     bool              empty          () const { return _end == _begin; }
     bool              error          () const { return _end == 0; } ///< works after at least a first read (and before free or clear)

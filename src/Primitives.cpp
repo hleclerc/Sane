@@ -194,6 +194,16 @@ REG_PRIMITIVE_TYPE( reassign ) {
         TODO;
     }
 
+    if ( va.type == vm->type_PT ) {
+        if ( va.type == vb.type )
+            return va.memcpy( vb ), va;
+        if ( vb.type->is_a_TypeBT() )
+            return va.memcpy( make_Conv( vb.to_Value(), va.type->type_in_sane() ) ), va;
+        TODO;
+    }
+
+
+
     // AT
     if ( va.type == vm->type_AT || va.type == vm->type_NullableAT ) {
         if ( vb.type == vm->type_AT || vb.type == vm->type_NullableAT )

@@ -131,6 +131,8 @@ TypeInSane *type_for_args( Class *def, const Variable &def_var, const Vec<Variab
                 //
                 if ( has_defs ) {
                     res->methods[ m.name ] = vm->main_scope.add_static_variable( m.var );
+                    if ( m.name.begins_with( "get_" ) )
+                        res->getters[ m.name.substring( 4 ) ] = vm->main_scope.add_static_variable( m.var );
                     continue;
                 }
             } else
@@ -336,9 +338,9 @@ Variable TypeClass::make_sl_trial( bool want_ret, const Variable &func, const Va
 
         // compute the condition
         Variable cond_ref = vm->visit( cond, true );
-        if ( cond_ref.is_false() )
+        if ( cond_ref.is_always_false() )
             return fail( "condition not met" );
-        if ( cond_ref.is_true() )
+        if ( cond_ref.is_always_true() )
             tr->condition.kv = 1;
         else {
             tr->condition.kv = 0;

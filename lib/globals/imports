@@ -13,8 +13,8 @@ PI32.met
 PI64.met
 FP32.met
 FP64.met
-PT.met
-ST.met
+# PT.met
+# ST.met
 AT.met
 NullableAT.met
 ct.met
@@ -31,6 +31,9 @@ Array.met
 Vec.met
 Cpu.met
 StringAncestor.met
+SurdefList.met
+
+
 # String.met
 # Def.met
 # Range.met
@@ -41,7 +44,6 @@ StringAncestor.met
 # math.met
 # Varargs.met
 # Lambda.met
-# SurdefList.met
 # ListOfTypesOrSurdefLists.met
 # RangeFrom.met
 # RangeUpTo.met

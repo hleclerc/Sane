@@ -5,8 +5,8 @@ void Ressource::thread_visitor( const std::function<void (Inst *, int, int)> &cb
     inst->thread_visitor( nout, cb, call_before );
 }
 
-void *Ressource::rcast() {
-    return inst->rcast( nout );
+void *Ressource::rcast( const KcSI64 &offset ) {
+    return inst->rcast( nout, offset  );
 }
 
 Ref *Ressource::ref() const {

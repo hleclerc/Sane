@@ -47,6 +47,7 @@ public:
     RcString                name;
     SI32                    alig;
     MSA                     methods;
+    MSA                     getters;
     SI32                    _kv_size;
     SI32                    _kv_alig;
     MA                      attributes;

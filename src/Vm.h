@@ -58,11 +58,13 @@ public:
     void          display_graph                 ( const char *fn = ".res" );
     void          codegen                       ( Codegen &cg );
 
-    void          if_else                       ( const Variable &cond_var, const std::function<void(void)> &ok, const std::function<void(void)> &ko );
+    Variable      if_else                       ( const Variable &cond_var, const std::function<Variable(void)> &ok, const std::function<Variable(void)> &ko );
 
     #define BT( T ) TypeInSane *type_##T;
     #include "BaseTypes.h"
     #undef BT
+    TypeInSane   *type_PT;
+    TypeInSane   *type_ST;
 
     Variable      ref_void;
     Variable      ref_error;

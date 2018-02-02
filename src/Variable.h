@@ -23,8 +23,8 @@ public:
     CanoVal            cano                ( bool fully_solved = false ) const; ///< complex tasks are executed only
 
     bool               is_shared           () const;
-    bool               is_false            () const;
-    bool               is_true             () const;
+    bool               is_always_false     () const;
+    bool               is_always_true      () const;
     bool               error               () const;
     operator           bool                () const { return bool( ref ); }
 
@@ -53,7 +53,7 @@ public:
     Variable           sub_part            ( Type *new_type, SI32 add_off ) const;
 
     template<class T>
-    T                 *rcast               () const { return (T *)ref->current.rcast(); }
+    T                 *rcast               () const { return (T *)ref->current.rcast( offset.cano() ); }
 
     RcPtr<Ref>         ref;
     KuSI64             offset;

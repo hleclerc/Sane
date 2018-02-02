@@ -15,8 +15,10 @@
 # content of a "class foo[ ... ] ..."
 global
 class Class
-    def operator== that: Class
-        __primitive_gen_equ self, that
+    host_id ~= PI64
+
+    # def operator== that: Class
+    #     __primitive_gen_equ self, that
 
     # name                   ~= String                         #
     # arg_names              ~= Vec[ String ]                  #
@@ -41,8 +43,17 @@ class Class
     
     # futur_attrs            ~= Vec[ String ]
                
-    instances              ~= NullablePtr[ Type ]              #
+    # instances              ~= NullablePtr[ Type ]              #
        
     # export_flag            ~= Bool                           #
     # global_flag           ~= Bool                           #
 
+     
+global
+class SlTrialClass
+    host_id ~= PI64
+
+    # args                   ~= Vec[ UntypedRef ]
+    # def_ref                ~= UntypedRef
+    # msg                    ~= String
+    # condition              ~= Bool

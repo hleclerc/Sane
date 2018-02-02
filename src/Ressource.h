@@ -22,7 +22,7 @@ public:
     RcPtr<CanoInst> cano_inst      () const { return inst->cano_inst( nout ); }
     CanoVal         cano_val       ( const KcSI64 &offset, const KcSI64 &length, TypeInSane *type ) const { return inst->cano_val( nout, offset, length, type ); }
     CanoVal         cano_val       () const { return inst->cano_val( nout ); }
-    void           *rcast          ();
+    void           *rcast          ( const KcSI64 &offset );
     TypeInSane     *type           () const { return inst->out_type( nout ); }
     KuSI64          size           () const { return inst->out_size( nout ); }
     operator        bool           () const { return bool( inst ); }

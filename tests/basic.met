@@ -6,16 +6,28 @@
 #     stdout.read a, 11
 #     stdout.read a, 12
 
-# stdout << 10
 class Pouet 
     def operator get 
         40
 
+class A[ d ]
+    def get_smurf
+        654
+
+class A[ d, e ]
+    def get_smurf
+        654
+
 # i := Pouet()
 # p := make_proxy SI32, i
-p := make_proxy SI32, Pouet()
-ct_info p
-ct_info 12 + p
-ct_info p + 12
+# p := make_proxy SI32, Pouet()
+# ct_info p
+# ct_info 12 + p
+# ct_info p + 12
 
 # __primitive_ct_display_graph()
+# a := Vec[ SI32 ]()
+# ct_info a.smurf
+# stdout << 10
+a := SI32
+ct_info a 10
